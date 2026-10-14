@@ -147,3 +147,23 @@ Verification (real click path): peak 0.451, meter 86%, bpm 90, loop on, onsets o
   live: 26/26 effects instantiate + survive every param at min/max/default ✓
   live: Strum spreads a chord to 0/12/24 ticks, Roll multiplies notes, Vel↗ ramps,
   Snap/Harmonize/Reverse all fire, 7/7 rack generators present, Fill mutates steps ✓
+
+# PulseForge Studio 2.0 — "entirely new app" upgrade (started 2026-10-14)
+Decisions (user-confirmed): Vercel = bring-your-own-key (keys stay in visitor's browser,
+stateless proxy); Mac app = Electron .dmg with embedded backend; real sampled instruments
+allowed (Salamander piano CC-BY 3.0 w/ attribution, VSCO 2 CE CC0). Rule: never remove a
+feature — add, fix, enhance only. Baseline checkpoint: git commit 422bf9d (local repo, no remote).
+Agent salvage notes: ~/.claude/agent-salvage/notes/pulseforge-2.0/
+
+Stage map (each stage has a check that can fail):
+- S1  shared contracts (drum roles, kit ids)                 -> roles/kits tests green
+- S2  [agent A] sound library: new kits + one-shots          -> every kit x every role renders non-silent/bounded/finite
+- S3  [agent B] instruments: new engines + sampled instruments -> sampled piano non-silent in OFFLINE render
+- S4  [agent C] Electron .dmg w/ embedded backend           -> packaged app answers /api/health; dmg mounts
+- S5  procedural producer (no-AI full beats)                  -> every genre: valid, in-key, multi-section composition
+- S6  production -> project (tracks, mixer, sends, sidechain, automation) -> ProjectSchema passes; all refs resolve
+- S7  AI end-to-end harness (plan>compose>arrange>mix>render>critique>revise) -> mocked-provider run completes
+- S8  UI 2.0: design system, nav rail, Home, Beginner/Expert -> both modes render every page, 0 console errors
+- S9  voice-ready providers (Fish Audio TTS, ElevenLabs Music) -> endpoint tests vs fetched docs
+- S10 Vercel build (BYOK, serverless)                         -> local serverless harness: health + BYOK compose
+- S11 integrate + full verify + skeptical review + final dmg -> lint/typecheck/test/build/e2e green
