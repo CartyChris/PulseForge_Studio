@@ -8,6 +8,9 @@ import { inspectZip, extractZipSafe } from "./ziputil";
 import { COMPOSITION_SYSTEM, EDIT_PLAN_SYSTEM, LYRICS_SYSTEM, MIX_SYSTEM, ANALYZE_SYSTEM } from "./prompts";
 import { validateComposition } from "../shared/composition";
 import { validateEditPlan } from "../shared/commands";
+import { registerConnectionRoutes, isLocalOrigin } from "./connections";
+import { chatWithJsonRetry } from "./ai-json";
+import { registerProducerRoutes } from "./producer-routes";
 
 // ---------- rate limiting (simple in-memory token bucket per IP) ----------
 const buckets = new Map<string, { tokens: number; last: number }>();
@@ -25,31 +28,40 @@ function rateLimit(ip: string, cost = 1, capacity = 60, refillPerSec = 1): boole
   return true;
 }
 
-function extractJson(text: string): unknown {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start < 0 || end <= start) throw new Error("Response contained no JSON object");
-  return JSON.parse(text.slice(start, end + 1));
-}
+const providerBody = z.object({ providerId: z.string(), model: z.string().optional() });
 
-async function chatWithJsonRetry<T>(provider: AIProviderAdapter, system: string, user: string, model: string | undefined, validate: (raw: unknown) => T): Promise<T> {
-  if (!provider.chat) throw new Error(`${provider.name} does not support text generation`);
-  const first = await provider.chat({ system, user, model });
+/**
+ * Cross-site request guard for every /api route. The backend can spend the user's API keys,
+ * drive their logged-in AI CLIs and read local files, so a random website must never be able
+ * to call it from the user's browser.
+ *  - Origin must be absent (curl, Electron main), local (localhost/127.0.0.1/file/app), or the
+ *    same host the request was sent to (same-origin, incl. LAN mode and Vercel).
+ *  - Locally, the Host header must be loopback or a literal IP: this blocks DNS rebinding, where
+ *    evil.example resolves to 127.0.0.1 and would otherwise look "same-origin".
+ */
+export function isAllowedRequest(origin: string | undefined, host: string | undefined, serverless: boolean): boolean {
+  if (!serverless) {
+    const h = (host ?? "").replace(/:\d+$/, "").replace(/^\[|\]$/g, "");
+    const loopbackOrIp = h === "localhost" || h === "" || /^(\d{1,3}\.){3}\d{1,3}$/.test(h) || h.includes(":");
+    if (!loopbackOrIp) return false;
+  }
+  if (!origin || origin === "null" || isLocalOrigin(origin)) return true;
   try {
-    return validate(extractJson(first));
-  } catch (err) {
-    const retry = await provider.chat({
-      system,
-      user: `${user}\n\nYour previous response was invalid: ${String(err).slice(0, 300)}\nPrevious response (truncated): ${first.slice(0, 1500)}\nRespond again with ONLY the corrected JSON object.`,
-      model,
-    });
-    return validate(extractJson(retry));
+    return new URL(origin).host === host;
+  } catch {
+    return false;
   }
 }
 
-const providerBody = z.object({ providerId: z.string(), model: z.string().optional() });
-
 export function registerRoutes(app: FastifyInstance): void {
+  const serverless = process.env.PF_SERVERLESS === "1";
+  app.addHook("onRequest", async (req, reply) => {
+    if (req.url.startsWith("/api/") && !isAllowedRequest(req.headers.origin, req.headers.host, serverless)) {
+      return reply.code(403).send({ error: "Blocked cross-site request — PulseForge's API only answers its own app." });
+    }
+  });
+  registerConnectionRoutes(app);
+  registerProducerRoutes(app);
   app.addHook("onRequest", async (req, reply) => {
     if (req.url.startsWith("/api/ai/") || req.url.startsWith("/api/providers/test")) {
       if (!rateLimit(req.ip, 2)) {

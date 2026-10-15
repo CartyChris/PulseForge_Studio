@@ -7,6 +7,9 @@ import type { Project, Clip, Note } from "../../shared/project";
 import { newId, MASTER_ID } from "../../shared/project";
 import type { DawCommand } from "../../shared/commands";
 import { snapTicks, clamp, TICKS_PER_STEP } from "../../shared/time";
+import { parseGrid } from "../../shared/producer";
+import { INSTRUMENT_PRESETS } from "../engine/instruments";
+import { DRUM_KITS } from "../engine/kits";
 
 export class CommandError extends Error {}
 
@@ -258,7 +261,47 @@ export function applyCommand(p: Project, cmd: DawCommand): Project {
       const updated = { ...pattern, notes: { ...pattern.notes, [cmd.channelId]: notes } };
       return { ...p, patterns: p.patterns.map((x) => (x.id === pattern.id ? updated : x)) };
     }
+    case "setChannelPreset": {
+      const ch = findOrThrow(p.channels, cmd.channelId, "Channel");
+      if (ch.instrument.type !== "synth") throw new CommandError(`Channel "${ch.name}" is not an instrument channel`);
+      const preset = INSTRUMENT_PRESETS.find((x) => x.id === cmd.presetId);
+      if (!preset) throw new CommandError(`Unknown instrument preset: ${cmd.presetId}`);
+      return patchChannel(p, ch.id, { name: preset.name, instrument: { type: "synth", synthId: preset.engineId, presetId: preset.id, params: { ...preset.params } } });
+    }
+    case "setChannelDrumSound": {
+      const ch = findOrThrow(p.channels, cmd.channelId, "Channel");
+      if (ch.instrument.type !== "drum-sound") throw new CommandError(`Channel "${ch.name}" is not a drum channel`);
+      const kit = DRUM_KITS.find((k) => k.id === cmd.kitId);
+      if (!kit) throw new CommandError(`Unknown kit: ${cmd.kitId}`);
+      const sound = kit.sounds.find((s) => s.id === cmd.sound || s.role === cmd.sound);
+      if (!sound) throw new CommandError(`Kit "${kit.name}" has no sound "${cmd.sound}"`);
+      return patchChannel(p, ch.id, { name: sound.name, instrument: { type: "drum-sound", kitId: kit.id, soundId: sound.id } });
+    }
+    case "setChannelVolume":
+      findOrThrow(p.channels, cmd.channelId, "Channel");
+      return patchChannel(p, cmd.channelId, { volumeDb: cmd.volumeDb });
+    case "setChannelPan":
+      findOrThrow(p.channels, cmd.channelId, "Channel");
+      return patchChannel(p, cmd.channelId, { pan: cmd.pan });
+    case "setChannelMuted":
+      findOrThrow(p.channels, cmd.channelId, "Channel");
+      return patchChannel(p, cmd.channelId, { muted: cmd.muted });
+    case "setDrumGrid": {
+      const pattern = findOrThrow(p.patterns, cmd.patternId, "Pattern");
+      findOrThrow(p.channels, cmd.channelId, "Channel");
+      const steps = parseGrid(cmd.grid, pattern.lengthSteps);
+      const updated = { ...pattern, steps: { ...pattern.steps, [cmd.channelId]: steps } };
+      return { ...p, patterns: p.patterns.map((x) => (x.id === pattern.id ? updated : x)) };
+    }
+    case "setPatternSwing": {
+      const pattern = findOrThrow(p.patterns, cmd.patternId, "Pattern");
+      return { ...p, patterns: p.patterns.map((x) => (x.id === pattern.id ? { ...x, swing: cmd.swing } : x)) };
+    }
   }
+}
+
+function patchChannel(p: Project, channelId: string, patch: Partial<Project["channels"][number]>): Project {
+  return { ...p, channels: p.channels.map((c) => (c.id === channelId ? { ...c, ...patch } : c)) };
 }
 
 export function applyCommands(p: Project, cmds: DawCommand[]): Project {

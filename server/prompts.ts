@@ -48,7 +48,7 @@ Available commands (each an object with "type" plus fields):
 - {"type":"duplicateSection","startTick":int,"lengthTicks":int,"toTick":int,"name":string}
 - {"type":"addSection","name":string,"startTick":int,"lengthTicks":int} | {"type":"addMarker","name":string,"tick":int}
 - {"type":"setTrackVolume","mixerChannelId":string,"volumeDb":-60..12} | {"type":"setTrackPan","mixerChannelId":string,"pan":-1..1} | {"type":"setTrackMuted","mixerChannelId":string,"muted":bool}
-- {"type":"addEffect","mixerChannelId":string,"effectType":"eq3"|"compressor"|"limiter"|"gate"|"reverb"|"delay"|"chorus"|"flanger"|"phaser"|"distortion"|"saturation"|"filter"|"widener"|"tremolo"|"gain"|"deesser"|"bitcrusher"|"lofi"|"transient","params":{}}
+- {"type":"addEffect","mixerChannelId":string,"effectType":"eq3"|"compressor"|"limiter"|"gate"|"reverb"|"delay"|"chorus"|"flanger"|"phaser"|"distortion"|"saturation"|"filter"|"widener"|"tremolo"|"gain"|"deesser"|"bitcrusher"|"lofi"|"transient"|"multiband"|"autopan"|"pingpong"|"autowah"|"pitchshift"|"vibrato"|"ringmod","params":{}}
 - {"type":"setEffectParameter","mixerChannelId":string,"effectId":string,"param":string,"value":number} | {"type":"removeEffect","mixerChannelId":string,"effectId":string}
 - {"type":"createBus","name":string} | {"type":"addSend","fromMixerChannelId":string,"toMixerChannelId":string,"levelDb":-60..6} | {"type":"setSidechain","mixerChannelId":string,"fromMixerChannelId":string|null}
 - {"type":"pulseTune","assetId":string,"rootPc":0..11,"scaleName":"major"|"minor"|"chromatic"|"pentatonic minor"|etc,"strength":0..1,"retuneMs":0..400,"humanize":0..1} — experimental pitch correction on a vocal/audio asset (0 retuneMs = hard-tune; creates a new tuned asset, non-destructive). Use the project's key for rootPc (C=0..B=11).
@@ -56,6 +56,11 @@ Available commands (each an object with "type" plus fields):
 - {"type":"quantizeNotes","patternId":string,"channelId":string,"grid":"step"|"beat"|"bar","amount":0-1}
 - {"type":"humanizeNotes","patternId":string,"channelId":string,"timingTicks":0-24,"velocityAmount":0-0.5}
 - {"type":"transposeNotes","patternId":string,"channelId":string,"semitones":int}
+- {"type":"setChannelPreset","channelId":string,"presetId":string} — swap an instrument channel to another preset from the catalog
+- {"type":"setChannelDrumSound","channelId":string,"kitId":string,"sound":role-or-soundId} — swap a drum channel's sound
+- {"type":"setChannelVolume","channelId":string,"volumeDb":-60..12} | {"type":"setChannelPan","channelId":string,"pan":-1..1} | {"type":"setChannelMuted","channelId":string,"muted":bool}
+- {"type":"setDrumGrid","patternId":string,"channelId":string,"grid":"x...x...x...x..."} — rewrite one drum line (x hit, X accent, o soft, g ghost, r 32nd roll, R triplet roll, . rest; 16 chars per bar, repeats)
+- {"type":"setPatternSwing","patternId":string,"swing":0-1}
 
 Only reference ids that exist in the provided project summary. Never invent asset ids.
 Mixing suggestions are subjective starting points, not objective fixes — say so in the explanation when relevant.`;

@@ -1,9 +1,10 @@
 /**
- * AI provider adapters. Ten adapters behind one interface; capabilities are
+ * AI provider adapters behind one interface; capabilities are
  * declared per adapter and only advertised when the adapter actually implements
  * them. Endpoints used are each provider's documented public API — nothing invented.
  */
 import { getSecret, getProviderConfig } from "./secrets";
+import { CLI_PROVIDERS } from "./cli-bridge";
 
 export type AICapability =
   | "composition"
@@ -33,6 +34,16 @@ export interface ChatRequest {
   /** optional audio for multimodal analysis (base64 + mime) */
   audioBase64?: string;
   audioMime?: string;
+  /**
+   * Optional structured-output hint. Used only where the provider supports it natively
+   * (OpenAI response_format json_schema, Grok CLI --json-schema); everyone else ignores it,
+   * so callers must still validate the text they get back.
+   */
+  jsonSchema?: object;
+  /** Optional hint: ask for a JSON object (OpenAI-style response_format json_object). */
+  json?: boolean;
+  /** Optional cancellation (CLI providers kill their subprocess). */
+  signal?: AbortSignal;
 }
 
 export interface AudioGenRequest {
@@ -71,12 +82,12 @@ export interface StemSeparationResult {
 
 const TIMEOUT = 120_000;
 
-async function post(url: string, headers: Record<string, string>, body: unknown): Promise<any> {
+async function post(url: string, headers: Record<string, string>, body: unknown, signal?: AbortSignal): Promise<any> {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json", ...headers },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(TIMEOUT),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(TIMEOUT)]) : AbortSignal.timeout(TIMEOUT),
   });
   if (!res.ok) {
     const text = (await res.text()).slice(0, 400);
@@ -113,39 +124,60 @@ const anthropic: AIProviderAdapter = {
     const key = getSecret("anthropic");
     if (!key) throw new Error("Anthropic API key not configured");
     const model = req.model || getProviderConfig("anthropic").model || "claude-opus-4-8";
-    const data = await post(
-      "https://api.anthropic.com/v1/messages",
-      { "x-api-key": key, "anthropic-version": "2023-06-01" },
-      {
-        model,
-        max_tokens: req.maxTokens ?? 8192,
-        system: req.system,
-        messages: [{ role: "user", content: req.user }],
-      },
-    );
-    return (data.content ?? [])
-      .filter((b: any) => b.type === "text")
-      .map((b: any) => b.text)
-      .join("\n");
+    return anthropicMessages("https://api.anthropic.com/v1/messages", { "x-api-key": key, "anthropic-version": "2023-06-01" }, model, req);
   },
 };
 
+/** Anthropic Messages API call (shared by Anthropic and Anthropic-compatible endpoints). */
+async function anthropicMessages(url: string, headers: Record<string, string>, model: string, req: ChatRequest): Promise<string> {
+  const data = await post(url, headers, {
+    model,
+    max_tokens: req.maxTokens ?? 8192,
+    system: req.system,
+    messages: [{ role: "user", content: req.user }],
+  }, req.signal);
+  return (data.content ?? [])
+    .filter((b: any) => b.type === "text")
+    .map((b: any) => b.text)
+    .join("\n");
+}
+
 // ---------- OpenAI-compatible chat helper ----------
-function openAiStyle(id: string, name: string, baseUrl: string | null, defaultModel: string, caps: AICapability[], extraHeaders: () => Record<string, string> = () => ({})): AIProviderAdapter {
-  const resolveBase = () => getProviderConfig(id).baseUrl || baseUrl;
-  return {
+interface OpenAiStyleOpts {
+  /** local servers (Ollama, LM Studio) need no key */
+  keyless?: boolean;
+  /** xAI documents max_tokens as deprecated in favour of max_completion_tokens */
+  tokenField?: "max_tokens" | "max_completion_tokens";
+  /** provider documents OpenAI response_format (json_schema / json_object) */
+  jsonMode?: boolean;
+  /** provider documents no GET /models → test with a 1-token chat instead */
+  testViaChat?: boolean;
+}
+
+function openAiStyle(id: string, name: string, baseUrl: string | null, defaultModel: string, caps: AICapability[], extraHeaders: () => Record<string, string> = () => ({}), opts: OpenAiStyleOpts = {}): AIProviderAdapter {
+  const resolveBase = () => (getProviderConfig(id).baseUrl || baseUrl)?.replace(/\/+$/, "") || null;
+  const keyless = opts.keyless ?? id === "ollama";
+  const adapter: AIProviderAdapter = {
     id,
     name,
     kind: "text",
-    needsKey: id !== "ollama",
+    needsKey: !keyless,
     configFields: ["baseUrl", "model"],
     capabilities: caps,
-    configured: () => (id === "ollama" ? true : !!getSecret(id)) && !!resolveBase(),
+    configured: () => (keyless ? true : !!getSecret(id)) && !!resolveBase(),
     async testConnection() {
       const base = resolveBase();
       if (!base) return { ok: false, message: "No base URL configured" };
       const key = getSecret(id);
-      if (id !== "ollama" && !key) return { ok: false, message: "No API key configured" };
+      if (!keyless && !key) return { ok: false, message: "No API key configured" };
+      if (opts.testViaChat) {
+        try {
+          await adapter.chat!({ system: "Reply with OK.", user: "OK", maxTokens: 1 });
+          return { ok: true, message: "Connected" };
+        } catch (e) {
+          return { ok: false, message: String(e) };
+        }
+      }
       try {
         const res = await fetch(`${base}/models`, {
           headers: { ...(key ? { authorization: `Bearer ${key}` } : {}), ...extraHeaders() },
@@ -176,20 +208,139 @@ function openAiStyle(id: string, name: string, baseUrl: string | null, defaultMo
             }
           : { role: "user", content: req.user },
       ];
+      const body: Record<string, unknown> = { model, [opts.tokenField ?? "max_tokens"]: req.maxTokens ?? 8192, messages };
+      if (opts.jsonMode && req.jsonSchema) body.response_format = { type: "json_schema", json_schema: { name: "response", schema: req.jsonSchema } };
+      else if (opts.jsonMode && req.json) body.response_format = { type: "json_object" };
       const data = await post(
         `${base}/chat/completions`,
         { ...(key ? { authorization: `Bearer ${key}` } : {}), ...extraHeaders() },
-        { model, max_tokens: req.maxTokens ?? 8192, messages },
+        body,
+        req.signal,
       );
       return data.choices?.[0]?.message?.content ?? "";
     },
   };
+  return adapter;
 }
 
-const openai = openAiStyle("openai", "OpenAI", "https://api.openai.com/v1", "gpt-4o", ["composition", "lyrics", "project-analysis", "audio-analysis", "transcription"]);
+const openai = openAiStyle("openai", "OpenAI", "https://api.openai.com/v1", "gpt-4o", ["composition", "lyrics", "project-analysis", "audio-analysis", "transcription"], undefined, { jsonMode: true });
 const openrouter = openAiStyle("openrouter", "OpenRouter", "https://openrouter.ai/api/v1", "anthropic/claude-sonnet-4.5", ["composition", "lyrics", "project-analysis"], () => ({ "HTTP-Referer": "http://localhost", "X-Title": "PulseForge Studio" }));
 const openaiCompatible = openAiStyle("openai-compatible", "OpenAI-compatible API", null, "default", ["composition", "lyrics", "project-analysis"]);
 const ollama = openAiStyle("ollama", "Ollama (local)", "http://localhost:11434/v1", "llama3.1", ["composition", "lyrics", "project-analysis"]);
+
+// ---------- 2.0 API providers ----------
+// Every base URL below was checked against the vendor's own docs on 2026-10-14
+// (doc URLs recorded in AI_PROVIDER_GUIDE.md). All use `Authorization: Bearer <key>`.
+const TEXT_CAPS: AICapability[] = ["composition", "lyrics", "project-analysis"];
+const PF_UA = () => ({ "user-agent": "PulseForge-Studio/2.0" });
+/** docs.x.ai — Chat Completions at https://api.x.ai/v1; max_tokens deprecated → max_completion_tokens */
+const xai = openAiStyle("xai", "xAI Grok API", "https://api.x.ai/v1", "grok-4.7", TEXT_CAPS, undefined, { tokenField: "max_completion_tokens" });
+/** platform.kimi.ai quickstart — https://api.moonshot.ai/v1 */
+const moonshot = openAiStyle("moonshot", "Moonshot Kimi API", "https://api.moonshot.ai/v1", "kimi-k3", TEXT_CAPS);
+/**
+ * kimi.com/code/docs — Kimi For Coding membership key. Overseas https://api.kimi.ai/coding/v1
+ * (China: https://api.kimi.com/coding/v1 — set baseUrl). Kimi's terms require the client to keep
+ * its real identity, so we send an honest User-Agent and never spoof a coding agent's.
+ */
+const kimiCoding = openAiStyle("kimi-coding", "Kimi For Coding (membership key)", "https://api.kimi.ai/coding/v1", "kimi-for-coding", TEXT_CAPS, PF_UA);
+/** docs.z.ai — standard API https://api.z.ai/api/paas/v4 (no list-models endpoint documented) */
+const zai = openAiStyle("zai", "Z.ai GLM API", "https://api.z.ai/api/paas/v4", "glm-5.3", TEXT_CAPS, undefined, { testViaChat: true });
+/** docs.z.ai/devpack/quick-start — GLM Coding Plan dedicated endpoint https://api.z.ai/api/coding/paas/v4 */
+const zaiCoding = openAiStyle("zai-coding", "Z.ai GLM Coding Plan", "https://api.z.ai/api/coding/paas/v4", "glm-5.3", TEXT_CAPS, undefined, { testViaChat: true });
+/** api-docs.deepseek.com — https://api.deepseek.com (/chat/completions) */
+const deepseek = openAiStyle("deepseek", "DeepSeek", "https://api.deepseek.com", "deepseek-flash", TEXT_CAPS);
+/** docs.mistral.ai/api — https://api.mistral.ai/v1 */
+const mistral = openAiStyle("mistral", "Mistral", "https://api.mistral.ai/v1", "mistral-large-latest", TEXT_CAPS);
+/** console.groq.com/docs/openai — https://api.groq.com/openai/v1 */
+const groq = openAiStyle("groq", "Groq", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile", TEXT_CAPS);
+/** docs.together.ai OpenAI compatibility — https://api.together.ai/v1 */
+const together = openAiStyle("together", "Together AI", "https://api.together.ai/v1", "MiniMaxAI/MiniMax-M3", TEXT_CAPS);
+/** LM Studio local server (OpenAI-compatible) — no key */
+const lmstudio = openAiStyle("lmstudio", "LM Studio (local)", "http://127.0.0.1:1234/v1", "local-model", TEXT_CAPS, undefined, { keyless: true });
+
+// ---------- Anthropic-compatible (Z.ai / Kimi coding plans document these) ----------
+const anthropicCompatible: AIProviderAdapter = {
+  id: "anthropic-compatible",
+  name: "Anthropic-compatible API",
+  kind: "text",
+  needsKey: true,
+  // baseUrl: e.g. https://api.z.ai/api/anthropic or https://api.kimi.ai/coding/ — we append /v1/messages
+  // authHeader: "x-api-key" (default, Anthropic style) or "bearer" (Authorization: Bearer — what
+  // Claude Code sends for ANTHROPIC_AUTH_TOKEN, the variable Z.ai's docs use)
+  configFields: ["baseUrl", "model", "authHeader"],
+  capabilities: TEXT_CAPS,
+  configured: () => !!getSecret("anthropic-compatible") && !!getProviderConfig("anthropic-compatible").baseUrl && !!getProviderConfig("anthropic-compatible").model,
+  async testConnection() {
+    const cfg = getProviderConfig("anthropic-compatible");
+    if (!cfg.baseUrl) return { ok: false, message: "No base URL configured" };
+    if (!cfg.model) return { ok: false, message: "No model configured" };
+    if (!getSecret("anthropic-compatible")) return { ok: false, message: "No API key configured" };
+    try {
+      await anthropicCompatible.chat!({ system: "Reply with OK.", user: "OK", maxTokens: 1 });
+      return { ok: true, message: "Connected" };
+    } catch (e) {
+      return { ok: false, message: String(e) };
+    }
+  },
+  async chat(req) {
+    const cfg = getProviderConfig("anthropic-compatible");
+    const key = getSecret("anthropic-compatible");
+    if (!key) throw new Error("Anthropic-compatible API key not configured");
+    if (!cfg.baseUrl) throw new Error("Anthropic-compatible base URL not configured");
+    const model = req.model || cfg.model;
+    if (!model) throw new Error("Anthropic-compatible model not configured");
+    const url = `${cfg.baseUrl.replace(/\/+$/, "")}/v1/messages`;
+    const auth: Record<string, string> = cfg.authHeader === "bearer" ? { authorization: `Bearer ${key}` } : { "x-api-key": key };
+    return anthropicMessages(url, { ...auth, "anthropic-version": "2023-06-01", ...PF_UA() }, model, req);
+  },
+};
+
+// ---------- Fish Audio (TTS) ----------
+// docs.fish.audio — POST https://api.fish.audio/v1/tts, Authorization: Bearer, optional `model`
+// header (s1, s2-pro, s2.1-pro [default], s2.1-pro-free, drama-3), JSON {text, reference_id?, format}.
+const fishAudio: AIProviderAdapter = {
+  id: "fish-audio",
+  name: "Fish Audio (voices)",
+  kind: "audio",
+  needsKey: true,
+  configFields: ["voiceId", "model"],
+  capabilities: ["text-to-speech"],
+  configured: () => !!getSecret("fish-audio"),
+  async testConnection() {
+    const key = getSecret("fish-audio");
+    if (!key) return { ok: false, message: "No API key configured" };
+    try {
+      const res = await fetch("https://api.fish.audio/wallet/self/api-credit", { headers: { authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(20_000) });
+      if (!res.ok) return { ok: false, message: `HTTP ${res.status}` };
+      const data: any = await res.json();
+      return { ok: true, message: `Connected${data?.credit !== undefined ? ` — API credit ${data.credit}` : ""}` };
+    } catch (e) {
+      return { ok: false, message: String(e) };
+    }
+  },
+  async generateAudio(req, onProgress) {
+    if (req.kind !== "speech") throw new Error("Fish Audio supports speech (text-to-speech) only");
+    const key = getSecret("fish-audio");
+    if (!key) throw new Error("Fish Audio API key not configured");
+    const cfg = getProviderConfig("fish-audio");
+    onProgress?.(0.1);
+    const res = await fetch("https://api.fish.audio/v1/tts", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${key}`,
+        "content-type": "application/json",
+        model: req.model || cfg.model || "s2.1-pro",
+      },
+      body: JSON.stringify({ text: req.prompt, format: "mp3", ...(cfg.voiceId ? { reference_id: cfg.voiceId } : {}) }),
+      signal: AbortSignal.timeout(TIMEOUT),
+    });
+    onProgress?.(0.7);
+    if (!res.ok) throw new Error(`Fish Audio ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const audio = Buffer.from(await res.arrayBuffer());
+    onProgress?.(1);
+    return { audio, mime: "audio/mpeg", licenseNote: "Generated via Fish Audio — usage governed by your Fish Audio plan and the voice model's terms." };
+  },
+};
 
 // ---------- Google Gemini ----------
 const gemini: AIProviderAdapter = {
@@ -233,8 +384,8 @@ const elevenlabs: AIProviderAdapter = {
   name: "ElevenLabs",
   kind: "audio",
   needsKey: true,
-  configFields: ["voiceId"],
-  capabilities: ["text-to-sound", "text-to-speech"],
+  configFields: ["voiceId", "musicModel"],
+  capabilities: ["text-to-sound", "text-to-speech", "text-to-music"],
   configured: () => !!getSecret("elevenlabs"),
   async testConnection() {
     const key = getSecret("elevenlabs");
@@ -256,6 +407,13 @@ const elevenlabs: AIProviderAdapter = {
       const voiceId = getProviderConfig("elevenlabs").voiceId || "21m00Tcm4TlvDq8ikWAM";
       url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
       body = { text: req.prompt, model_id: "eleven_multilingual_v2" };
+    } else if (req.kind === "music") {
+      // Eleven Music — elevenlabs.io/docs/api-reference/music/compose: POST /v1/music,
+      // music_length_ms 3000..600000, model_id music_v1 | music_v2 | music_v2_5; returns the audio file
+      url = "https://api.elevenlabs.io/v1/music";
+      const ms = Math.round(Math.min(600, Math.max(3, req.durationSec ?? 30)) * 1000);
+      const musicModel = (req.model?.startsWith("music_") ? req.model : undefined) || getProviderConfig("elevenlabs").musicModel || "music_v1";
+      body = { prompt: req.prompt, music_length_ms: ms, model_id: musicModel };
     } else {
       url = "https://api.elevenlabs.io/v1/sound-generation";
       body = { text: req.prompt, duration_seconds: Math.min(22, Math.max(0.5, req.durationSec ?? 5)) };
@@ -460,7 +618,12 @@ const manualImport: AIProviderAdapter = {
 
 export const PROVIDERS: AIProviderAdapter[] = [
   anthropic, openai, gemini, openrouter, openaiCompatible, ollama,
-  elevenlabs, genericAudioSync, genericAudioAsync, replicate, manualImport,
+  elevenlabs, genericAudioSync, genericAudioAsync, replicate,
+  // 2.0: subscriptions via the user's own installed CLIs (desktop only)
+  ...CLI_PROVIDERS,
+  // 2.0: more APIs + local servers + voices
+  xai, moonshot, kimiCoding, zai, zaiCoding, deepseek, mistral, groq, together, lmstudio, anthropicCompatible, fishAudio,
+  manualImport,
 ];
 
 export function getProvider(id: string): AIProviderAdapter {

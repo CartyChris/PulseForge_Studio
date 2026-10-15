@@ -8,6 +8,7 @@ import type { Project } from "../../shared/project";
 import { PPQ, ticksPerBar, TICKS_PER_STEP } from "../../shared/time";
 import { buildGraph, scheduleEvents, scheduleMetronome, bufferResolverRef, type BuiltGraph } from "./graph";
 import { buildEventList } from "./events";
+import { ensureSampledInstrumentsLoaded, sampledInstrumentsReady } from "./sampled";
 
 export interface EngineStatus {
   running: boolean;
@@ -131,6 +132,8 @@ class AudioEngine {
       c: project.channels, m: project.mixer.channels,
     });
     bufferResolverRef.current = (id) => this.getAssetBuffer(id);
+    // sampled instruments fetch in the background; their instances swap in the real sampler when ready
+    if (!sampledInstrumentsReady(project)) void ensureSampledInstrumentsLoaded(project);
     if (sig !== this.structuralSig) {
       this.structuralSig = sig;
       this.rebuildGraph();

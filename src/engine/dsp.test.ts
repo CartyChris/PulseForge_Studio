@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { DRUM_KITS, FACTORY_SAMPLES, getKitSound } from "./kits";
+import { DRUM_ROLES } from "../../shared/composition";
 import { FACTORY_RATE, synthKick, mulberry32, resampleLinear } from "./dsp";
 import { computePeaks, detectTransients, detectSilence, estimateBpm, isNonSilent, normalizeBuffer, nearestZeroCrossing, estimateKey } from "./analysis";
 
 describe("factory sound synthesis", () => {
-  it("all kits render all 18 roles, non-silent, bounded, finite", () => {
+  it("all kits render every drum role, non-silent, bounded, finite", () => {
     expect(DRUM_KITS.length).toBeGreaterThanOrEqual(4); // spec minimum; expansion kits welcome
     for (const kit of DRUM_KITS) {
-      expect(kit.sounds).toHaveLength(18);
+      expect(kit.sounds).toHaveLength(DRUM_ROLES.length);
       for (const s of kit.sounds) {
         const data = s.render();
         expect(data.length).toBeGreaterThan(FACTORY_RATE * 0.02);

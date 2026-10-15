@@ -134,6 +134,17 @@ export const DawCommandSchema = z.discriminatedUnion("type", [
     velocityAmount: z.number().min(0).max(0.5).default(0.1),
   }),
   z.object({ type: z.literal("transposeNotes"), patternId: z.string(), channelId: z.string(), semitones: z.number().int().min(-48).max(48) }),
+  // ── 2.0: beat-level commands (used by the AI producer and the Beat page) ──
+  /** swap a synth channel's instrument to another preset (e.g. "808 → Reese bass") */
+  z.object({ type: z.literal("setChannelPreset"), channelId: z.string(), presetId: z.string() }),
+  /** swap a drum channel's sound (kit + role or sound id) */
+  z.object({ type: z.literal("setChannelDrumSound"), channelId: z.string(), kitId: z.string(), sound: z.string() }),
+  z.object({ type: z.literal("setChannelVolume"), channelId: z.string(), volumeDb: z.number().min(-60).max(12) }),
+  z.object({ type: z.literal("setChannelPan"), channelId: z.string(), pan: z.number().min(-1).max(1) }),
+  z.object({ type: z.literal("setChannelMuted"), channelId: z.string(), muted: z.boolean() }),
+  /** write a drum part as a grid string: x hit, X accent, o soft, g ghost, r 32nd roll, R triplet roll, . rest */
+  z.object({ type: z.literal("setDrumGrid"), patternId: z.string(), channelId: z.string(), grid: z.string().regex(/^[xXogrR.\-|]+$/).max(260) }),
+  z.object({ type: z.literal("setPatternSwing"), patternId: z.string(), swing: z.number().min(0).max(1) }),
 ]);
 export type DawCommand = z.infer<typeof DawCommandSchema>;
 

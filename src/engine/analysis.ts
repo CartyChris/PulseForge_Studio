@@ -3,7 +3,7 @@
  * These are honest approximations: good enough to place slice markers and guess a
  * loop's tempo, clearly labeled as estimates in the UI.
  */
-import { mulberry32 } from "./dsp";
+import { mulberry32, biquad } from "./dsp";
 
 /** Min/max peak pairs for waveform drawing. */
 export function computePeaks(data: Float32Array, buckets: number): Float32Array {
@@ -337,4 +337,76 @@ export function pitchCorrect(data: Float32Array, sampleRate: number, opts: Pitch
     }
   }
   return out;
+}
+
+/**
+ * Mix measurements used by the AI producer's review stage (the model "listens" through these).
+ * Loudness is an approximation of ITU-R BS.1770 integrated loudness: K-weighting approximated
+ * with a 60 Hz high-pass + a +4 dB presence boost, 400 ms blocks, absolute (-70) and relative
+ * (-10 LU) gating. Close enough to steer gain staging; labeled "≈ LUFS" in the UI.
+ */
+export interface MixMetrics {
+  lufs: number;
+  peakDb: number;
+  crestDb: number;
+  /** share of total energy below 150 Hz / 150 Hz–5 kHz / above 5 kHz (sums to ~1) */
+  low: number;
+  mid: number;
+  high: number;
+  clippedSamples: number;
+  durationSec: number;
+}
+
+export function mixMetrics(channelData: Float32Array[], sampleRate: number): MixMetrics {
+  const n = channelData[0]?.length ?? 0;
+  const mono = new Float32Array(n);
+  let peak = 0, clipped = 0;
+  for (const ch of channelData) {
+    for (let i = 0; i < n; i++) {
+      const v = ch[i]!;
+      mono[i]! += v / channelData.length;
+      const a = Math.abs(v);
+      if (a > peak) peak = a;
+      if (a >= 0.999) clipped++;
+    }
+  }
+  const empty: MixMetrics = { lufs: -70, peakDb: -Infinity, crestDb: 0, low: 0, mid: 0, high: 0, clippedSamples: 0, durationSec: n / sampleRate };
+  if (!n || peak === 0) return empty;
+
+  // K-weighting approximation, per channel, summed as mean squares
+  const block = Math.max(1, Math.round(0.4 * sampleRate));
+  const hop = Math.max(1, Math.round(0.1 * sampleRate)); // 75% overlap like BS.1770
+  const weighted = channelData.map((ch) => biquad(biquad(Float32Array.from(ch), sampleRate, "highpass", 60, 0.5), sampleRate, "peak", 4000, 0.7, 4));
+  const blocks: number[] = [];
+  for (let s = 0; s + block <= n || (s === 0 && blocks.length === 0); s += hop) {
+    const end = Math.min(n, s + block);
+    let ms = 0;
+    for (const w of weighted) { let acc = 0; for (let i = s; i < end; i++) acc += w[i]! * w[i]!; ms += acc / Math.max(1, end - s); }
+    blocks.push(ms);
+    if (end >= n) break;
+  }
+  const lk = (ms: number) => -0.691 + 10 * Math.log10(Math.max(ms, 1e-12));
+  const abs = blocks.filter((ms) => lk(ms) > -70);
+  const meanAbs = abs.reduce((a, b) => a + b, 0) / Math.max(1, abs.length);
+  const rel = abs.filter((ms) => lk(ms) > lk(meanAbs) - 10);
+  const lufs = rel.length ? lk(rel.reduce((a, b) => a + b, 0) / rel.length) : -70;
+
+  let rmsAcc = 0;
+  for (let i = 0; i < n; i++) rmsAcc += mono[i]! * mono[i]!;
+  const rms = Math.sqrt(rmsAcc / n);
+
+  const energy = (x: Float32Array) => { let e = 0; for (let i = 0; i < x.length; i++) e += x[i]! * x[i]!; return e; };
+  const total = energy(mono) || 1e-12;
+  const low = energy(biquad(biquad(Float32Array.from(mono), sampleRate, "lowpass", 150), sampleRate, "lowpass", 150)) / total;
+  const high = energy(biquad(biquad(Float32Array.from(mono), sampleRate, "highpass", 5000), sampleRate, "highpass", 5000)) / total;
+  return {
+    lufs: Math.round(lufs * 10) / 10,
+    peakDb: Math.round(20 * Math.log10(peak) * 10) / 10,
+    crestDb: Math.round(20 * Math.log10(peak / Math.max(rms, 1e-9)) * 10) / 10,
+    low: Math.round(low * 1000) / 1000,
+    mid: Math.round(Math.max(0, 1 - low - high) * 1000) / 1000,
+    high: Math.round(high * 1000) / 1000,
+    clippedSamples: clipped,
+    durationSec: n / sampleRate,
+  };
 }

@@ -8,6 +8,7 @@ import { PPQ, ticksToSeconds } from "../../shared/time";
 import { buildEventList } from "./events";
 import { buildGraph, scheduleEvents, bufferResolverRef, type BufferResolver } from "./graph";
 import { encodeWav, type BitDepth } from "../../shared/wav";
+import { ensureSampledInstrumentsLoaded } from "./sampled";
 
 export interface RenderOptions {
   sampleRate?: number;
@@ -57,6 +58,10 @@ export async function renderProject(project: Project, resolveBuffer: BufferResol
       },
     };
   }
+
+  // every export / region render goes through here: sampled sets must be decoded BEFORE the offline
+  // graph is built, or those notes would be silent in the file
+  await ensureSampledInstrumentsLoaded(renderedProject);
 
   const buffer = await Tone.Offline(
     async () => {

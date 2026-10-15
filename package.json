@@ -1,9 +1,10 @@
 {
   "name": "pulseforge-studio",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "PulseForge Studio — local-first pattern-based DAW with optional AI assistance",
   "private": true,
   "type": "module",
+  "main": "dist-electron/app/main.cjs",
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "vite build",
@@ -14,7 +15,9 @@
     "test": "vitest run",
     "pretest:e2e": "playwright install chromium",
     "test:e2e": "playwright test",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run test:e2e"
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run test:e2e",
+    "build:desktop": "node scripts/build-desktop.mjs",
+    "desktop:dev": "node scripts/build-desktop.mjs --dev"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",
@@ -34,11 +37,66 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3",
     "eslint": "^9.17.0",
     "fake-indexeddb": "^6.0.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.19.0",
     "vite": "^6.0.7",
     "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "studio.pulseforge.app",
+    "productName": "PulseForge Studio",
+    "copyright": "Copyright © 2026 PulseForge Studio",
+    "directories": {
+      "app": "dist-electron/app",
+      "output": "release",
+      "buildResources": "electron/resources"
+    },
+    "files": [
+      "**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "dist",
+        "to": "web",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "asar": true,
+    "npmRebuild": false,
+    "electronDist": "node_modules/electron/dist",
+    "afterPack": "electron/build/after-pack.cjs",
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.music",
+      "icon": "electron/resources/icon.icns",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "darkModeSupport": true,
+      "minimumSystemVersion": "12.0",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "PulseForge Studio uses the microphone to record vocals and instruments into your projects.",
+        "NSHighResolutionCapable": true
+      }
+    },
+    "dmg": {
+      "artifactName": "PulseForge-Studio-${version}-${arch}.${ext}",
+      "title": "PulseForge Studio ${version}",
+      "icon": "electron/resources/icon.icns",
+      "writeUpdateInfo": false
+    }
   }
 }

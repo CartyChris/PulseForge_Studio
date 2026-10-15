@@ -78,5 +78,8 @@ export const DRUM_ROLES = [
   "kick", "kick-808", "snare", "clap", "rimshot", "hat-closed", "hat-open",
   "ride", "crash", "tom-low", "tom-mid", "tom-high", "shaker", "tambourine",
   "cowbell", "perc", "click", "impact",
+  // 2.0 expansion — appended only, order is part of the contract
+  "snap", "conga-high", "conga-low", "bongo", "clave", "woodblock",
+  "triangle", "agogo", "timbale", "vox-hey", "reverse-cymbal", "riser",
 ] as const;
 export type DrumRole = (typeof DRUM_ROLES)[number];

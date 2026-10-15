@@ -85,6 +85,14 @@ describe("providers", () => {
     for (const id of ["anthropic", "openai", "gemini", "openrouter", "openai-compatible", "ollama", "elevenlabs", "generic-audio-sync", "generic-audio-async", "replicate", "manual-import"]) {
       expect(ids).toContain(id);
     }
+    // 2.0: subscription CLIs + more APIs + local LM Studio + voices
+    for (const id of ["cli-claude", "cli-codex", "cli-kimi", "cli-grok", "xai", "moonshot", "kimi-coding", "zai", "zai-coding", "deepseek", "mistral", "groq", "together", "lmstudio", "anthropic-compatible", "fish-audio"]) {
+      expect(ids).toContain(id);
+    }
+    expect(new Set(ids).size).toBe(ids.length); // no duplicate ids
+    expect(PROVIDERS.length).toBe(27);
+    expect(getProvider("fish-audio").capabilities).toEqual(["text-to-speech"]);
+    expect(getProvider("elevenlabs").capabilities).toContain("text-to-music");
     // manual import claims nothing; audio adapters don't claim composition
     expect(getProvider("manual-import").capabilities).toHaveLength(0);
     expect(getProvider("elevenlabs").capabilities).not.toContain("composition");
