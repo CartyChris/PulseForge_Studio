@@ -93,6 +93,17 @@ describe("applyProduction", () => {
     expect(new Set(hookClips.map((c) => c.patternId)).size).toBe(1);
   });
 
+  it("replace mode starts from a neutral master fader (never inherits the last beat's auto-mix gain)", () => {
+    const first = applyProduction(createEmptyProject(), prod("lofi", 1));
+    const hot = { ...first, mixer: { channels: first.mixer.channels.map((c) => (c.id === MASTER_ID ? { ...c, volumeDb: 12, pan: 0.5 } : c)) } };
+    const next = applyProduction(hot, prod("afrobeats", 2));
+    const m = next.mixer.channels.find((c) => c.id === MASTER_ID)!;
+    expect(m.volumeDb).toBe(0);
+    expect(m.pan).toBe(0);
+    // append mode leaves the user's master alone
+    expect(applyProduction(hot, prod("afrobeats", 2), { mode: "append" }).mixer.channels.find((c) => c.id === MASTER_ID)!.volumeDb).toBe(12);
+  });
+
   it("replace mode keeps the user's audio assets; append mode keeps everything and places after the song", () => {
     const base = applyProduction(createEmptyProject(), prod("lofi", 1));
     const withAsset = { ...base, assets: [{ id: "a1", name: "vocal", durationSec: 3, sampleRate: 44100, channels: 1, source: "recording" as const, blobKey: "k", originalBlobKey: null, licenseNote: "", tags: [], favorite: false, bpmEstimate: null, keyEstimate: null, aiMeta: null }] };

@@ -116,7 +116,8 @@ export function applyProduction(project: Project, prod: Production, opts: ApplyP
 
   const master = project.mixer.channels.find((c) => c.id === MASTER_ID)!;
   const mixer: MixerChannel[] = replace
-    ? [{ ...master, effects: prod.mix.master.map((e) => makeEffect(e.type, e.params)) }]
+    // a fresh session starts from a neutral master strip: never inherit the previous beat's fader/pan/sends
+    ? [{ ...master, volumeDb: 0, pan: 0, muted: false, soloed: false, sends: [], sidechainFromId: null, effects: prod.mix.master.map((e) => makeEffect(e.type, e.params)) }]
     : [...project.mixer.channels];
   const channels: Channel[] = replace ? [] : [...project.channels];
   const patterns: Pattern[] = replace ? [] : [...project.patterns];

@@ -126,3 +126,58 @@ function makeTitle(genre: GenreId, moods: string[], seed = 0): string {
   h >>>= 0;
   return `${TITLE_A[h % TITLE_A.length]} ${TITLE_B[(h >>> 8) % TITLE_B.length]}`;
 }
+
+/**
+ * Offline revision: apply a plain-English change request to an existing spec.
+ * "faster and darker", "make it hit harder", "more swing", "use a piano", "another version".
+ * Explicit values (genre / bpm / key / instruments) come from directFromPrompt; relative words
+ * adjust the current values. Asking for nothing recognizable yields a fresh variation (new seed).
+ */
+export function localRevise(current: ProductionSpec, request: string): { spec: ProductionSpec; changes: string[] } {
+  const t = request.toLowerCase();
+  const changes: string[] = [];
+  const next: ProductionSpec = JSON.parse(JSON.stringify(current));
+  const parsed = directFromPrompt(request).spec;
+  const g = GENRES[next.genre];
+  const bpmNow = next.bpm ?? Math.round((g.bpm[0] + g.bpm[1]) / 2);
+
+  // explicit mentions (only when the request actually names them)
+  if (GENRE_WORDS.some(([re]) => re.test(request)) && parsed.genre !== next.genre) {
+    next.genre = parsed.genre; next.bpm = undefined; next.instruments = {}; next.styles = {};
+    changes.push(`genre → ${GENRES[parsed.genre].name}`);
+  }
+  if (parsed.bpm) { next.bpm = parsed.bpm; changes.push(`tempo → ${parsed.bpm} BPM`); }
+  else if (/\b(faster|speed (it )?up|quicker|more tempo|up ?tempo)\b/.test(t)) { next.bpm = Math.min(200, bpmNow + 8); changes.push(`tempo ${bpmNow} → ${next.bpm} BPM`); }
+  else if (/\b(slower|slow (it )?down|half[- ]?time|down ?tempo)\b/.test(t)) { next.bpm = Math.max(50, bpmNow - 8); changes.push(`tempo ${bpmNow} → ${next.bpm} BPM`); }
+  if (parsed.key && /\b(in|key)\b/.test(t)) { next.key = parsed.key; changes.push(`key → ${parsed.key}`); }
+  if (parsed.scale && /\b(major|minor|dorian|phrygian|lydian|mixolydian|pentatonic|blues)\b/.test(t)) { next.scale = parsed.scale; changes.push(`scale → ${parsed.scale}`); }
+  for (const slot of ["bass", "chords", "melody", "counter"] as const) {
+    if (parsed.instruments[slot]) { next.instruments = { ...next.instruments, [slot]: parsed.instruments[slot] }; changes.push(`${slot} → ${parsed.instruments[slot]}`); }
+  }
+
+  // relative feel changes
+  const addMood = (w: string) => { if (!next.mood.includes(w)) next.mood = `${next.mood} ${w}`.trim(); };
+  if (/\b(darker|more dark|sinister|evil|scarier|grim)\b/.test(t)) { addMood("dark"); next.scale = g.scales.find((s) => s === "phrygian" || s === "harmonic minor") ?? "minor"; changes.push("darker (minor-mode harmony)"); }
+  if (/\b(happier|brighter|uplifting|more positive|sunnier)\b/.test(t)) { addMood("bright"); next.scale = "major"; changes.push("brighter (major key)"); }
+  if (/\b(harder|hit harder|more aggressive|heavier|punchier|grittier)\b/.test(t)) { addMood("aggressive"); next.mix = { ...next.mix, saturation: Math.min(1, (next.mix.saturation ?? g.mix.saturation) + 0.2) }; changes.push("harder (more drive)"); }
+  if (/\b(softer|chiller|more chill|calmer|mellower|smoother)\b/.test(t)) { addMood("chill"); next.mix = { ...next.mix, reverb: Math.min(1, (next.mix.reverb ?? g.mix.reverb) + 0.15) }; changes.push("softer (more space)"); }
+  if (/\b(more swing|swing it|bouncier|more bounce|shuffle)\b/.test(t)) { next.swing = Math.min(0.7, (next.swing ?? g.swing) + 0.15); changes.push(`swing → ${Math.round(next.swing * 100)}%`); }
+  if (/\b(no swing|less swing|straight(er)?|quantized)\b/.test(t)) { next.swing = 0; changes.push("straight timing"); }
+  if (/\b(more reverb|wetter|more space|bigger room)\b/.test(t)) { next.mix = { ...next.mix, reverb: Math.min(1, (next.mix.reverb ?? g.mix.reverb) + 0.2) }; changes.push("more reverb"); }
+  if (/\b(less reverb|drier|dry(er)?|tighter)\b/.test(t)) { next.mix = { ...next.mix, reverb: Math.max(0, (next.mix.reverb ?? g.mix.reverb) - 0.2) }; changes.push("less reverb"); }
+  if (/\b(no sidechain|without sidechain|stop pumping)\b/.test(t)) { next.mix = { ...next.mix, sidechain: false }; changes.push("sidechain off"); }
+  else if (/\b(sidechain|pump(ing)?)\b/.test(t)) { next.mix = { ...next.mix, sidechain: true }; changes.push("sidechain on"); }
+  if (/\b(longer|extend(ed)?|full song)\b/.test(t)) { next.length = "extended"; changes.push("longer arrangement"); }
+  if (/\b(shorter|short version|quick loop)\b/.test(t)) { next.length = "short"; changes.push("shorter arrangement"); }
+  if (/\b(no|remove|without|drop the) melody\b/.test(t)) { next.styles = { ...next.styles, melody: "none" }; changes.push("melody removed"); }
+  if (/\b(arp|arpeggiat)/.test(t)) { next.styles = { ...next.styles, melody: "arp" }; changes.push("arpeggiated melody"); }
+
+  // new seed when asked for a different take, or when nothing else was understood
+  const keepSeed = /\b(same beat|keep (the )?(beat|melody|same)|same melody)\b/.test(t);
+  const wantsNew = /\b(another|different|new) (version|variation|take|one|beat|melody)\b|\bvariation\b|\bregenerate\b|\bremix\b/.test(t);
+  if (!keepSeed && (wantsNew || changes.length === 0)) {
+    next.seed = ((current.seed ?? 1) * 1103515245 + 12345) % 2_000_000_000;
+    changes.push(changes.length === 0 ? "fresh variation (new melody, groove & voicings)" : "new variation");
+  }
+  return { spec: ProductionSpecSchema.parse(next), changes };
+}

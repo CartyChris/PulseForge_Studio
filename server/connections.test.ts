@@ -88,12 +88,21 @@ describe("CLI argv builders (exact)", () => {
     });
   });
   it("kimi", () => {
-    expect(bridge.buildCliInvocation("cli-kimi", { system: "SYS", prompt: "P" }, T)).toEqual({
-      args: ["-p", "SYS\n\n---\n\nP", "--plan", "--output-format", "text"],
-    });
-    expect(bridge.buildCliInvocation("cli-kimi", { system: "", prompt: "P", model: "k3" }, T).args).toEqual(["-p", "P", "--plan", "--output-format", "text", "-m", "k3"]);
-  });
-  it("grok (plain + json-schema)", () => {
+    const kimi = bridge.buildCliInvocation("cli-kimi", { system: "SYS", prompt: "P" }, T);
+    expect(kimi.args).toEqual(["--agent-file", `${T}/pulseforge-agent.md`, "-p", "P", "--output-format", "stream-json"]);
+    expect(kimi.args).not.toContain("--plan"); // kimi rejects --plan together with -p
+    expect(kimi.files?.[0]?.content).toMatch(/^---\n[\s\S]*\ntools: \[\]\nsubagents: \[\]\n---\n\nSYS\n$/); // every tool off
+    expect(bridge.buildCliInvocation("cli-kimi", { system: "", prompt: "P", model: "k3" }, T).args.slice(-2)).toEqual(["-m", "k3"]);
+    expect(bridge.parseKimiStream([
+      '{"role":"meta","type":"system.version","version":"2.2.0"}',
+      "Warning: [loop_control] deprecated",
+      '{"role":"assistant","content":"thinking draft"}',
+      '{"role":"assistant","content":"{\\"ok\\":true}"}',
+      '{"role":"meta","type":"session.resume_hint","content":"To resume this session: kimi -r x"}',
+    ].join("\n"))).toBe('{"ok":true}');
+    const spec = { id: "cli-codex", name: "Codex CLI", binary: "codex", vendor: "OpenAI", loginHint: "login" } as const;
+    expect(bridge.classifyFailure(spec as never, { code: 1, stdout: "", stderr: "Error: failed to parse model_catalog_json path `/x.json` as JSON: missing field", signal: null } as never, 1000))
+      .toMatch(/couldn't load its own settings.*run `codex` in Terminal/);
     expect(bridge.buildCliInvocation("cli-grok", { system: "SYS", prompt: "P" }, T)).toEqual({
       args: ["--single=P", "--output-format", "plain", "--cwd", T, "--disable-web-search", "--no-subagents", "--max-turns", "1", "--permission-mode", "plan", "--rules=SYS"],
     });
@@ -107,8 +116,8 @@ describe("CLI argv builders (exact)", () => {
     expect(bridge.buildCliInvocation("cli-claude", { system: "S", prompt: EVIL }, "/t").stdin).toBe(EVIL);
     expect(bridge.buildCliInvocation("cli-codex", { system: "", prompt: EVIL }, "/t").stdin).toBe(EVIL);
     const kimi = bridge.buildCliInvocation("cli-kimi", { system: "", prompt: EVIL }, "/t").args;
-    expect(kimi[1]).toBe(EVIL);
-    expect(kimi).toHaveLength(5);
+    expect(kimi[kimi.indexOf("-p") + 1]).toBe(EVIL);
+    expect(kimi).toHaveLength(6);
     const grok = bridge.buildCliInvocation("cli-grok", { system: "", prompt: "--version" }, "/t").args;
     expect(grok[0]).toBe("--single=--version");
     expect(grok).not.toContain("--version");
@@ -152,13 +161,18 @@ describe("CLI execution safety", () => {
     bridge._setSpawnForTests(f.fn);
     await expect(getProvider("cli-claude").chat!({ system: "s", user: "u" })).rejects.toThrow(/Claude Code isn't logged in — run `claude`/);
   });
-  it("codex reads the -o file; kimi + grok return stdout", async () => {
+  it("codex reads the -o file; kimi parses stream-json; grok returns stdout", async () => {
     bridge._setDiscoveryForTests(FAKE_BINS);
     const f = fakeSpawn((c, child) => {
       if (c.file.endsWith("codex")) {
         const o = c.args[c.args.indexOf("-o") + 1]!;
         fs.writeFileSync(o, "codex answer\n");
         reply(child, "progress noise");
+      } else if (c.file.endsWith("kimi")) {
+        // the tools-free agent file must exist (inside the temp dir) when kimi starts
+        const agent = c.args[c.args.indexOf("--agent-file") + 1]!;
+        expect(fs.readFileSync(agent, "utf8")).toContain("tools: []");
+        reply(child, 'Warning: x\n{"role":"assistant","content":"kimi answer"}\n{"role":"meta","type":"session.resume_hint"}\n');
       } else reply(child, `${path.basename(c.file)} answer\n`);
     });
     bridge._setSpawnForTests(f.fn);

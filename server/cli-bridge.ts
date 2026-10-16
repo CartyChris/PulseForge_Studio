@@ -343,6 +343,34 @@ export interface CliInvocation {
   stdin?: string;
   /** file the CLI writes its final answer to (codex -o) */
   outFile?: string;
+  /** files the runner writes into tmpDir before spawning (kimi's tools-free agent definition) */
+  files?: Array<{ path: string; content: string }>;
+}
+
+/** Kimi agent definition with every tool and sub-agent disabled (`tools: []` is enforced again before
+ * execution, per the Kimi Code agents docs; verified: a "write a file" request is refused). Without it,
+ * `kimi -p` auto-runs tools — and `--plan` cannot be combined with `-p`. The body is the system prompt. */
+export function kimiAgentFile(system: string): string {
+  return `---\nname: pulseforge-answer\ndescription: Answer-only assistant for PulseForge Studio (no tools)\ntools: []\nsubagents: []\n---\n\n${system.trim() || "Answer the user's request in plain text."}\n`;
+}
+
+/** Final assistant text from `kimi --output-format stream-json` (one JSON object per line). */
+export function parseKimiStream(stdout: string): string {
+  let last = "";
+  for (const line of stdout.split("\n")) {
+    const t = line.trim();
+    if (!t.startsWith("{")) continue; // warnings etc.
+    try {
+      const m = JSON.parse(t) as { role?: string; content?: unknown };
+      if (m.role !== "assistant") continue;
+      if (typeof m.content === "string" && m.content.trim()) last = m.content;
+      else if (Array.isArray(m.content)) {
+        const text = m.content.map((c: { type?: string; text?: string }) => (c?.type === "text" && typeof c.text === "string" ? c.text : "")).join("");
+        if (text.trim()) last = text;
+      }
+    } catch { /* partial line */ }
+  }
+  return stripAnsi(last).trim();
 }
 
 const MODEL_RE = /^[A-Za-z0-9][A-Za-z0-9._:/@[\]-]{0,127}$/;
@@ -384,9 +412,15 @@ export function buildCliInvocation(id: CliProviderId, turn: CliTurn, tmpDir: str
         outFile,
       };
     }
-    case "cli-kimi":
-      // commander consumes the next argv element as -p's value even if it starts with "-" (verified)
-      return { args: ["-p", combinePrompt(turn.system, turn.prompt), "--plan", "--output-format", "text", ...(model ? ["-m", model] : [])] };
+    case "cli-kimi": {
+      // commander consumes the next argv element as -p's value even if it starts with "-" (verified).
+      // Tools are disabled by the agent file (see kimiAgentFile); the system prompt lives there too.
+      const agentPath = path.join(tmpDir, "pulseforge-agent.md");
+      return {
+        args: ["--agent-file", agentPath, "-p", turn.prompt, "--output-format", "stream-json", ...(model ? ["-m", model] : [])],
+        files: [{ path: agentPath, content: kimiAgentFile(turn.system) }],
+      };
+    }
     case "cli-grok": {
       // clap: attached "--flag=value" form so a prompt starting with "-" can't be parsed as a flag (verified)
       const json = !!turn.jsonSchema;
@@ -434,6 +468,8 @@ function parseGrokJson(stdout: string): string {
 const AUTH_RE = /failed to authenticate|session expired|could not be refreshed|not logged in|log ?in required|please (run )?\/?log ?in|please sign in|unauthori[sz]ed|\b401\b|invalid (api )?key|authentication (failed|required|error)|oauth token|credentials? (not found|missing|expired)|no (valid )?(auth|credentials)/i;
 const LIMIT_RE = /rate.?limit|usage limit|quota|\b429\b|limit reached|too many requests/i;
 
+const CONFIG_RE = /failed to (parse|load)[^\n]*(config|\.toml|\.json|catalog)|config\.toml[^\n]*(error|invalid)/i;
+
 export function classifyFailure(spec: CliSpec, r: RunResult, timeoutMs: number): string {
   if (r.spawnError) return `${spec.name}: could not start \`${spec.binary}\` (${r.spawnError.slice(0, 200)})`;
   if (r.cancelled) return `${spec.name}: cancelled`;
@@ -441,6 +477,10 @@ export function classifyFailure(spec: CliSpec, r: RunResult, timeoutMs: number):
   if (r.truncated) return `${spec.name} produced more than ${MAX_OUTPUT_BYTES / (1024 * 1024)} MB of output and was stopped.`;
   const blob = `${r.stderr}\n${r.stdout}`;
   if (AUTH_RE.test(blob)) return spec.loginHint;
+  if (CONFIG_RE.test(blob)) {
+    const line = redactSecrets((blob.split("\n").find((l) => CONFIG_RE.test(l)) ?? "").trim().slice(0, 300));
+    return `${spec.name} couldn't load its own settings, so it stopped before answering: ${line} — run \`${spec.binary}\` in Terminal to see and fix it (PulseForge never edits your CLI config).`;
+  }
   const tail = redactSecrets((r.stderr.trim() || r.stdout.trim()).split("\n").slice(-6).join(" ").slice(-400));
   if (LIMIT_RE.test(blob)) return `${spec.name} hit a usage/rate limit: ${tail}`;
   return `${spec.name} exited with code ${r.code ?? r.signal ?? "?"}${tail ? `: ${tail}` : ""}`;
@@ -472,6 +512,10 @@ export async function runCliChat(id: string, turn: CliTurn, opts: CliChatOptions
   const tmpDir = await fsp.mkdtemp(path.join(os.tmpdir(), "pf-cli-"));
   try {
     const inv = buildCliInvocation(id, turn, tmpDir);
+    for (const f of inv.files ?? []) {
+      if (path.dirname(f.path) !== tmpDir) throw new Error("refusing to write outside the CLI temp dir");
+      await fsp.writeFile(f.path, f.content, { mode: 0o600 });
+    }
     const r = await runProcess({ file: bin, args: inv.args, stdin: inv.stdin, cwd: tmpDir, env: buildCliEnv(bin), timeoutMs, signal: opts.signal });
     if (r.spawnError || r.timedOut || r.truncated || r.cancelled) throw new Error(classifyFailure(spec, r, timeoutMs));
     if (id === "cli-claude") {
@@ -492,6 +536,11 @@ export async function runCliChat(id: string, turn: CliTurn, opts: CliChatOptions
       return text;
     }
     if (id === "cli-grok" && turn.jsonSchema) return parseGrokJson(r.stdout);
+    if (id === "cli-kimi") {
+      const text = parseKimiStream(r.stdout);
+      if (!text) throw new Error(`${spec.name} finished without an answer. ${classifyFailure(spec, r, timeoutMs)}`);
+      return text;
+    }
     const text = r.stdout.trim();
     if (!text) throw new Error(`${spec.name} finished without an answer. ${classifyFailure(spec, r, timeoutMs)}`);
     return text;

@@ -49,3 +49,22 @@ seeded `mulberry32`. License: original, MIT — same as the rest of the bundled 
 
 Notes: the "hey" shouts are formant-filtered synthetic buzz + noise (no human voice recorded);
 the scratch FX reads back a synthetic vowel buffer, not a record. Audio you make with them is yours.
+
+## Sampled instruments (PulseForge Studio 2.0, 2026-10-15)
+Real recorded instruments, bundled in `public/samples/` (catalogued in `public/samples/manifest.json`, which is
+copied to `src/engine/sample-manifest.json` for the app and checked equal by a test). Produced by
+`scripts/fetch-samples.mjs`, which downloads only from the sources below, refuses to continue unless VSCO's
+LICENSE file still says CC0, records each source's license evidence URL, then trims and normalizes the audio. These are the **only** non-original sounds shipped with PulseForge.
+
+| Source | License | Instruments |
+|---|---|---|
+| [Salamander Grand Piano V2](https://tonejs.github.io/audio/salamander/) | [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) (evidence: https://tonejs.github.io/audio/salamander/README) | Grand Piano (Salamander) |
+| [VSCO 2 Community Edition](https://github.com/sgossner/VSCO-2-CE) | [CC0-1.0](https://github.com/sgossner/VSCO-2-CE/blob/master/LICENSE) (evidence: https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/LICENSE) | Strings Ensemble, Solo Violin, Cello Section, Pizzicato Strings, Concert Harp, Flute, Clarinet, Oboe, Trumpet, French Horn, Trombone, Glockenspiel, Marimba, Xylophone, Timpani, Brass Section |
+
+**Attribution** (CC BY 3.0 requires it; it is also shown in the app under Settings → Sound credits):
+
+- Salamander Grand Piano V2 (Yamaha C5) by Alexander Holm, licensed CC BY 3.0 (http://creativecommons.org/licenses/by/3.0/). mp3 edition as hosted by Tone.js (https://tonejs.github.io/audio/salamander/).
+- VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html
+
+Music you make with these instruments is yours. The CC BY attribution covers redistributing the *samples*
+themselves (e.g. shipping this app); it does not need to appear in songs you release. VSCO 2 CE is CC0 (public domain).

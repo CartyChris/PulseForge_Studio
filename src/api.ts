@@ -33,23 +33,87 @@ export interface JobInfo {
   finishedAt?: string;
 }
 
+/**
+ * Bring-your-own-key store for the hosted (serverless) build. Keys live ONLY in this browser's
+ * localStorage and travel to our own origin's stateless proxy per request — never baked into the
+ * bundle, never stored server-side. In the desktop/local app keys stay in the backend instead.
+ */
+const BYOK_KEY = "pf_byok_keys";
+const BYOK_CFG = "pf_byok_config";
+function readJsonLS(k: string): Record<string, unknown> { try { return JSON.parse(localStorage.getItem(k) ?? "{}"); } catch { return {}; } }
+export const byok = {
+  keys: () => readJsonLS(BYOK_KEY) as Record<string, string>,
+  config: () => readJsonLS(BYOK_CFG) as Record<string, Record<string, string>>,
+  setKey(providerId: string, key: string) {
+    const all = byok.keys();
+    if (key) all[providerId] = key; else delete all[providerId];
+    try { localStorage.setItem(BYOK_KEY, JSON.stringify(all)); } catch {}
+  },
+  setConfig(providerId: string, cfg: Record<string, string>) {
+    const all = byok.config();
+    all[providerId] = cfg;
+    try { localStorage.setItem(BYOK_CFG, JSON.stringify(all)); } catch {}
+  },
+};
+const b64 = (o: unknown) => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+
+/** "local" = desktop app / local server (keys in backend); "serverless" = hosted, BYOK */
+export let serverMode: "local" | "serverless" = "local";
+let modeKnown: Promise<void> | null = null;
+export function detectServerMode(): Promise<void> {
+  modeKnown ??= fetch("/api/health").then((r) => r.json()).then((h: { mode?: string }) => { serverMode = h.mode === "serverless" ? "serverless" : "local"; }).catch(() => {});
+  return modeKnown;
+}
+
 async function call<T>(path: string, body?: unknown, method = body === undefined ? "GET" : "POST"): Promise<T> {
-  const res = await fetch(`/api${path}`, {
-    method,
-    headers: body !== undefined ? { "content-type": "application/json" } : undefined,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  await detectServerMode();
+  const headers: Record<string, string> = {};
+  if (body !== undefined) headers["content-type"] = "application/json";
+  if (serverMode === "serverless") {
+    const keys = byok.keys(), cfg = byok.config();
+    if (Object.keys(keys).length) headers["x-pf-byok"] = b64(keys);
+    if (Object.keys(cfg).length) headers["x-pf-config"] = b64(cfg);
+  }
+  const res = await fetch(`/api${path}`, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((data as any).error ?? `HTTP ${res.status}`);
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
   return data as T;
 }
 
+export interface ConnectionsReport {
+  serverless: boolean;
+  clis: Array<{ id: string; name: string; binary: string; path: string | null; version: string | null; installed: boolean; supported: boolean }>;
+  local: Array<{ id: "ollama" | "lmstudio"; url: string; reachable: boolean; models: string[] }>;
+  envKeys: Array<{ providerId: string; envVar: string; present: boolean; source: "process" | "login-shell" | null }>;
+  importedFromShell: string[];
+}
+
 export const api = {
-  health: () => call<{ ok: boolean }>("/health"),
+  health: () => call<{ ok: boolean; mode?: string; version?: string }>("/health"),
   providers: () => call<{ providers: ProviderInfo[] }>("/providers"),
   testProvider: (providerId: string) => call<{ ok: boolean; message: string; models?: string[] }>("/providers/test", { providerId }),
-  setSecret: (providerId: string, apiKey: string) => call<{ ok: boolean }>("/providers/secret", { providerId, apiKey }),
-  setConfig: (providerId: string, config: Record<string, string>) => call<{ ok: boolean }>("/providers/config", { providerId, config }),
+  setSecret: async (providerId: string, apiKey: string) => {
+    await detectServerMode();
+    if (serverMode === "serverless") { byok.setKey(providerId, apiKey); return { ok: true }; }
+    return call<{ ok: boolean }>("/providers/secret", { providerId, apiKey });
+  },
+  setConfig: async (providerId: string, config: Record<string, string>) => {
+    await detectServerMode();
+    if (serverMode === "serverless") { byok.setConfig(providerId, config); return { ok: true }; }
+    return call<{ ok: boolean }>("/providers/config", { providerId, config });
+  },
+  // ── end-to-end producer ──
+  producePlan: (providerId: string, prompt: string, catalog: string, model?: string, context = "") =>
+    call<{ spec: import("../shared/producer").ProductionSpec }>("/ai/produce/plan", { providerId, prompt, catalog, context, model }),
+  produceRevise: (providerId: string, prompt: string, spec: object, projectSummary: string, catalog: string, model?: string) =>
+    call<{ result: import("../shared/producer-ai").ProduceRevise }>("/ai/produce/revise", { providerId, prompt, spec, projectSummary, catalog, model }),
+  produceCritique: (providerId: string, goal: string, spec: object, metrics: string, projectSummary: string, model?: string) =>
+    call<{ critique: import("../shared/producer-ai").ProduceCritique }>("/ai/produce/critique", { providerId, goal, spec, metrics, projectSummary, model }),
+  // ── connections (desktop/local only) ──
+  connections: () => call<ConnectionsReport>("/connections"),
+  connectionsRescan: () => call<{ ok: boolean }>("/connections/rescan", {}),
+  connectionsTest: (providerId: string) => call<{ providerId: string; ok: boolean; message: string }>("/connections/test", { providerId }),
+  oauthOpenRouterStart: () => call<{ url: string }>("/oauth/openrouter/start", {}),
   compose: (providerId: string, prompt: string, context: string, model?: string) =>
     call<{ composition: Composition }>("/ai/compose", { providerId, prompt, context, model }),
   editPlan: (providerId: string, prompt: string, projectSummary: string, model?: string) =>

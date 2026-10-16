@@ -11,6 +11,7 @@ import { validateEditPlan } from "../shared/commands";
 import { registerConnectionRoutes, isLocalOrigin } from "./connections";
 import { chatWithJsonRetry } from "./ai-json";
 import { registerProducerRoutes } from "./producer-routes";
+import { registerOAuthRoutes } from "./oauth";
 
 // ---------- rate limiting (simple in-memory token bucket per IP) ----------
 const buckets = new Map<string, { tokens: number; last: number }>();
@@ -62,6 +63,7 @@ export function registerRoutes(app: FastifyInstance): void {
   });
   registerConnectionRoutes(app);
   registerProducerRoutes(app);
+  registerOAuthRoutes(app);
   app.addHook("onRequest", async (req, reply) => {
     if (req.url.startsWith("/api/ai/") || req.url.startsWith("/api/providers/test")) {
       if (!rateLimit(req.ip, 2)) {
@@ -73,7 +75,9 @@ export function registerRoutes(app: FastifyInstance): void {
   app.get("/api/health", async () => ({
     ok: true,
     name: "PulseForge Studio backend",
-    version: "1.0.0",
+    version: "2.0.0",
+    /** "serverless" = hosted build (bring-your-own-key, no CLIs); "local" = desktop/local server */
+    mode: serverless ? "serverless" : "local",
     time: new Date().toISOString(),
   }));
 
@@ -104,6 +108,7 @@ export function registerRoutes(app: FastifyInstance): void {
   });
 
   app.post("/api/providers/secret", async (req, reply) => {
+    if (serverless) return reply.code(400).send({ error: "Hosted version: keys are stored in your browser, not on the server." });
     const body = z.object({ providerId: z.string(), apiKey: z.string().max(500) }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "Invalid body" });
     getProvider(body.data.providerId); // throws on unknown
@@ -112,6 +117,7 @@ export function registerRoutes(app: FastifyInstance): void {
   });
 
   app.post("/api/providers/config", async (req, reply) => {
+    if (serverless) return reply.code(400).send({ error: "Hosted version: provider settings are stored in your browser." });
     const body = z.object({ providerId: z.string(), config: z.record(z.string(), z.string().max(500)) }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "Invalid body" });
     getProvider(body.data.providerId);
@@ -224,6 +230,19 @@ export function registerRoutes(app: FastifyInstance): void {
       prompt: body.data.prompt,
       durationSec: body.data.durationSec,
     });
+    if (serverless) {
+      try {
+        const result = await provider.generateAudio!(
+          { prompt: body.data.prompt, durationSec: body.data.durationSec, model: body.data.model, kind: body.data.kind },
+        );
+        if (result.audio.length > 4_000_000) throw new Error("Generated audio is larger than the hosted 4 MB response limit — try a shorter duration or use the desktop app.");
+        updateJob(job.id, { status: "completed", progress: 1, mime: result.mime, licenseNote: result.licenseNote });
+        return { job: getJob(job.id), audioBase64: result.audio.toString("base64"), mime: result.mime };
+      } catch (e) {
+        updateJob(job.id, { status: "failed", error: redactSecrets(String(e)) });
+        return reply.code(502).send({ error: redactSecrets(String(e)), job: getJob(job.id) });
+      }
+    }
     // run async
     (async () => {
       updateJob(job.id, { status: "running", progress: 0.02 });
@@ -252,6 +271,7 @@ export function registerRoutes(app: FastifyInstance): void {
     sourceName: z.string().max(200).default("audio"),
   });
   app.post("/api/ai/separate-stems", async (req, reply) => {
+    if (serverless) return reply.code(400).send({ error: "Stem separation needs the PulseForge desktop app (song uploads exceed the hosted 4.5 MB request limit)." });
     const body = stemBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: body.error.issues[0]?.message });
     const provider = getProvider(body.data.providerId);
@@ -350,6 +370,7 @@ export function registerRoutes(app: FastifyInstance): void {
 
   // safe pack download on explicit user request (https only, size-capped)
   app.post("/api/packs/download", async (req, reply) => {
+    if (serverless) return reply.code(400).send({ error: "Downloading packs through the server is a desktop-app feature. In the hosted version, download the pack in your browser and import the ZIP." });
     const body = z.object({ url: z.string().url().max(2000) }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "Invalid URL" });
     if (!body.data.url.startsWith("https://")) return reply.code(400).send({ error: "Only https downloads are allowed" });

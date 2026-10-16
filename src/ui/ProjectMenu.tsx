@@ -57,8 +57,8 @@ export function ProjectMenu() {
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <button className="tbtn" title="Project menu" aria-haspopup="menu" onClick={() => setMenuOpen(!menuOpen)}>
-        {project.name} ▾
+      <button className="tbtn proj-btn" title={`Project menu: ${project.name}`} aria-haspopup="menu" onClick={() => setMenuOpen(!menuOpen)}>
+        <span className="proj-name">{project.name}</span> ▾
       </button>
       {menuOpen && (
         <div className="palette" style={{ position: "absolute", top: 36, left: 0, transform: "none", width: 280 }} role="menu">

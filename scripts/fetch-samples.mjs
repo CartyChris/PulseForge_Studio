@@ -518,6 +518,8 @@ async function main() {
   }
 
   fs.writeFileSync(path.join(OUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+  // the app imports this copy (Vite dev cannot import JSON from public/); keep both in sync
+  fs.writeFileSync(path.join(REPO, "src", "engine", "sample-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 
   // ---- budget + sanity report ----
   let total = 0;

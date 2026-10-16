@@ -41,6 +41,8 @@ export interface ProducerRunState {
 
 export interface ProducerRequest {
   prompt: string;
+  /** a ready spec (revision / variation) — skips planning entirely */
+  spec?: ProductionSpec;
   /** explicit UI choices always win over both the AI and the director */
   overrides?: Partial<Pick<ProductionSpec, "genre" | "bpm" | "key" | "scale" | "length" | "swing">> & { seed?: number };
   mode?: "replace" | "append";
@@ -61,6 +63,8 @@ export interface ProducerDeps {
   signal?: AbortSignal;
 }
 
+const errMsg = (e: unknown) => String(e instanceof Error ? e.message : e).replace(/^(Error:\s*)+/, "");
+
 const STAGE_LABELS: Record<StageId, string> = {
   plan: "Planning the beat", compose: "Writing the music", arrange: "Arranging the song", mix: "Mixing & mastering", review: "Producer review",
 };
@@ -76,7 +80,8 @@ export function loudnessTarget(spec: Pick<ProductionSpec, "genre">): number {
  * (eq3 → compressor → limiter): loudness moves via the compressor's makeup gain (pre-limiter, so
  * louder never means clipping), tone via the master EQ, low end via the Bass insert.
  */
-export function autoMixCommands(project: Project, m: MixMetrics, target: number): { commands: DawCommand[]; notes: string[] } {
+export function autoMixCommands(project: Project, m: MixMetrics, target: number, opts: { tonal?: boolean } = {}): { commands: DawCommand[]; notes: string[] } {
+  const tonal = opts.tonal ?? true; // bass/top-end moves: once per run, so passes don't stack them
   const commands: DawCommand[] = [];
   const notes: string[] = [];
   const master = project.mixer.channels.find((c) => c.id === MASTER_ID);
@@ -85,22 +90,55 @@ export function autoMixCommands(project: Project, m: MixMetrics, target: number)
   const eq = master.effects.find((e) => e.type === "eq3");
   const limiter = master.effects.find((e) => e.type === "limiter");
 
-  const delta = Math.max(-6, Math.min(6, target - m.lufs));
-  if (Math.abs(delta) >= 1 && comp) {
-    const makeup = Math.max(0, Math.min(12, (comp.params.makeup ?? 0) + delta));
-    if (makeup !== (comp.params.makeup ?? 0)) {
-      commands.push({ type: "setEffectParameter", mixerChannelId: MASTER_ID, effectId: comp.id, param: "makeup", value: Math.round(makeup * 10) / 10 });
-      notes.push(`Loudness ${m.lufs} → aiming for ${target} LUFS (${delta > 0 ? "+" : ""}${delta.toFixed(1)} dB makeup)`);
+  const delta = target - m.lufs;
+  // Gain staging: the master fader sits AFTER the limiter, so pushing it above 0 dB defeats the
+  // limiter's ceiling. Loudness therefore goes in BEFORE the limiter — a "drive" gain stage, else the
+  // compressor's makeup — and the fader only rises above 0 dB on a master with no limiter at all.
+  const limIdx = master.effects.findIndex((e) => e.type === "limiter");
+  const drive = limIdx > 0 ? master.effects.slice(0, limIdx).reverse().find((e) => e.type === "gain") : undefined;
+  const faderCeil = limiter ? 0 : 12;
+  const driveDb = drive?.params.gain ?? 0;
+  let fader = 0, driveMove = 0;
+  if (m.peakDb > -0.5 && master.volumeDb > 0) {
+    fader = -Math.min(master.volumeDb, m.peakDb + 1);
+    notes.push(`Output peaked at ${m.peakDb} dBFS because the master fader was up ${master.volumeDb} dB — pulled it back ${(-fader).toFixed(1)} dB`);
+  } else if (delta >= 1) {
+    // a fader below its ceiling comes up first, as far as the peaks allow
+    fader = Math.max(0, Math.min(delta, -1 - m.peakDb, faderCeil - master.volumeDb));
+    if (fader >= 0.5) notes.push(`Loudness ${m.lufs} → aiming for ${target} LUFS: master +${fader.toFixed(1)} dB (peaks had room)`);
+    else fader = 0;
+  } else if (delta <= -1) {
+    if (drive && driveDb > 0) {
+      driveMove = -Math.min(driveDb, -delta);
+      notes.push(`Loudness ${m.lufs} is hotter than the ${target} LUFS target: drive into the limiter ${driveMove.toFixed(1)} dB`);
     }
-    if (delta < 0 && (comp.params.makeup ?? 0) + delta < 0) {
-      commands.push({ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: Math.max(-12, master.volumeDb + ((comp.params.makeup ?? 0) + delta)) });
+    const left = delta - driveMove;
+    if (left <= -1) {
+      fader = Math.max(-24 - master.volumeDb, left);
+      notes.push(`Loudness ${m.lufs} is hotter than the ${target} LUFS target: master ${fader.toFixed(1)} dB`);
     }
   }
+  if (fader !== 0) commands.push({ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: Math.round((master.volumeDb + fader) * 10) / 10 });
+  // whatever loudness is still missing is pushed into the limiter (it and its safety clipper hold the ceiling)
+  const rest = delta - Math.max(0, fader);
+  if (delta >= 1 && rest >= 1) {
+    if (drive && driveDb < 24) {
+      driveMove = Math.min(24 - driveDb, rest, 12);
+      notes.push(`Still ${rest.toFixed(1)} dB under target: drive into the limiter +${driveMove.toFixed(1)} dB`);
+    } else if (comp) {
+      const makeup = Math.min(12, (comp.params.makeup ?? 0) + Math.min(6, rest));
+      if (makeup > (comp.params.makeup ?? 0)) {
+        commands.push({ type: "setEffectParameter", mixerChannelId: MASTER_ID, effectId: comp.id, param: "makeup", value: Math.round(makeup * 10) / 10 });
+        notes.push(`Still ${rest.toFixed(1)} dB under target: master compressor makeup → ${makeup.toFixed(1)} dB`);
+      }
+    }
+  }
+  if (drive && driveMove !== 0) commands.push({ type: "setEffectParameter", mixerChannelId: MASTER_ID, effectId: drive.id, param: "gain", value: Math.round((driveDb + driveMove) * 10) / 10 });
   if (m.peakDb > -0.5 && limiter) {
     commands.push({ type: "setEffectParameter", mixerChannelId: MASTER_ID, effectId: limiter.id, param: "threshold", value: Math.max(-6, (limiter.params.threshold ?? -1) - 1) });
     notes.push(`Peaks at ${m.peakDb} dBFS — tightened the limiter`);
   }
-  const bass = project.mixer.channels.find((c) => c.name.startsWith("Bass"));
+  const bass = tonal ? project.mixer.channels.find((c) => c.name.startsWith("Bass")) : undefined;
   if (bass && m.low > 0.62) {
     commands.push({ type: "setTrackVolume", mixerChannelId: bass.id, volumeDb: Math.max(-30, bass.volumeDb - 2) });
     notes.push(`Low end is ${(m.low * 100).toFixed(0)}% of the energy — bass down 2 dB`);
@@ -108,10 +146,10 @@ export function autoMixCommands(project: Project, m: MixMetrics, target: number)
     commands.push({ type: "setTrackVolume", mixerChannelId: bass.id, volumeDb: Math.min(6, bass.volumeDb + 1.5) });
     notes.push(`Thin low end (${(m.low * 100).toFixed(0)}%) — bass up 1.5 dB`);
   }
-  if (eq && m.high > 0.28) {
+  if (tonal && eq && m.high > 0.28) {
     commands.push({ type: "setEffectParameter", mixerChannelId: MASTER_ID, effectId: eq.id, param: "high", value: Math.max(-24, (eq.params.high ?? 0) - 1.5) });
     notes.push("Top end a little harsh — master high shelf −1.5 dB");
-  } else if (eq && m.high < 0.04) {
+  } else if (tonal && eq && m.high < 0.04) {
     commands.push({ type: "setEffectParameter", mixerChannelId: MASTER_ID, effectId: eq.id, param: "high", value: Math.min(24, (eq.params.high ?? 0) + 1.5) });
     notes.push("Dull top end — master high shelf +1.5 dB");
   }
@@ -144,13 +182,14 @@ export async function runProducer(req: ProducerRequest, deps: ProducerDeps, onUp
   try {
     // ── 1. plan ──
     stage("plan", "running");
-    let spec: ProductionSpec | null = null;
-    if (deps.planWithAI) {
+    let spec: ProductionSpec | null = req.spec ?? null;
+    if (spec) state.notes.push("Using the revised plan.");
+    if (!spec && deps.planWithAI) {
       try {
         spec = await deps.planWithAI(req.prompt, deps.catalog());
         state.usedAI = true;
       } catch (e) {
-        state.notes.push(`AI planning failed (${String(e).slice(0, 160)}) — used the offline producer instead.`);
+        state.notes.push(`AI planning failed (${errMsg(e).slice(0, 160)}) — used the offline producer instead.`);
       }
     }
     if (!spec) spec = directFromPrompt(req.prompt, req.overrides?.seed).spec;
@@ -196,19 +235,25 @@ export async function runProducer(req: ProducerRequest, deps: ProducerDeps, onUp
     const m1 = mixMetrics(r1.channelData, r1.sampleRate);
     state.metricsBefore = m1;
     state.metrics = m1;
-    const { commands, notes } = autoMixCommands(deps.getProject(), m1, target);
-    if (commands.length && deps.dispatchMany(commands)) {
+    // measured loop: apply rule-based fixes, re-render, keep only what measurably helps
+    const MAX_PASSES = 3;
+    for (let pass = 1; pass <= MAX_PASSES; pass++) {
+      const cur = state.metrics!;
+      if (pass > 1 && Math.abs(cur.lufs - target) <= 1.5) break; // close enough; tonal fixes ran in pass 1
+      const { commands, notes } = autoMixCommands(deps.getProject(), cur, target, { tonal: pass === 1 });
+      if (!commands.length || !deps.dispatchMany(commands)) break;
+      stage("mix", "running", `Mix pass ${pass}: re-rendering to check…`);
       const r2 = await deps.render(deps.getProject(), from, to);
-      if (r2) {
-        const m2 = mixMetrics(r2.channelData, r2.sampleRate);
-        const before = Math.abs(m1.lufs - target), after = Math.abs(m2.lufs - target);
-        if (after <= before + 0.3 && m2.clippedSamples <= m1.clippedSamples) {
-          state.metrics = m2;
-          state.notes.push(...notes);
-        } else {
-          deps.undo(); // the fix didn't measurably help — keep the original mix
-          state.notes.push("Auto-mix adjustment didn't measurably improve the mix, so it was reverted.");
-        }
+      if (!r2) throw new Error("Cancelled");
+      const m2 = mixMetrics(r2.channelData, r2.sampleRate);
+      const before = Math.abs(cur.lufs - target), after = Math.abs(m2.lufs - target);
+      if (after <= before + 0.3 && m2.clippedSamples <= cur.clippedSamples) {
+        state.metrics = m2;
+        state.notes.push(...notes);
+      } else {
+        deps.undo(); // the fix didn't measurably help — keep the previous mix
+        state.notes.push(pass === 1 ? "Auto-mix adjustment didn't measurably improve the mix, so it was reverted." : `Mix pass ${pass} didn't help, so it was reverted.`);
+        break;
       }
     }
     stage("mix", "done", `≈${state.metrics!.lufs} LUFS (target ${target}) · peak ${state.metrics!.peakDb} dBFS`);
@@ -229,7 +274,7 @@ export async function runProducer(req: ProducerRequest, deps: ProducerDeps, onUp
         }
         stage("review", "done", critique.verdict === "ship" ? "Sounds good to go" : `${critique.issues.length} suggestion${critique.issues.length === 1 ? "" : "s"}`);
       } catch (e) {
-        state.notes.push(`AI review unavailable (${String(e).slice(0, 120)}).`);
+        state.notes.push(`AI review unavailable (${errMsg(e).slice(0, 120)}).`);
         stage("review", "skipped", "AI review unavailable");
       }
     } else {

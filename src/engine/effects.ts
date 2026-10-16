@@ -29,6 +29,27 @@ function simple(node: any, map: Record<string, (n: any, v: number) => void>, ext
   };
 }
 
+/** Input range the limiter's safety clipper handles: up to +12 dBFS of overshoot (×4). */
+export const CLIP_HEADROOM = 4;
+
+/**
+ * Safety-clipper transfer curve for a WaveShaper fed with signal/CLIP_HEADROOM (a WaveShaper
+ * only sees −1…1, anything beyond is pinned to the ends). Linear up to 85% of the ceiling, then a
+ * tanh knee that approaches — and never exceeds — the ceiling. Exported for tests.
+ */
+export function softClipCurve(ceilingDb: number, n = 4096): Float32Array {
+  const c = 10 ** (Math.min(0, ceilingDb) / 20);
+  const k = 0.85 * c;
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = ((i / (n - 1)) * 2 - 1) * CLIP_HEADROOM; // the real (pre-scale) sample value
+    const a = Math.abs(x);
+    const y = a <= k ? a : k + (c - k) * Math.tanh((a - k) / (c - k));
+    curve[i] = Math.sign(x) * Math.min(y, c);
+  }
+  return curve;
+}
+
 export const EFFECT_DEFS: Record<EffectType, EffectDef> = {
   eq3: {
     type: "eq3", name: "Equalizer",
@@ -75,8 +96,18 @@ export const EFFECT_DEFS: Record<EffectType, EffectDef> = {
     type: "limiter", name: "Limiter",
     params: [{ key: "threshold", name: "Ceiling (dB)", min: -24, max: 0, default: -1 }],
     create(p) {
+      // Tone.Limiter is a fast compressor (3 ms attack), so drum transients overshoot its threshold.
+      // A smooth safety clipper after it makes the ceiling a hard guarantee (no clipped exports).
       const n = new Tone.Limiter(p.threshold ?? -1);
-      return simple(n, { threshold: (x, v) => (x.threshold.value = v) });
+      const pre = new Tone.Gain(1 / CLIP_HEADROOM);
+      const clip = new Tone.WaveShaper(softClipCurve(p.threshold ?? -1), 4096);
+      clip.oversample = "4x";
+      n.chain(pre, clip);
+      return {
+        input: n, output: clip,
+        set: (k, v) => { if (k === "threshold") { n.threshold.value = v; clip.curve = softClipCurve(v); } },
+        dispose: () => { n.dispose(); pre.dispose(); clip.dispose(); },
+      };
     },
   },
   gate: {

@@ -78,12 +78,26 @@ describe("runProducer (end-to-end harness)", () => {
     expect(s.notes.join(" ")).toMatch(/AI planning failed.*401/);
   });
 
-  it("mix stage: a quiet render gets makeup gain, kept only because the re-render improved", async () => {
-    const h = harness({}, [0.03, 0.25]); // before: very quiet; after: louder
+  it("mix stage: a quiet render gets drive into the limiter, kept only because the re-render improved", async () => {
+    const h = harness({}, [0.03, 0.25, 0.2]); // before: very quiet; pass 1: louder; pass 2: quieter again → reverted
     const s = await runProducer({ prompt: "trap" }, h.deps);
-    const comp = h.project.mixer.channels.find((c) => c.id === MASTER_ID)!.effects.find((e) => e.type === "compressor")!;
-    expect(comp.params.makeup).toBeGreaterThan(0);
+    const master = h.project.mixer.channels.find((c) => c.id === MASTER_ID)!;
+    const drive = master.effects.find((e) => e.type === "gain")!;
+    expect(master.effects.map((e) => e.type).slice(-2)).toEqual(["gain", "limiter"]); // drive sits before the limiter
+    expect(master.volumeDb).toBe(0); // the post-limiter fader never goes above 0 dB
+    expect(drive.params.gain).toBe(18); // 6 dB default + pass 1's +12; pass 2's move reverted
     expect(s.metrics!.lufs).toBeGreaterThan(s.metricsBefore!.lufs);
+    expect(h.deps.render).toHaveBeenCalledTimes(3);
+    expect(s.notes.join(" ")).toMatch(/pass 2 didn't help/);
+  });
+
+  it("mix stage: stops iterating once loudness is within 1.5 LU of the target", async () => {
+    const target = loudnessTarget({ genre: "trap" });
+    const unit = mixMetrics(sine(1).channelData, 8000).lufs; // calibrate: loudness of a full-scale test sine
+    const ampFor = (lufs: number) => 10 ** ((lufs - unit) / 20);
+    const h = harness({}, [ampFor(target - 8), ampFor(target - 0.5)]);
+    const s = await runProducer({ prompt: "trap" }, h.deps);
+    expect(Math.abs(s.metrics!.lufs - target)).toBeLessThanOrEqual(1.5);
     expect(h.deps.render).toHaveBeenCalledTimes(2);
   });
 
@@ -143,6 +157,32 @@ describe("autoMixCommands", () => {
     expect(loudnessTarget({ genre: "house" })).toBe(-8.5);
     expect(loudnessTarget({ genre: "lofi" })).toBe(-12);
   });
+  it("uses the master fader first while the peaks have room, makeup only for the rest", () => {
+    const p = applyCommands(createEmptyProject(), [{ type: "addEffect", mixerChannelId: MASTER_ID, effectType: "compressor", params: {} }]);
+    const m = { ...mixMetrics([new Float32Array(10)], 8000), lufs: -20, peakDb: -12, low: 0.4, high: 0.1 };
+    const { commands } = autoMixCommands(p, m, -9);
+    expect(commands).toContainEqual({ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: 11 });
+    expect(commands.some((c) => c.type === "setEffectParameter" && c.param === "makeup")).toBe(false);
+    const tight = autoMixCommands(p, { ...m, peakDb: -3 }, -9).commands; // only 2 dB of room → the rest goes to makeup
+    expect(tight).toContainEqual({ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: 2 });
+    expect(tight.some((c) => c.type === "setEffectParameter" && c.param === "makeup")).toBe(true);
+    const hot = autoMixCommands(p, { ...m, lufs: -5, peakDb: -0.8 }, -9).commands; // too loud → fader down
+    expect(hot).toContainEqual({ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: -4 });
+    const loudMaster = applyCommands(p, [{ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: 12 }]);
+    const clip = autoMixCommands(loudMaster, { ...m, lufs: -16, peakDb: 4.8 }, -9).commands; // fader is what clips
+    expect(clip).toContainEqual({ type: "setTrackVolume", mixerChannelId: MASTER_ID, volumeDb: 6.2 });
+    // with a limiter + drive stage: loudness goes into the drive, the fader stays at 0 dB
+    const lim = applyCommands(p, [
+      { type: "addEffect", mixerChannelId: MASTER_ID, effectType: "gain", params: { gain: 6 } },
+      { type: "addEffect", mixerChannelId: MASTER_ID, effectType: "limiter", params: { threshold: -1 } },
+    ]);
+    const driven = autoMixCommands(lim, m, -9).commands;
+    expect(driven.some((c) => c.type === "setTrackVolume" && c.mixerChannelId === MASTER_ID)).toBe(false);
+    expect(driven).toContainEqual(expect.objectContaining({ type: "setEffectParameter", param: "gain", value: 17 }));
+    expect(autoMixCommands(lim, { ...m, lufs: -6 }, -9).commands).toContainEqual(expect.objectContaining({ param: "gain", value: 3 })); // too loud → less drive
+    expect(autoMixCommands(p, { ...m, low: 0.9 }, -9, { tonal: false }).commands.some((c) => c.type === "setTrackVolume" && c.mixerChannelId !== MASTER_ID)).toBe(false);
+  });
+
   it("builds a readable catalog", () => {
     const c = buildCatalog([{ id: "k", name: "Kit" }], [{ id: "p", name: "Piano", category: "Piano" }], ["kick"]);
     expect(c).toContain("k (Kit)");

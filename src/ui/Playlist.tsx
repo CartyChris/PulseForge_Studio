@@ -2,6 +2,7 @@
  * fades, markers, sections, ripple edit, track management, drop targets for samples. */
 import { useMemo, useRef, useState } from "react";
 import { useStudio, usePlayhead } from "../state/store";
+import { ShowAt } from "./shell/Level";
 import type { Clip, Track } from "../../shared/project";
 import { newId } from "../../shared/project";
 import { ticksPerBar, snapTicks, clamp } from "../../shared/time";
@@ -189,13 +190,15 @@ export function Playlist() {
       <div className="pl-toolbar">
         <button className="btn small" onClick={() => addTrack("pattern")}>+ Pattern Track</button>
         <button className="btn small" onClick={() => addTrack("audio")}>+ Audio Track</button>
-        <button className="btn small" onClick={() => addTrack("automation")}>+ Automation</button>
+        <ShowAt min="intermediate"><button className="btn small" onClick={() => addTrack("automation")}>+ Automation</button></ShowAt>
         <span className="dim small">|</span>
         <button className={`tbtn ${tool === "select" ? "active" : ""}`} title="Select tool (B)" onClick={() => setTool("select")}>▭</button>
         <button className={`tbtn ${tool === "split" ? "active" : ""}`} title="Split tool (S) — click a clip to cut" onClick={() => setTool("split")}>✂</button>
+        <ShowAt min="intermediate">
         <label className="row small dim" title="Ripple edit: trims shift later clips">
           <input type="checkbox" checked={ripple} onChange={(e) => setRipple(e.target.checked)} />ripple
         </label>
+        </ShowAt>
         <button className="btn small" title="Add marker at playhead" onClick={() => {
           const name = prompt("Marker name", `Marker ${project.markers.length + 1}`);
           if (name) dispatch({ type: "addMarker", name, tick: usePlayhead.getState().ticks });
@@ -208,7 +211,7 @@ export function Playlist() {
           dispatch({ type: "addSection", name, startTick: start, lengthTicks: len });
         }}>+ Section</button>
         <div className="spacer" />
-        <span className="dim small">double-click empty lane places the selected pattern</span>
+        <span className="dim small">double-click an empty lane to place the selected pattern · drag clip edges to trim</span>
         <button className="btn small" title="Zoom out (-)" onClick={() => setZoom("playlist", Math.max(0.02, pxPerTick / 1.35))}>−</button>
         <button className="btn small" title="Zoom in (+)" onClick={() => setZoom("playlist", Math.min(1.2, pxPerTick * 1.35))}>+</button>
       </div>

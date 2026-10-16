@@ -1,7 +1,7 @@
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist/**", "node_modules/**", "playwright-report/**", "test-results/**"] },
+  { ignores: ["dist/**", "node_modules/**", "playwright-report/**", "test-results/**", "release/**", "dist-electron/**", ".pf-run/**", "public/samples/**"] },
   ...tseslint.configs.recommended.map((c) => ({
     ...c,
     files: ["src/**/*.{ts,tsx}", "shared/**/*.ts", "server/**/*.ts", "e2e/**/*.ts", "integrations/**/*.ts"],

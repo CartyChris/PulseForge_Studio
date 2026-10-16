@@ -1,21 +1,51 @@
 /** Top transport & toolbar: play/stop/record, BPM, tap tempo, position, meters, status lights. */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useStudio, usePlayhead } from "../state/store";
 import { engine } from "../engine/engine";
 import { formatPosition, formatSeconds, ticksToSeconds, ticksPerBar } from "../../shared/time";
 import { ProjectMenu } from "./ProjectMenu";
 import { SettingsButton } from "./Settings";
+import { Icon, BrandMark } from "./shell/Icons";
+import { ShowAt, LevelSwitch } from "./shell/Level";
+
+const SQUEEZE_STEPS = 7;
 
 export function TransportBar() {
   const { project, playing, recording, micActive, cloudActive, aiBusy, dirty, lastSavedAt, snap, setSnap, playMode, setPlayMode, update, undo, redo, undoStack, redoStack, save, setTab, toast } = useStudio();
   const positionTicks = usePlayhead((s) => s.ticks);
   const [status, setStatus] = useState(engine.status());
+  const [moreAt, setMoreAt] = useState<{ x: number; y: number } | null>(null); // ⋯ popover anchor (fixed: the bar clips overflow)
+  const moreOpen = moreAt !== null;
   const tapTimes = useRef<number[]>([]);
+  const level = useStudio((s) => s.level);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  // Keep everything on one row at any window width: add squeeze steps (see .topbar.sqN in
+  // styles.css) one at a time until the bar stops overflowing. Classes are set on the DOM
+  // directly so the 150ms status re-renders never fight them.
+  const fit = useCallback(() => {
+    const el = barRef.current;
+    if (!el) return;
+    for (let k = 1; k <= SQUEEZE_STEPS; k++) el.classList.remove(`sq${k}`);
+    for (let n = 1; n <= SQUEEZE_STEPS && el.scrollWidth > el.clientWidth + 1; n++) el.classList.add(`sq${n}`);
+  }, []);
+  useLayoutEffect(fit, [fit, level, project.name, playMode]);
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [fit]);
 
   useEffect(() => {
-    const t = setInterval(() => setStatus(engine.status()), 150);
+    const t = setInterval(() => {
+      setStatus(engine.status());
+      const el = barRef.current; // content can grow later (engine info text), re-fit if it overflows
+      if (el && el.scrollWidth > el.clientWidth + 1) fit();
+    }, 150);
     return () => clearInterval(t);
-  }, []);
+  }, [fit]);
 
   const togglePlay = async () => {
     if (engine.playing) engine.pause();
@@ -39,51 +69,57 @@ export function TransportBar() {
   const meterPct = status.masterPeakDb === -Infinity ? 0 : Math.max(0, Math.min(100, ((status.masterPeakDb + 48) / 48) * 100));
   const loopOn = project.loop.enabled;
 
+  // snap / time signature / count-in: inline on wide windows, in a ⋯ popover on narrow ones
+  const extras = (
+    <>
+      <select className="sel" title="Snap grid" value={snap} aria-label="Snap" onChange={(e) => setSnap(e.target.value)}>
+        {["bar", "beat", "1/2", "1/4", "1/8", "step", "1/32", "none"].map((s) => <option key={s} value={s}>Snap: {s}</option>)}
+      </select>
+      <ShowAt min="expert">
+        <select className="sel" title="Time signature" aria-label="Time signature" value={`${project.timeSignature.num}/${project.timeSignature.den}`}
+          onChange={(e) => { const [num, den] = e.target.value.split("/").map(Number); update((p) => ({ ...p, timeSignature: { num: num!, den: den as 4 } })); }}>
+          {["4/4", "3/4", "6/8", "5/4", "7/8", "2/4", "12/8"].map((ts) => <option key={ts}>{ts}</option>)}
+        </select>
+        <select className="sel" title="Count-in bars before recording" value={project.countInBars} aria-label="Count-in"
+          onChange={(e) => update((p) => ({ ...p, countInBars: Number(e.target.value) }))}>
+          {[0, 1, 2].map((n) => <option key={n} value={n}>Count-in: {n}</option>)}
+        </select>
+      </ShowAt>
+    </>
+  );
+
   return (
-    <div className="topbar">
-      <div className="logo" title="PulseForge Studio">
-        <div className="logo-mark">⚒</div>
-        <span><span className="pulse">Pulse</span>Forge</span>
+    <div className="topbar" ref={barRef}>
+      <div className="logo" title="PulseForge Studio 2.0">
+        <BrandMark size={28} />
+        <span className="word"><span className="pulse">Pulse</span>Forge</span>
       </div>
 
       <ProjectMenu />
 
-      <div className="transport" role="toolbar" aria-label="Playback mode">
-        <button
-          className={`tbtn ${playMode === "pattern" ? "active" : ""}`}
-          title="Pattern mode — loop the current Channel Rack pattern"
-          onClick={() => setPlayMode("pattern")}
-        >PAT</button>
-        <button
-          className={`tbtn ${playMode === "song" ? "active" : ""}`}
-          title="Song mode — play the Playlist arrangement"
-          onClick={() => setPlayMode("song")}
-        >SONG</button>
+      <div className="seg" role="radiogroup" aria-label="Playback mode">
+        <button role="radio" aria-checked={playMode === "pattern"} className={playMode === "pattern" ? "on" : ""}
+          title="Pattern mode: loop the current pattern" onClick={() => setPlayMode("pattern")}><Icon name="pads" size={14} /><span className="lbl">Pattern</span></button>
+        <button role="radio" aria-checked={playMode === "song"} className={playMode === "song" ? "on" : ""}
+          title="Song mode: play the whole arrangement" onClick={() => setPlayMode("song")}><Icon name="song" size={14} /><span className="lbl">Song</span></button>
       </div>
 
-      <div className="transport" role="toolbar" aria-label="Transport">
-        <button className="tbtn" title="Return to beginning" aria-label="Return to beginning" onClick={() => engine.seek(0)}>⏮</button>
-        <button className={`tbtn ${playing ? "active" : ""}`} title="Play / Pause (Space)" aria-label="Play or pause" onClick={togglePlay}>
-          {playing ? "❚❚" : "▶"}
+      <div className="tb-group" role="toolbar" aria-label="Transport">
+        <button className="tbtn" title="Back to start" aria-label="Back to start" onClick={() => engine.seek(0)}><Icon name="rewind" size={15} /></button>
+        <button className={`tbtn play ${playing ? "active" : ""}`} title="Play / Pause (Space)" aria-label="Play or pause" onClick={togglePlay}>
+          <Icon name={playing ? "pause" : "play"} size={16} />
         </button>
-        <button className="tbtn" title="Stop" aria-label="Stop" onClick={() => engine.stop()}>■</button>
-        <button
-          className={`tbtn rec ${recording ? "active" : ""}`}
-          title="Record (R) — opens Recording Studio"
-          aria-label="Record"
-          onClick={() => setTab("recording")}
-        >●</button>
-        <button
-          className={`tbtn ${loopOn ? "active" : ""}`}
-          title="Toggle loop region"
-          aria-label="Toggle loop"
+        <button className="tbtn" title="Stop" aria-label="Stop" onClick={() => engine.stop()}><Icon name="stop" size={14} /></button>
+        <button className={`tbtn rec ${recording ? "active" : ""}`} title="Record (R) — opens the recording studio" aria-label="Record" onClick={() => setTab("recording")}>
+          <Icon name="record" size={15} />
+        </button>
+        <button className={`tbtn ${loopOn ? "active" : ""}`} title="Loop region on/off" aria-label="Toggle loop"
           onClick={() => update((p) => ({
             ...p,
             loop: p.loop.enabled
               ? { ...p.loop, enabled: false }
               : { enabled: true, startTick: 0, endTick: p.loop.endTick > 0 ? p.loop.endTick : ticksPerBar(p.timeSignature) * 4 },
-          }))}
-        >⟲</button>
+          }))}><Icon name="loop" size={15} /></button>
       </div>
 
       <div className="position-display" title="Bar.Beat.Step | mm:ss">
@@ -92,75 +128,52 @@ export function TransportBar() {
       </div>
 
       <div className="bpm-box" title="Tempo (BPM)">
-        <input
-          className="num-input"
-          type="number"
-          min={20}
-          max={400}
-          step={0.5}
-          value={project.bpm}
-          aria-label="BPM"
-          onChange={(e) => {
-            const bpm = Number(e.target.value);
-            if (bpm >= 20 && bpm <= 400) update((p) => ({ ...p, bpm }));
-          }}
-        />
-        <button className="tbtn" title="Tap tempo" onClick={tapTempo}>TAP</button>
+        <input className="num-input" type="number" min={20} max={400} step={0.5} value={project.bpm} aria-label="BPM"
+          onChange={(e) => { const bpm = Number(e.target.value); if (bpm >= 20 && bpm <= 400) update((p) => ({ ...p, bpm })); }} />
+        <label>bpm</label>
+        <ShowAt min="intermediate"><button className="tbtn" title="Tap tempo" onClick={tapTempo}>TAP</button></ShowAt>
       </div>
 
-      <select
-        className="sel"
-        title="Time signature"
-        aria-label="Time signature"
-        value={`${project.timeSignature.num}/${project.timeSignature.den}`}
-        onChange={(e) => {
-          const [num, den] = e.target.value.split("/").map(Number);
-          update((p) => ({ ...p, timeSignature: { num: num!, den: den as 4 } }));
-        }}
-      >
-        {["4/4", "3/4", "6/8", "5/4", "7/8", "2/4", "12/8"].map((ts) => <option key={ts}>{ts}</option>)}
-      </select>
+      <button className={`tbtn ${project.metronome ? "active" : ""}`} title="Metronome (M)" aria-label="Metronome"
+        onClick={() => update((p) => ({ ...p, metronome: !p.metronome }))}><Icon name="metronome" size={15} /></button>
 
-      <button
-        className={`tbtn ${project.metronome ? "active" : ""}`}
-        title="Metronome (M)"
-        aria-label="Metronome"
-        onClick={() => update((p) => ({ ...p, metronome: !p.metronome }))}
-      >⏱</button>
+      <ShowAt min="intermediate">
+        <span className="tb-inline">{extras}</span>
+        <span className="tb-more">
+          <button className={`tbtn ${moreOpen ? "active" : ""}`} title="Snap, time signature, count-in" aria-label="More transport options" aria-expanded={moreOpen}
+            onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setMoreAt(moreOpen ? null : { x: r.left + r.width / 2, y: r.bottom + 6 }); }}><Icon name="sliders" size={15} /></button>
+          {moreAt && (
+            <>
+              <div className="tb-more-scrim" onMouseDown={() => setMoreAt(null)} />
+              <div className="tb-more-pop" style={{ left: moreAt.x, top: moreAt.y }}>{extras}</div>
+            </>
+          )}
+        </span>
+      </ShowAt>
 
-      <select className="sel" title="Count-in bars" value={project.countInBars} aria-label="Count-in"
-        onChange={(e) => update((p) => ({ ...p, countInBars: Number(e.target.value) }))}>
-        {[0, 1, 2].map((n) => <option key={n} value={n}>Count-in: {n}</option>)}
-      </select>
-
-      <select className="sel" title="Snap grid" value={snap} aria-label="Snap" onChange={(e) => setSnap(e.target.value)}>
-        {["bar", "beat", "1/2", "1/4", "1/8", "step", "1/32", "none"].map((s) => <option key={s} value={s}>Snap: {s}</option>)}
-      </select>
-
-      <div className="row" style={{ gap: 3 }}>
-        <button className="tbtn" title="Undo (⌘Z)" aria-label="Undo" disabled={!undoStack.length} onClick={undo}>↩</button>
-        <button className="tbtn" title="Redo (⌘⇧Z)" aria-label="Redo" disabled={!redoStack.length} onClick={redo}>↪</button>
+      <div className="tb-group">
+        <button className="tbtn" title="Undo (⌘Z)" aria-label="Undo" disabled={!undoStack.length} onClick={undo}><Icon name="undo" size={15} /></button>
+        <button className="tbtn" title="Redo (⌘⇧Z)" aria-label="Redo" disabled={!redoStack.length} onClick={redo}><Icon name="redo" size={15} /></button>
       </div>
 
       <div className="spacer" />
 
-      <div
-        className={`meter-master ${status.clipped ? "clip" : ""}`}
+      <div className={`meter-master ${status.clipped ? "clip" : ""}`}
         title={`Master peak ${status.masterPeakDb === -Infinity ? "-∞" : status.masterPeakDb.toFixed(1)} dB${status.clipped ? " — CLIPPED (click to reset)" : ""}`}
-        onClick={() => engine.resetClip()}
-      >
+        onClick={() => engine.resetClip()}>
         <div className="fill" style={{ width: `${meterPct}%` }} />
       </div>
 
-      <div className="status-lights" title="Audio engine status">
-        <span className="mono">{status.running ? `${(status.sampleRate / 1000).toFixed(1)}k · ${status.outputLatencyMs}ms` : "engine idle"}</span>
+      <div className="status-lights" title="Status: microphone · cloud · AI · saved">
+        <ShowAt min="expert"><span className="mono engine-info">{status.running ? `${(status.sampleRate / 1000).toFixed(1)}k · ${status.outputLatencyMs}ms` : "engine idle"}</span></ShowAt>
         <span className={`light ${micActive ? "on-red" : ""}`} title={micActive ? "Microphone active" : "Microphone off"} />
         <span className={`light ${cloudActive ? "on-cyan" : ""}`} title={cloudActive ? "Cloud request in flight" : "No cloud activity"} />
-        <span className={`light ${aiBusy ? "on-purple" : ""}`} title={aiBusy ? "AI generation running" : "AI idle"} />
+        <span className={`light ${aiBusy ? "on-purple" : ""}`} title={aiBusy ? "AI working" : "AI idle"} />
         <span className={`light ${!dirty ? "on-green" : ""}`} title={dirty ? "Unsaved changes (autosave pending)" : `Saved ${lastSavedAt ? new Date(lastSavedAt).toLocaleTimeString() : ""}`} />
       </div>
 
-      <button className="btn small" title="Save (⌘S)" onClick={() => save(true)}>Save</button>
+      <LevelSwitch compact />
+      <button className="tbtn" title="Save (⌘S)" aria-label="Save" onClick={() => save(true)}><Icon name="save" size={15} /></button>
       <SettingsButton />
     </div>
   );

@@ -9,6 +9,7 @@ import { fillEnding, ghostNotes, shiftSteps, polyrhythm, accentEvery, thin, reve
 import { DRUM_KITS } from "../engine/kits";
 import { INSTRUMENT_PRESETS } from "../engine/instruments";
 import { engine } from "../engine/engine";
+import { ShowAt, MoreTools } from "./shell/Level";
 
 const COLORS = ["#e8663c", "#ffd166", "#4cc2ff", "#8ef58a", "#7b6cff", "#ff7bd5", "#5ad9c9", "#f5a623"];
 
@@ -158,6 +159,7 @@ export function ChannelRack() {
           const latest = useStudio.getState().project.patterns.at(-1);
           if (latest) select({ patternId: latest.id });
         }}>+ New</button>
+        <ShowAt min="intermediate">
         <button className="btn small" title="Clone pattern with contents" onClick={() => {
           const clone = { ...pattern, id: newId("pat"), name: `${pattern.name} clone`, steps: { ...pattern.steps }, notes: { ...pattern.notes } };
           update((p) => ({ ...p, patterns: [...p.patterns, clone] }));
@@ -174,11 +176,13 @@ export function ChannelRack() {
               patchPattern((p) => ({ ...p, lengthSteps }));
             }} /> steps
         </label>
+        </ShowAt>
         <label className="row small dim" title="Swing delays every off-16th">Swing
           <input type="range" min={0} max={1} step={0.01} value={pattern.swing}
             onChange={(e) => patchPattern((p) => ({ ...p, swing: Number(e.target.value) }))} />
           <span className="mono small">{Math.round(pattern.swing * 100)}%</span>
         </label>
+        <MoreTools>
         <button className="btn small" title="Copy the selected channel's groove (velocities + micro-timing)"
           disabled={!selection.channelId}
           onClick={() => {
@@ -212,6 +216,7 @@ export function ChannelRack() {
               detail: `Continue this ${pattern.lengthSteps}-step drum pattern with a complementary variation as a new pattern. Current pattern "${pattern.name}" (${project.bpm} BPM): ${desc || "empty"}`,
             })), 50);
           }}>AI ▸ Continue</button>
+        </MoreTools>
         <div className="spacer" />
         <button className="btn small primary" onClick={() => setAddOpen(true)}>+ Add Channel</button>
       </div>
@@ -273,11 +278,14 @@ export function ChannelRack() {
 
             <div className="row" style={{ gap: 3 }}>
               <button className="mini-btn" title="Open in Piano Roll" onClick={() => { select({ channelId: ch.id, patternId: pattern.id }); setTab("piano-roll"); }}>♪</button>
-              <button className="mini-btn" title="Euclidean rhythm" onClick={() => generators.euclidean(ch.id)}>E</button>
+              <ShowAt min="intermediate"><button className="mini-btn" title="Euclidean rhythm" onClick={() => generators.euclidean(ch.id)}>E</button></ShowAt>
               <button className="mini-btn" title="Randomize" onClick={() => generators.randomize(ch.id)}>R</button>
+              <ShowAt min="intermediate">
               <button className="mini-btn" title="Humanize velocities & timing" onClick={() => generators.humanize(ch.id)}>H</button>
               <button className="mini-btn" title="Generate variation" onClick={() => generators.variation(ch.id)}>V</button>
               <button className="mini-btn" title="End-of-bar fill" onClick={() => generators.fill(ch.id)}>F</button>
+              </ShowAt>
+              <ShowAt min="expert">
               <button className="mini-btn" title="Add ghost notes between hits" onClick={() => generators.ghosts(ch.id)}>G</button>
               <button className="mini-btn" title="Polyrhythm — hit every N steps" onClick={() => generators.poly(ch.id)}>P</button>
               <button className="mini-btn" title="Accent every 4th step" onClick={() => generators.accent(ch.id)}>A</button>
@@ -285,6 +293,7 @@ export function ChannelRack() {
               <button className="mini-btn" title="Reverse pattern in time" onClick={() => generators.reverse(ch.id)}>↔</button>
               <button className="mini-btn" title="Shift pattern one step later" onClick={() => generators.shift(ch.id, 1)}>→</button>
               <button className="mini-btn" title="Shift pattern one step earlier" onClick={() => generators.shift(ch.id, -1)}>←</button>
+              </ShowAt>
               <button className="mini-btn" title="Delete channel" onClick={() => {
                 if (!confirm(`Remove channel "${ch.name}"?`)) return;
                 update((p) => ({

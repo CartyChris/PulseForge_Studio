@@ -1,6 +1,9 @@
 /** Command palette (⌘K): fuzzy-ish command search over studio actions. */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useStudio, type Tab } from "../state/store";
+import { useStudio, type Tab, LEVELS, levelRank } from "../state/store";
+import { NAV } from "./shell/NavRail";
+import { GENRES, GENRE_IDS } from "../../shared/producer";
+import { useProducer } from "../ai/useProducer";
 import { engine } from "../engine/engine";
 
 export function CommandPalette() {
@@ -14,14 +17,13 @@ export function CommandPalette() {
   }, []);
 
   const commands = useMemo(() => {
-    const tabs: Array<[Tab, string]> = [
-      ["channel-rack", "Channel Rack"], ["piano-roll", "Piano Roll"], ["playlist", "Playlist"],
-      ["audio-editor", "Audio Editor"], ["mixer", "Mixer"], ["instrument", "Instrument Editor"],
-      ["ai-assistant", "AI Production Assistant"], ["sound-lab", "AI Sound Lab"],
-      ["recording", "Recording Studio"], ["resources", "Resource Hub"],
-    ];
+    // every section — choosing one from a lower level switches up so it's visible
+    const tabs = NAV.map((n) => [n.tab, n.label, n.min] as const);
     return [
-      ...tabs.map(([tab, name]) => ({ name: `Go to ${name}`, kbd: "", run: () => studio.setTab(tab) })),
+      ...tabs.map(([tab, name, min]) => ({ name: `Go to ${name}`, kbd: "", run: () => { if (levelRank(studio.level) < levelRank(min)) studio.setLevel(min); studio.setTab(tab as Tab); } })),
+      ...GENRE_IDS.map((g) => ({ name: `Produce a ${GENRES[g].name} beat`, kbd: "", run: () => { studio.setTab("producer"); void useProducer.getState().start({ prompt: GENRES[g].name, overrides: { genre: g } }); } })),
+      ...LEVELS.map((l) => ({ name: `Switch to ${l} mode`, kbd: "", run: () => studio.setLevel(l) })),
+      { name: "Show help & shortcuts", kbd: "?", run: () => window.dispatchEvent(new CustomEvent("pf-cheatsheet")) },
       { name: "Play / Pause", kbd: "Space", run: () => (engine.playing ? engine.pause() : engine.play()) },
       { name: "Stop", kbd: "", run: () => engine.stop() },
       { name: "Save project", kbd: "⌘S", run: () => studio.save(true) },

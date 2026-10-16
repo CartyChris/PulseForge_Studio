@@ -1,0 +1,1643 @@
+{
+  "version": 1,
+  "generatedBy": "scripts/fetch-samples.mjs",
+  "sampleRate": 44100,
+  "sources": {
+    "salamander": {
+      "name": "Salamander Grand Piano V2",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by/3.0/",
+      "url": "https://tonejs.github.io/audio/salamander/",
+      "licenseEvidence": "https://tonejs.github.io/audio/salamander/README"
+    },
+    "vsco2ce": {
+      "name": "VSCO 2 Community Edition",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://github.com/sgossner/VSCO-2-CE/blob/master/LICENSE",
+      "url": "https://github.com/sgossner/VSCO-2-CE",
+      "homepage": "http://vis.versilstudios.net/vsco-community.html",
+      "licenseEvidence": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/LICENSE"
+    }
+  },
+  "instruments": [
+    {
+      "id": "grand-piano",
+      "name": "Grand Piano (Salamander)",
+      "category": "Piano",
+      "license": "CC-BY-3.0",
+      "attribution": "Salamander Grand Piano V2 (Yamaha C5) by Alexander Holm, licensed CC BY 3.0 (http://creativecommons.org/licenses/by/3.0/). mp3 edition as hosted by Tone.js (https://tonejs.github.io/audio/salamander/).",
+      "sourceUrl": "https://tonejs.github.io/audio/salamander/",
+      "notes": {
+        "A0": "salamander/A0.mp3",
+        "C1": "salamander/C1.mp3",
+        "D#1": "salamander/Ds1.mp3",
+        "F#1": "salamander/Fs1.mp3",
+        "A1": "salamander/A1.mp3",
+        "C2": "salamander/C2.mp3",
+        "D#2": "salamander/Ds2.mp3",
+        "F#2": "salamander/Fs2.mp3",
+        "A2": "salamander/A2.mp3",
+        "C3": "salamander/C3.mp3",
+        "D#3": "salamander/Ds3.mp3",
+        "F#3": "salamander/Fs3.mp3",
+        "A3": "salamander/A3.mp3",
+        "C4": "salamander/C4.mp3",
+        "D#4": "salamander/Ds4.mp3",
+        "F#4": "salamander/Fs4.mp3",
+        "A4": "salamander/A4.mp3",
+        "C5": "salamander/C5.mp3",
+        "D#5": "salamander/Ds5.mp3",
+        "F#5": "salamander/Fs5.mp3",
+        "A5": "salamander/A5.mp3",
+        "C6": "salamander/C6.mp3",
+        "D#6": "salamander/Ds6.mp3",
+        "F#6": "salamander/Fs6.mp3",
+        "A6": "salamander/A6.mp3",
+        "C7": "salamander/C7.mp3",
+        "D#7": "salamander/Ds7.mp3",
+        "F#7": "salamander/Fs7.mp3",
+        "A7": "salamander/A7.mp3",
+        "C8": "salamander/C8.mp3"
+      },
+      "files": {
+        "salamander/A0.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A0.mp3",
+          "bytes": 113969
+        },
+        "salamander/A1.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A1.mp3",
+          "bytes": 115061
+        },
+        "salamander/A2.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A2.mp3",
+          "bytes": 81678
+        },
+        "salamander/A3.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A3.mp3",
+          "bytes": 74526
+        },
+        "salamander/A4.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A4.mp3",
+          "bytes": 61148
+        },
+        "salamander/A5.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A5.mp3",
+          "bytes": 45747
+        },
+        "salamander/A6.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A6.mp3",
+          "bytes": 30013
+        },
+        "salamander/A7.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/A7.mp3",
+          "bytes": 18730
+        },
+        "salamander/C1.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C1.mp3",
+          "bytes": 110199
+        },
+        "salamander/C2.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C2.mp3",
+          "bytes": 110357
+        },
+        "salamander/C3.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C3.mp3",
+          "bytes": 78036
+        },
+        "salamander/C4.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C4.mp3",
+          "bytes": 78718
+        },
+        "salamander/C5.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C5.mp3",
+          "bytes": 68920
+        },
+        "salamander/C6.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C6.mp3",
+          "bytes": 28065
+        },
+        "salamander/C7.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C7.mp3",
+          "bytes": 18963
+        },
+        "salamander/C8.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/C8.mp3",
+          "bytes": 18914
+        },
+        "salamander/Ds1.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds1.mp3",
+          "bytes": 120625
+        },
+        "salamander/Ds2.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds2.mp3",
+          "bytes": 110796
+        },
+        "salamander/Ds3.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds3.mp3",
+          "bytes": 78717
+        },
+        "salamander/Ds4.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds4.mp3",
+          "bytes": 73519
+        },
+        "salamander/Ds5.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds5.mp3",
+          "bytes": 58179
+        },
+        "salamander/Ds6.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds6.mp3",
+          "bytes": 31395
+        },
+        "salamander/Ds7.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Ds7.mp3",
+          "bytes": 22136
+        },
+        "salamander/Fs1.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs1.mp3",
+          "bytes": 115010
+        },
+        "salamander/Fs2.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs2.mp3",
+          "bytes": 102320
+        },
+        "salamander/Fs3.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs3.mp3",
+          "bytes": 77933
+        },
+        "salamander/Fs4.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs4.mp3",
+          "bytes": 68219
+        },
+        "salamander/Fs5.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs5.mp3",
+          "bytes": 51597
+        },
+        "salamander/Fs6.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs6.mp3",
+          "bytes": 26478
+        },
+        "salamander/Fs7.mp3": {
+          "sourceUrl": "https://tonejs.github.io/audio/salamander/Fs7.mp3",
+          "bytes": 22709
+        }
+      },
+      "release": 1,
+      "description": "Yamaha C5 grand, one velocity layer per minor third (Tone.js mp3 edition)."
+    },
+    {
+      "id": "strings-ensemble",
+      "name": "Strings Ensemble",
+      "category": "Strings",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Strings/Cello%20Section/susvib",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/CelloEnsSusVib.sfz",
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/ViolinEnsSusVib.sfz"
+      ],
+      "notes": {
+        "C2": "vsco/strings-ensemble/C2.wav",
+        "G2": "vsco/strings-ensemble/G2.wav",
+        "D3": "vsco/strings-ensemble/D3.wav",
+        "F3": "vsco/strings-ensemble/F3.wav",
+        "A3": "vsco/strings-ensemble/A3.wav",
+        "D4": "vsco/strings-ensemble/D4.wav",
+        "A4": "vsco/strings-ensemble/A4.wav",
+        "C5": "vsco/strings-ensemble/C5.wav",
+        "G5": "vsco/strings-ensemble/G5.wav",
+        "D6": "vsco/strings-ensemble/D6.wav"
+      },
+      "files": {
+        "vsco/strings-ensemble/A3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/susVib/VlnEns_susVib_A2_v2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/susVib/VlnEns_susVib_A2_v2.wav",
+          "sourceSha1": "5960b46c4678a146834594031d0bba1048855102",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/A4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/susVib/VlnEns_susVib_A3_v2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/susVib/VlnEns_susVib_A3_v2.wav",
+          "sourceSha1": "401653718e521b65712da594a53d22184f4a207a",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/C2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_C1_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_C1_v3_1.wav",
+          "sourceSha1": "d3820a6d57daf9a202a000bff0fa082a3f77acf6",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/C5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/susVib/VlnEns_susVib_C4_v2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/susVib/VlnEns_susVib_C4_v2.wav",
+          "sourceSha1": "1c8e05059b270f870342a03e19b93882d6dd1e1b",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/D3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_D2_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_D2_v3_1.wav",
+          "sourceSha1": "fdb46242bb68876ad275b9b8ed10c4b8508b9292",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/D4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/susVib/VlnEns_susVib_D3_v2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/susVib/VlnEns_susVib_D3_v2.wav",
+          "sourceSha1": "31143ae1a31ddd57baa38b3e79a4415b108a0007",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/D6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/susVib/VlnEns_susVib_D5_v2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/susVib/VlnEns_susVib_D5_v2.wav",
+          "sourceSha1": "804a72a49c07eed754e377b354f8e54a4805476d",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_F2_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_F2_v3_1.wav",
+          "sourceSha1": "a384e84a342ab9be12ca55b92c845a3c351b75bf",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/G2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_G1_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_G1_v3_1.wav",
+          "sourceSha1": "35971538059e18b8f38cdc556630967777a0a0d5",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/strings-ensemble/G5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/susVib/VlnEns_susVib_G4_v2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/susVib/VlnEns_susVib_G4_v2.wav",
+          "sourceSha1": "c36674326c6d0b6ae8bf5d20b52b6ddd005719bb",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Cello section below G3, violin section from G3 up; sustain with vibrato."
+    },
+    {
+      "id": "violin",
+      "name": "Solo Violin",
+      "category": "Strings",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Strings/Solo%20Violin/Arco%20Vib",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/SViolinVib.sfz"
+      ],
+      "notes": {
+        "G3": "vsco/violin/G3.wav",
+        "C4": "vsco/violin/C4.wav",
+        "G4": "vsco/violin/G4.wav",
+        "A4": "vsco/violin/A4.wav",
+        "E5": "vsco/violin/E5.wav",
+        "A5": "vsco/violin/A5.wav",
+        "E6": "vsco/violin/E6.wav",
+        "G6": "vsco/violin/G6.wav",
+        "C7": "vsco/violin/C7.wav"
+      },
+      "files": {
+        "vsco/violin/A4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A4_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A4_f.wav",
+          "sourceSha1": "3155c72c1f9ea1518ddb6c1a20eb5c0a094bd537",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/A5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A5_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A5_f.wav",
+          "sourceSha1": "eebb9f220dc2a93557acc849d5dd3273b8f0ff8f",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/C4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C4_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C4_f.wav",
+          "sourceSha1": "8a700075b7ae2f19c1c56108738324dfba6959e8",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/C7.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C7_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C7_f.wav",
+          "sourceSha1": "2348056e211ef9b6d309f3718d8e4e49471f65ce",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/E5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E5_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E5_f.wav",
+          "sourceSha1": "269658d510e82345227ac10d22f928cfae428c99",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/E6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E6_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E6_f.wav",
+          "sourceSha1": "26855bca28a7be29386cbd6db56d2ae6f7c3b66c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/G3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G3_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G3_f.wav",
+          "sourceSha1": "a09b038528097878ad6b12d30da4ac1a227d5a98",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/G4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G4_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G4_f.wav",
+          "sourceSha1": "f9c1a5547a7e062eb34ee6bef09e559d3839f46e",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/violin/G6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G6_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G6_f.wav",
+          "sourceSha1": "9bd2b0d9d6e5505a0c0ce0722bd10db7913ee97d",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Solo violin arco with vibrato."
+    },
+    {
+      "id": "cello",
+      "name": "Cello Section",
+      "category": "Strings",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Strings/Cello%20Section/susvib",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/CelloEnsSusVib.sfz"
+      ],
+      "notes": {
+        "C2": "vsco/cello/C2.wav",
+        "G2": "vsco/cello/G2.wav",
+        "B2": "vsco/cello/B2.wav",
+        "F3": "vsco/cello/F3.wav",
+        "A3": "vsco/cello/A3.wav",
+        "E4": "vsco/cello/E4.wav",
+        "G4": "vsco/cello/G4.wav",
+        "D5": "vsco/cello/D5.wav",
+        "F5": "vsco/cello/F5.wav"
+      },
+      "files": {
+        "vsco/cello/A3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_A2_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_A2_v3_1.wav",
+          "sourceSha1": "ad696c6ad3cbacb37b6d9cf4f26da4a54521e7ce",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/B2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_B1_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_B1_v3_1.wav",
+          "sourceSha1": "56c81412c60a2b04b8556dfa26a7e0127357c5cb",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/C2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_C1_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_C1_v3_1.wav",
+          "sourceSha1": "d3820a6d57daf9a202a000bff0fa082a3f77acf6",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/D5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_D4_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_D4_v3_1.wav",
+          "sourceSha1": "9189549dab9d3e0928fc7e42f94c04d66d28c52b",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/E4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_E3_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_E3_v3_1.wav",
+          "sourceSha1": "7711cb67795d692b0d732eb8fd234c41d5980f42",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_F2_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_F2_v3_1.wav",
+          "sourceSha1": "a384e84a342ab9be12ca55b92c845a3c351b75bf",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/F5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_F4_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_F4_v3_1.wav",
+          "sourceSha1": "074f12a91124e13ea0e4fb34d9ecbe7279ec0806",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/G2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_G1_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_G1_v3_1.wav",
+          "sourceSha1": "35971538059e18b8f38cdc556630967777a0a0d5",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/cello/G4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/susvib/susvib_G3_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/susvib/susvib_G3_v3_1.wav",
+          "sourceSha1": "732d0c80596fdfc593f55b5a24f65c07cd3191cd",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Cello section sustain with vibrato."
+    },
+    {
+      "id": "pizzicato",
+      "name": "Pizzicato Strings",
+      "category": "Strings",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Strings/Cello%20Section/pizzT",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/CelloEnsPizz.sfz",
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/ViolinEnsPizz.sfz"
+      ],
+      "notes": {
+        "C2": "vsco/pizzicato/C2.wav",
+        "G2": "vsco/pizzicato/G2.wav",
+        "D3": "vsco/pizzicato/D3.wav",
+        "F3": "vsco/pizzicato/F3.wav",
+        "A3": "vsco/pizzicato/A3.wav",
+        "D4": "vsco/pizzicato/D4.wav",
+        "A4": "vsco/pizzicato/A4.wav",
+        "C5": "vsco/pizzicato/C5.wav",
+        "G5": "vsco/pizzicato/G5.wav",
+        "D6": "vsco/pizzicato/D6.wav"
+      },
+      "files": {
+        "vsco/pizzicato/A3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_A2_v2_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_A2_v2_rr1.wav",
+          "sourceSha1": "67424af2bfc19cbac72eee6a8fdba6acebbf735e",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.062
+        },
+        "vsco/pizzicato/A4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_A3_v2_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_A3_v2_rr1.wav",
+          "sourceSha1": "251db5f874e4d431601a5f76b7a780cc1e5ef489",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.989
+        },
+        "vsco/pizzicato/C2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/pizzT/pizzT_C1_v2_RR1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/pizzT/pizzT_C1_v2_RR1.wav",
+          "sourceSha1": "e863415fcc1daf43bb56c7ad2990774f66c1cb98",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.5
+        },
+        "vsco/pizzicato/C5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_C4_v2_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_C4_v2_rr1.wav",
+          "sourceSha1": "2321eac4b4d5b26823a89e56a98e232fc143e121",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.855
+        },
+        "vsco/pizzicato/D3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/pizzT/pizzT_D2_v2_RR1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/pizzT/pizzT_D2_v2_RR1.wav",
+          "sourceSha1": "55891f1ec98c1742b27e0b7565c0ef2f027e9bbc",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.5
+        },
+        "vsco/pizzicato/D4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_D3_v2_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_D3_v2_rr1.wav",
+          "sourceSha1": "72d0589858c7bcd1e8c616c9ae5e384dd53851be",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.5
+        },
+        "vsco/pizzicato/D6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_D5_v2_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_D5_v2_rr1.wav",
+          "sourceSha1": "85833b67611f3bb3e1c082721d62269f305e0afa",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.578
+        },
+        "vsco/pizzicato/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/pizzT/pizzT_F2_v2_RR1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/pizzT/pizzT_F2_v2_RR1.wav",
+          "sourceSha1": "20c6e50e4f6e6d4e677a66989de22ebe44af9707",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.408
+        },
+        "vsco/pizzicato/G2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Cello%20Section/pizzT/pizzT_G1_v2_RR1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Cello%20Section/pizzT/pizzT_G1_v2_RR1.wav",
+          "sourceSha1": "9e6b7510899020e0deffdf7cd84ebc207057ec27",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.5
+        },
+        "vsco/pizzicato/G5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_G4_v2_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Violin%20Section/Pizz/VlnEns_Pizz_G4_v2_rr1.wav",
+          "sourceSha1": "9a723d81746d3241c1adcea38fc925fed558c735",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.043
+        }
+      },
+      "release": 0.25,
+      "description": "Cello pizz below G3, violin section pizz above."
+    },
+    {
+      "id": "harp",
+      "name": "Concert Harp",
+      "category": "Strings",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Strings/Harp",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/Harp.sfz"
+      ],
+      "notes": {
+        "E1": "vsco/harp/E1.wav",
+        "B1": "vsco/harp/B1.wav",
+        "F2": "vsco/harp/F2.wav",
+        "C3": "vsco/harp/C3.wav",
+        "G3": "vsco/harp/G3.wav",
+        "D4": "vsco/harp/D4.wav",
+        "A4": "vsco/harp/A4.wav",
+        "E5": "vsco/harp/E5.wav",
+        "B5": "vsco/harp/B5.wav",
+        "F6": "vsco/harp/F6.wav",
+        "B6": "vsco/harp/B6.wav",
+        "F7": "vsco/harp/F7.wav"
+      },
+      "files": {
+        "vsco/harp/A4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_A4_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_A4_mf.wav",
+          "sourceSha1": "acbece38a84e886cb5516e0f29d6ff5d38900fe1",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/B1.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_B1_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_B1_mf.wav",
+          "sourceSha1": "bb26292fd8b4d4d7f95703c69667c8f2234eebc8",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/B5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_B5_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_B5_mf.wav",
+          "sourceSha1": "2d2689e8ca023cd685ed5a29161f3d641f109da9",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/B6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_B6_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_B6_mf.wav",
+          "sourceSha1": "d350ad472b663c9c239802f10228cd0073cf698d",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.743
+        },
+        "vsco/harp/C3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_C3_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_C3_mf.wav",
+          "sourceSha1": "20e91e167e86132bb16601f682c90444779d8a23",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/D4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_D4_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_D4_mf.wav",
+          "sourceSha1": "342eec5072e2c0a7fb7cb03b6f5b46d84ed6ac69",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/E1.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_E1_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_E1_f.wav",
+          "sourceSha1": "483714bd64ecf4947fe70d0ae0da6f2292c958f2",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/E5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_E5_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_E5_mf.wav",
+          "sourceSha1": "20675907d698db011d0c8bc72cf9af4e7a1ac971",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/F2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_F2_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_F2_mf.wav",
+          "sourceSha1": "03c3ce65453dc79a0b36805126b57574ff7dc654",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/harp/F6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_F6_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_F6_mf.wav",
+          "sourceSha1": "5d80932f790a28c088fab5dc2727c01ef2a130fc",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.342
+        },
+        "vsco/harp/F7.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_F7_f.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_F7_f.wav",
+          "sourceSha1": "2451907b2acc4cdf9b371111c760abc9bb866926",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.849
+        },
+        "vsco/harp/G3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Strings/Harp/KSHarp_G3_mf.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Strings/Harp/KSHarp_G3_mf.wav",
+          "sourceSha1": "a2f7fcc2bce81d039d9c0c529a94159f589f36e1",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Plucked concert harp, mf."
+    },
+    {
+      "id": "flute",
+      "name": "Flute",
+      "category": "Woodwinds",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Woodwinds/Flute/susvib",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/FluteSusVib.sfz"
+      ],
+      "notes": {
+        "C4": "vsco/flute/C4.wav",
+        "E4": "vsco/flute/E4.wav",
+        "A4": "vsco/flute/A4.wav",
+        "C5": "vsco/flute/C5.wav",
+        "E5": "vsco/flute/E5.wav",
+        "A5": "vsco/flute/A5.wav",
+        "C6": "vsco/flute/C6.wav",
+        "E6": "vsco/flute/E6.wav",
+        "A6": "vsco/flute/A6.wav",
+        "C7": "vsco/flute/C7.wav"
+      },
+      "files": {
+        "vsco/flute/A4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_A3_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_A3_v1_1.wav",
+          "sourceSha1": "1e8972d4e28dbf8b48e348b93c7862f29b0edfab",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/A5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_A4_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_A4_v1_1.wav",
+          "sourceSha1": "1202232193c565a79618a1696913714e9fe1ad20",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/A6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_A5_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_A5_v1_1.wav",
+          "sourceSha1": "1114c8bf25896d3ee2f7d257c5d81e426fef2cc5",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/C4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_C3_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_C3_v1_1.wav",
+          "sourceSha1": "50220315ef8ca85e92b8809f6c0e15a0c4954cce",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/C5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_C4_v1_2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_C4_v1_2.wav",
+          "sourceSha1": "18bfcccf848cfb4d8d10a005174408ef66fb1cae",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/C6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_C5_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_C5_v1_1.wav",
+          "sourceSha1": "5dc3e06072700651fe1844aafd304633692c6e97",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/C7.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_C6_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_C6_v1_1.wav",
+          "sourceSha1": "f98e1ff1bc4d3dd23cb689de548e13bbfd48ebbb",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/E4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_E3_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_E3_v1_1.wav",
+          "sourceSha1": "ee1008bf0f9dde16d2c584b0cca67fc79889d298",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/E5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_E4_v1_2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_E4_v1_2.wav",
+          "sourceSha1": "5df7941f73d2de88cfe8890d52031b4e3fa2b8b4",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/flute/E6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Flute/susvib/LDFlute_susvib_E5_v1_2.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Flute/susvib/LDFlute_susvib_E5_v1_2.wav",
+          "sourceSha1": "45c715c6e1ca72e4535b9723a030024fea16f40a",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Flute sustain with vibrato."
+    },
+    {
+      "id": "clarinet",
+      "name": "Clarinet",
+      "category": "Woodwinds",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Woodwinds/Clarinet/susLong",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/ClarinetSus.sfz"
+      ],
+      "notes": {
+        "D3": "vsco/clarinet/D3.wav",
+        "F3": "vsco/clarinet/F3.wav",
+        "D4": "vsco/clarinet/D4.wav",
+        "F4": "vsco/clarinet/F4.wav",
+        "A#4": "vsco/clarinet/As4.wav",
+        "D5": "vsco/clarinet/D5.wav",
+        "A#5": "vsco/clarinet/As5.wav",
+        "D6": "vsco/clarinet/D6.wav",
+        "F6": "vsco/clarinet/F6.wav"
+      },
+      "files": {
+        "vsco/clarinet/As4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_A%233_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_A%233_v2_rr1_sum.wav",
+          "sourceSha1": "c80415402c31b050eb51796e17fba541a24a57a0",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/As5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_A%234_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_A%234_v2_rr1_sum.wav",
+          "sourceSha1": "4250227b229f8f94ea73ecb3ff4e996bfa1cf91b",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/D3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D2_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D2_v2_rr1_sum.wav",
+          "sourceSha1": "e435f825232aff390c93e0462d9e93e9e488d7ed",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/D4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D3_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D3_v2_rr1_sum.wav",
+          "sourceSha1": "dfffae60b3793d9687b2cb2c9b3850f593c723c6",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/D5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D4_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D4_v2_rr1_sum.wav",
+          "sourceSha1": "9efaf747591d3c39b7b6e87a077963a1ac71ae45",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/D6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D5_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_D5_v2_rr1_sum.wav",
+          "sourceSha1": "d2c1fa23c73a15d50b581b6f83aa9e56e7e01a0c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_F2_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_F2_v2_rr1_sum.wav",
+          "sourceSha1": "090db5da13fb0ec67673b6a656887644c923d341",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/F4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_F3_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_F3_v2_rr1_sum.wav",
+          "sourceSha1": "1a445b0610a060c571574916d140344fc60922b2",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/clarinet/F6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Clarinet/susLong/DCClar_susLong_F%235_v2_rr1_sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Clarinet/susLong/DCClar_susLong_F%235_v2_rr1_sum.wav",
+          "sourceSha1": "5e103799bb30ef1afa405511230c852b942a9d7c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Clarinet long sustain."
+    },
+    {
+      "id": "oboe",
+      "name": "Oboe",
+      "category": "Woodwinds",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Woodwinds/Oboe/Vib",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/OboeSusVib.sfz"
+      ],
+      "notes": {
+        "A#3": "vsco/oboe/As3.wav",
+        "D4": "vsco/oboe/D4.wav",
+        "F4": "vsco/oboe/F4.wav",
+        "A#4": "vsco/oboe/As4.wav",
+        "D5": "vsco/oboe/D5.wav",
+        "F5": "vsco/oboe/F5.wav",
+        "A#5": "vsco/oboe/As5.wav",
+        "D6": "vsco/oboe/D6.wav",
+        "F6": "vsco/oboe/F6.wav"
+      },
+      "files": {
+        "vsco/oboe/As3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_A%232_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_A%232_v3_Main.wav",
+          "sourceSha1": "281c98b6e0724f08207273383c01040a6068760d",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/As4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_A%233_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_A%233_v3_Main.wav",
+          "sourceSha1": "0fe9f6f9108782a477d8bf3a8a6245ccca20780b",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/As5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_A%234_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_A%234_v3_Main.wav",
+          "sourceSha1": "6e593e290f7b24611868eb66a910a71e543acdba",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/D4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_D3_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_D3_v3_Main.wav",
+          "sourceSha1": "dfe78cb70c94138f4a42ce2fc48d00ba980ab500",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/D5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_D4_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_D4_v3_Main.wav",
+          "sourceSha1": "60c393a1ccf1f83a69d8ff2c9eb1a451d4050f3c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/D6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_D5_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_D5_v3_Main.wav",
+          "sourceSha1": "b788a608581e380831cb7f2ed771e36e1f09e4ed",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/F4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_F3_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_F3_v3_Main.wav",
+          "sourceSha1": "9a61e3adcb5837237e3cbb8bbfa6dff0d0570113",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/F5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_F4_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_F4_v3_Main.wav",
+          "sourceSha1": "8aec1d903928028c31e4adbc2ac4f356df2d7a53",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/oboe/F6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Woodwinds/Oboe/Vib/Oboe_Vib_F5_v3_Main.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Woodwinds/Oboe/Vib/Oboe_Vib_F5_v3_Main.wav",
+          "sourceSha1": "8fc50b77329e4c5dd140b45e9afb70259d8489f6",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Oboe sustain with vibrato."
+    },
+    {
+      "id": "trumpet",
+      "name": "Trumpet",
+      "category": "Brass",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Brass/Trumpet/sus",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/TrumpetSus.sfz"
+      ],
+      "notes": {
+        "F3": "vsco/trumpet/F3.wav",
+        "A3": "vsco/trumpet/A3.wav",
+        "C4": "vsco/trumpet/C4.wav",
+        "D#4": "vsco/trumpet/Ds4.wav",
+        "A#4": "vsco/trumpet/As4.wav",
+        "D5": "vsco/trumpet/D5.wav",
+        "F5": "vsco/trumpet/F5.wav",
+        "A5": "vsco/trumpet/A5.wav",
+        "C6": "vsco/trumpet/C6.wav"
+      },
+      "files": {
+        "vsco/trumpet/A3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A2_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A2_v3_rr1.wav",
+          "sourceSha1": "85310d01faf50dbd83ed4a65ac7bed50d97904e1",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/A5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A4_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A4_v3_rr1.wav",
+          "sourceSha1": "bbdc0773c636c611b953ed1383f8cf1eb6b53b38",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/As4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A%233_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A%233_v3_rr1.wav",
+          "sourceSha1": "f6b2753da2ae19e4748a91b0ed412decf3973fda",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/C4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_C3_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_C3_v3_rr1.wav",
+          "sourceSha1": "d5490467cf68db010843924b975fd71edfc41273",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/C6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_C5_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_C5_v3_rr1.wav",
+          "sourceSha1": "9e43868b7c7e47a8ee107c68c6072756ef0f6bc1",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/D5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_D4_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_D4_v3_rr1.wav",
+          "sourceSha1": "815560ece9f2e8d0ad6a33ba24a014345ea59814",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/Ds4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_D%233_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_D%233_v3_rr1.wav",
+          "sourceSha1": "0b2c29a0d8744377dd839065be025a47b7bde77e",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_F2_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_F2_v3_rr1.wav",
+          "sourceSha1": "ee1895af491c7c332439dae630de17e1a83a4abd",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/F5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_F4_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_F4_v3_rr1.wav",
+          "sourceSha1": "cb508c5bf2e3c21dc3441194499fc6d0e7344f4b",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Trumpet sustain."
+    },
+    {
+      "id": "french-horn",
+      "name": "French Horn",
+      "category": "Brass",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Brass/F%20Horn/sus",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/FHornSus.sfz"
+      ],
+      "notes": {
+        "A1": "vsco/french-horn/A1.wav",
+        "C2": "vsco/french-horn/C2.wav",
+        "D#2": "vsco/french-horn/Ds2.wav",
+        "G2": "vsco/french-horn/G2.wav",
+        "A#2": "vsco/french-horn/As2.wav",
+        "F3": "vsco/french-horn/F3.wav",
+        "A3": "vsco/french-horn/A3.wav",
+        "C4": "vsco/french-horn/C4.wav",
+        "D5": "vsco/french-horn/D5.wav",
+        "F5": "vsco/french-horn/F5.wav"
+      },
+      "files": {
+        "vsco/french-horn/A1.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_A0_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_A0_v1_1.wav",
+          "sourceSha1": "bec79afe2bde69ed445c52da977b83e31cc81ed7",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/A3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_A2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_A2_v2_1.wav",
+          "sourceSha1": "5ea35c7b0bf50d85195ba726380e611817f4ba9a",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/As2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_A%231_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_A%231_v2_1.wav",
+          "sourceSha1": "62c15504278f9c2dfaa0006530d34a5a3d92ecb0",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/C2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_C1_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_C1_v2_1.wav",
+          "sourceSha1": "48ea1921e88607d0aea8aece16be6bc2456f6a4e",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/C4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_C3_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_C3_v3_1.wav",
+          "sourceSha1": "69e3187ccc4d4338931d412a9f50978ca576db5c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/D5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_D4_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_D4_v1_1.wav",
+          "sourceSha1": "0d13acd769ecdfc234c416fe859a4eda9aac2f22",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/Ds2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_D%231_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_D%231_v2_1.wav",
+          "sourceSha1": "20c33d3ffb3bf369e30359e3eb8b8ac7548adda3",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_F2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_F2_v2_1.wav",
+          "sourceSha1": "37655b24ac23b96a47a6bb75c091bedef6913632",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/F5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_F4_v1_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_F4_v1_1.wav",
+          "sourceSha1": "3061198e82995900230e9ddde1138a076d8dca9f",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/G2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_G1_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_G1_v2_1.wav",
+          "sourceSha1": "e09ff9550c6ed4b660baeaba5497040ca7add35e",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "F horn sustain."
+    },
+    {
+      "id": "trombone",
+      "name": "Trombone",
+      "category": "Brass",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Brass/Tenor%20Trombone/sus",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/TromboneSus.sfz"
+      ],
+      "notes": {
+        "A#1": "vsco/trombone/As1.wav",
+        "C#2": "vsco/trombone/Cs2.wav",
+        "F2": "vsco/trombone/F2.wav",
+        "A#2": "vsco/trombone/As2.wav",
+        "D3": "vsco/trombone/D3.wav",
+        "F3": "vsco/trombone/F3.wav",
+        "C#4": "vsco/trombone/Cs4.wav",
+        "D#4": "vsco/trombone/Ds4.wav",
+        "F4": "vsco/trombone/F4.wav"
+      },
+      "files": {
+        "vsco/trombone/As1.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%230_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%230_v2_1.wav",
+          "sourceSha1": "e81b27ce12cc7921533136f7c822ad66bde17b48",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/As2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%231_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%231_v2_1.wav",
+          "sourceSha1": "bfed422b95827132a8cd27cdf5f6bc3073dbc293",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/Cs2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_C%231_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_C%231_v2_1.wav",
+          "sourceSha1": "232b246c39891a738c246a41685a2ed5a7c7470d",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/Cs4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_C%233_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_C%233_v2_1.wav",
+          "sourceSha1": "8e546c8995c15c63c856099030ae45c5abbc8924",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/D3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_D2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_D2_v2_1.wav",
+          "sourceSha1": "879dbfba0ad741de2c7b34688ce7a6c763b54da2",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/Ds4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_D%233_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_D%233_v2_1.wav",
+          "sourceSha1": "f328088a8745a2c01d1d39c78db9a65599f86bca",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/F2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F1_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F1_v2_1.wav",
+          "sourceSha1": "baabbbd2f72b8e34259cef60bde4b6c2f1fd554c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F2_v2_1.wav",
+          "sourceSha1": "34359f397938e10a675d5906f21cd90392cad15b",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/F4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F3_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F3_v2_1.wav",
+          "sourceSha1": "aad935618350cdffb0af783043d3b63e00b6092a",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Tenor trombone sustain."
+    },
+    {
+      "id": "glockenspiel",
+      "name": "Glockenspiel",
+      "category": "Mallets",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Percussion/Glock",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/Glockenspiel.sfz"
+      ],
+      "notes": {
+        "G4": "vsco/glockenspiel/G4.wav",
+        "C5": "vsco/glockenspiel/C5.wav",
+        "G5": "vsco/glockenspiel/G5.wav",
+        "C6": "vsco/glockenspiel/C6.wav",
+        "G6": "vsco/glockenspiel/G6.wav",
+        "C7": "vsco/glockenspiel/C7.wav"
+      },
+      "files": {
+        "vsco/glockenspiel/C5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Glock/glock_medium_C5.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Glock/glock_medium_C5.wav",
+          "sourceSha1": "db079c70946137f543820b6a6ac023d0afaac47c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3
+        },
+        "vsco/glockenspiel/C6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Glock/glock_medium_C6.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Glock/glock_medium_C6.wav",
+          "sourceSha1": "c02ff721d10eb3551372806653368f45ea5dc367",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3
+        },
+        "vsco/glockenspiel/C7.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Glock/glock_medium_C7.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Glock/glock_medium_C7.wav",
+          "sourceSha1": "a0f4aff9ef7d73e49a16f4054ead1369a78572b0",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.623
+        },
+        "vsco/glockenspiel/G4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Glock/glock_medium_G4.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Glock/glock_medium_G4.wav",
+          "sourceSha1": "a7d9ca6c68e4c56327d83f0653ee3e16e4810265",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3
+        },
+        "vsco/glockenspiel/G5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Glock/glock_medium_G5.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Glock/glock_medium_G5.wav",
+          "sourceSha1": "dbaf80bc3975016095de3a611a202b581931311c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3
+        },
+        "vsco/glockenspiel/G6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Glock/glock_medium_G6.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Glock/glock_medium_G6.wav",
+          "sourceSha1": "e95738492bdc207b11ad32891a9a1ea090b6719e",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3
+        }
+      },
+      "release": 0.6,
+      "description": "Mapped at written pitch as in the library's SFZ (instrument sounds two octaves higher)."
+    },
+    {
+      "id": "marimba",
+      "name": "Marimba",
+      "category": "Mallets",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Percussion/Marimba",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/Marimba.sfz"
+      ],
+      "notes": {
+        "F2": "vsco/marimba/F2.wav",
+        "C3": "vsco/marimba/C3.wav",
+        "G3": "vsco/marimba/G3.wav",
+        "B3": "vsco/marimba/B3.wav",
+        "F4": "vsco/marimba/F4.wav",
+        "C5": "vsco/marimba/C5.wav",
+        "G5": "vsco/marimba/G5.wav",
+        "B5": "vsco/marimba/B5.wav",
+        "F6": "vsco/marimba/F6.wav",
+        "C7": "vsco/marimba/C7.wav"
+      },
+      "files": {
+        "vsco/marimba/B3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_B2_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_B2_loud_01.wav",
+          "sourceSha1": "e3b63f301191c679cea1eaa61a99d3baa9c3fbfe",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.2
+        },
+        "vsco/marimba/B5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_B4_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_B4_loud_01.wav",
+          "sourceSha1": "cf36d9cae6614613c17069accbaa46594846c113",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.266
+        },
+        "vsco/marimba/C3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_C2_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_C2_loud_01.wav",
+          "sourceSha1": "155e036d3aa04fba9d3389e2cdf3accec9842e01",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.2
+        },
+        "vsco/marimba/C5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_C4_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_C4_loud_01.wav",
+          "sourceSha1": "fe3ec22b99ed4afdd007d0107d925669e7e1d4c9",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.2
+        },
+        "vsco/marimba/C7.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_C6_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_C6_loud_01.wav",
+          "sourceSha1": "aa3b9670477cf7d6825cb9e6e3c9446acffa95ee",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.222
+        },
+        "vsco/marimba/F2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_F1_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_F1_loud_01.wav",
+          "sourceSha1": "cc5b73c4c0b50ca64a0c484f17d37e825957de50",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.2
+        },
+        "vsco/marimba/F4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_F3_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_F3_loud_01.wav",
+          "sourceSha1": "646d1490ead56eaf0db10c96ac352c80d3275736",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.2
+        },
+        "vsco/marimba/F6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_F5_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_F5_loud_01.wav",
+          "sourceSha1": "fadca10c6d332115fa9f586cc37245a008a8a859",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.291
+        },
+        "vsco/marimba/G3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_G2_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_G2_loud_01.wav",
+          "sourceSha1": "b73a4b8febfdeb8e86ab13edabd1e663caebd378",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 2.2
+        },
+        "vsco/marimba/G5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Marimba/Marimba_hit_Outrigger_G4_loud_01.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Marimba/Marimba_hit_Outrigger_G4_loud_01.wav",
+          "sourceSha1": "3c6ea81532f6924112581140e8f530e6cc45739d",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.409
+        }
+      },
+      "release": 0.6,
+      "description": "Outrigger mallets, loud hits."
+    },
+    {
+      "id": "xylophone",
+      "name": "Xylophone",
+      "category": "Mallets",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Percussion/Xylo",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/Xylophone.sfz"
+      ],
+      "notes": {
+        "G3": "vsco/xylophone/G3.wav",
+        "C4": "vsco/xylophone/C4.wav",
+        "G4": "vsco/xylophone/G4.wav",
+        "C5": "vsco/xylophone/C5.wav",
+        "G5": "vsco/xylophone/G5.wav",
+        "C6": "vsco/xylophone/C6.wav",
+        "G6": "vsco/xylophone/G6.wav",
+        "C7": "vsco/xylophone/C7.wav"
+      },
+      "files": {
+        "vsco/xylophone/C4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_C4_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_C4_ff_01_far.wav",
+          "sourceSha1": "af5c4ea6431fc38aa5049cd202dde9e58102e6b7",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.4
+        },
+        "vsco/xylophone/C5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_C5_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_C5_ff_01_far.wav",
+          "sourceSha1": "f8bd2232bc174009e2a4e1a531e879e8cbd74199",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.217
+        },
+        "vsco/xylophone/C6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_C6_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_C6_ff_01_far.wav",
+          "sourceSha1": "b947a33529eb125a762090fc368b1942a4e3aa72",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.628
+        },
+        "vsco/xylophone/C7.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_C7_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_C7_ff_01_far.wav",
+          "sourceSha1": "d44013498ae967ea9998cb03bac8b59f461865ed",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.466
+        },
+        "vsco/xylophone/G3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_G3_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_G3_ff_01_far.wav",
+          "sourceSha1": "0ebb689b682277fdbcde0a3c76b9b1e197ef29fa",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.4
+        },
+        "vsco/xylophone/G4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_G4_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_G4_ff_01_far.wav",
+          "sourceSha1": "dd8e753fbd1a67efa83049e7b226ddabc5644720",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 1.4
+        },
+        "vsco/xylophone/G5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_G5_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_G5_ff_01_far.wav",
+          "sourceSha1": "7183664e7583871c9221e3b0c40a324a265706f7",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.78
+        },
+        "vsco/xylophone/G6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Xylo/Xylo_Medium_G6_ff_01_far.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Xylo/Xylo_Medium_G6_ff_01_far.wav",
+          "sourceSha1": "911cb8efac1a84a05d071a04ff35d6b3b087e313",
+          "sourceFormat": "24-bit PCM 2ch 44100 Hz",
+          "durationSec": 0.567
+        }
+      },
+      "release": 0.25,
+      "description": "Mapped at written pitch as in the library's SFZ."
+    },
+    {
+      "id": "timpani",
+      "name": "Timpani",
+      "category": "Orchestral",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Percussion/Timpani",
+      "sfz": [
+        "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/SFZ/Timpani.sfz"
+      ],
+      "notes": {
+        "F#2": "vsco/timpani/Fs2.wav",
+        "A#2": "vsco/timpani/As2.wav",
+        "C#3": "vsco/timpani/Cs3.wav",
+        "E3": "vsco/timpani/E3.wav",
+        "F#3": "vsco/timpani/Fs3.wav"
+      },
+      "files": {
+        "vsco/timpani/As2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Timpani/Timpani2_Hit_v3_rr1_Sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Timpani/Timpani2_Hit_v3_rr1_Sum.wav",
+          "sourceSha1": "23f38123671e904b64b45c694deec814daff98ce",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/timpani/Cs3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Timpani/Timpani3_Hit_v3_rr1_Sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Timpani/Timpani3_Hit_v3_rr1_Sum.wav",
+          "sourceSha1": "1996b4911a0c0a0d6f8ef7e5efd823fbcc7612ff",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/timpani/E3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Timpani/Timpani4_Hit_v3_rr1_Sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Timpani/Timpani4_Hit_v3_rr1_Sum.wav",
+          "sourceSha1": "198b2582307137805b0fccef4e7eb71a4398e953",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/timpani/Fs2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Timpani/Timpani1_Hit_v3_rr1_Sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Timpani/Timpani1_Hit_v3_rr1_Sum.wav",
+          "sourceSha1": "86d8e078c8820d49fd15124fe037cbd667ae8fa2",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/timpani/Fs3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Percussion/Timpani/Timpani5_Hit_v3_rr1_Sum.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Percussion/Timpani/Timpani5_Hit_v3_rr1_Sum.wav",
+          "sourceSha1": "52b8d8441ff31e3870572cdbba0ae317c201bfe9",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Five tuned timpani hits; repitched between drums."
+    },
+    {
+      "id": "brass-section",
+      "name": "Brass Section",
+      "category": "Brass",
+      "license": "CC0-1.0",
+      "attribution": "VSCO 2 Community Edition by Versilian Studios (Sam Gossner) and Ivy Audio (Simon Dalzell); sample cutting by Elan Hickler/Soundemote. CC0 1.0 — credit requested, not required. http://vis.versilstudios.net/vsco-community.html",
+      "sourceUrl": "https://github.com/sgossner/VSCO-2-CE/tree/master/Brass/Tenor%20Trombone/sus https://github.com/sgossner/VSCO-2-CE/tree/master/Brass/F%20Horn/sus https://github.com/sgossner/VSCO-2-CE/tree/master/Brass/Trumpet/sus",
+      "notes": {
+        "A#1": "vsco/trombone/As1.wav",
+        "C#2": "vsco/trombone/Cs2.wav",
+        "F2": "vsco/trombone/F2.wav",
+        "A#2": "vsco/trombone/As2.wav",
+        "D3": "vsco/trombone/D3.wav",
+        "F3": "vsco/french-horn/F3.wav",
+        "A3": "vsco/french-horn/A3.wav",
+        "C4": "vsco/french-horn/C4.wav",
+        "A#4": "vsco/trumpet/As4.wav",
+        "D5": "vsco/trumpet/D5.wav",
+        "F5": "vsco/trumpet/F5.wav",
+        "A5": "vsco/trumpet/A5.wav",
+        "C6": "vsco/trumpet/C6.wav"
+      },
+      "files": {
+        "vsco/french-horn/A3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_A2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_A2_v2_1.wav",
+          "sourceSha1": "5ea35c7b0bf50d85195ba726380e611817f4ba9a",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/C4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_C3_v3_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_C3_v3_1.wav",
+          "sourceSha1": "69e3187ccc4d4338931d412a9f50978ca576db5c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/french-horn/F3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/F%20Horn/sus/MOHorn_sus_F2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/F%20Horn/sus/MOHorn_sus_F2_v2_1.wav",
+          "sourceSha1": "37655b24ac23b96a47a6bb75c091bedef6913632",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/As1.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%230_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%230_v2_1.wav",
+          "sourceSha1": "e81b27ce12cc7921533136f7c822ad66bde17b48",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/As2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%231_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_A%231_v2_1.wav",
+          "sourceSha1": "bfed422b95827132a8cd27cdf5f6bc3073dbc293",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/Cs2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_C%231_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_C%231_v2_1.wav",
+          "sourceSha1": "232b246c39891a738c246a41685a2ed5a7c7470d",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/D3.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_D2_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_D2_v2_1.wav",
+          "sourceSha1": "879dbfba0ad741de2c7b34688ce7a6c763b54da2",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trombone/F2.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F1_v2_1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Tenor%20Trombone/sus/tenortbn_sus_F1_v2_1.wav",
+          "sourceSha1": "baabbbd2f72b8e34259cef60bde4b6c2f1fd554c",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/A5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A4_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A4_v3_rr1.wav",
+          "sourceSha1": "bbdc0773c636c611b953ed1383f8cf1eb6b53b38",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/As4.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A%233_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_A%233_v3_rr1.wav",
+          "sourceSha1": "f6b2753da2ae19e4748a91b0ed412decf3973fda",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/C6.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_C5_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_C5_v3_rr1.wav",
+          "sourceSha1": "9e43868b7c7e47a8ee107c68c6072756ef0f6bc1",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/D5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_D4_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_D4_v3_rr1.wav",
+          "sourceSha1": "815560ece9f2e8d0ad6a33ba24a014345ea59814",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        },
+        "vsco/trumpet/F5.wav": {
+          "sourceUrl": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_F4_v3_rr1.wav",
+          "sourcePage": "https://github.com/sgossner/VSCO-2-CE/blob/master/Brass/Trumpet/sus/Sum_SHTrumpet_sus_F4_v3_rr1.wav",
+          "sourceSha1": "cb508c5bf2e3c21dc3441194499fc6d0e7344f4b",
+          "sourceFormat": "16-bit PCM 2ch 44100 Hz",
+          "durationSec": 3.5
+        }
+      },
+      "release": 0.6,
+      "description": "Range-split section: trombone (low), French horn (mid), trumpet (high)."
+    }
+  ]
+}

@@ -12,8 +12,26 @@ import { engine } from "../engine/engine";
 import { saveProject } from "../storage/projects";
 
 export type Tab =
+  | "home" | "producer" | "connections" | "library"
   | "channel-rack" | "piano-roll" | "playlist" | "audio-editor" | "mixer"
   | "instrument" | "ai-assistant" | "sound-lab" | "recording" | "resources";
+
+/** Experience level — controls how much of the studio is visible at once (never what it can do). */
+export type Level = "beginner" | "intermediate" | "expert";
+export const LEVELS: Level[] = ["beginner", "intermediate", "expert"];
+export const levelRank = (l: Level) => LEVELS.indexOf(l);
+
+function loadLevel(): Level {
+  try {
+    const v = localStorage.getItem("pf_level");
+    if (v === "beginner" || v === "intermediate" || v === "expert") return v;
+  } catch {}
+  return "beginner";
+}
+function loadTab(): Tab {
+  try { if (localStorage.getItem("pf_onboarded") === "1") return "home"; } catch {}
+  return "home";
+}
 
 export interface Selection {
   patternId: string | null;
@@ -55,7 +73,12 @@ interface StudioState {
   uiScale: number;
   reducedMotion: boolean;
   paletteOpen: boolean;
+  level: Level;
+  /** true until the user has picked a level once (drives the welcome screen) */
+  needsOnboarding: boolean;
 
+  setLevel(level: Level): void;
+  finishOnboarding(level: Level): void;
   setProject(project: Project, opts?: { resetUndo?: boolean }): void;
   update(fn: (p: Project) => Project, opts?: { undoable?: boolean }): void;
   dispatch(cmd: DawCommand): void;
@@ -89,7 +112,7 @@ export const useStudio = create<StudioState>((set, get) => ({
   lastSavedAt: null,
   undoStack: [],
   redoStack: [],
-  tab: "channel-rack",
+  tab: loadTab(),
   selection: { patternId: null, channelId: null, clipIds: [], noteIds: [], mixerChannelId: null, assetId: null, trackId: null },
   playing: false,
   positionTicks: 0,
@@ -105,6 +128,17 @@ export const useStudio = create<StudioState>((set, get) => ({
   uiScale: 1,
   reducedMotion: false,
   paletteOpen: false,
+  level: loadLevel(),
+  needsOnboarding: (() => { try { return localStorage.getItem("pf_onboarded") !== "1"; } catch { return false; } })(),
+
+  setLevel(level) {
+    try { localStorage.setItem("pf_level", level); } catch {}
+    set({ level });
+  },
+  finishOnboarding(level) {
+    try { localStorage.setItem("pf_level", level); localStorage.setItem("pf_onboarded", "1"); } catch {}
+    set({ level, needsOnboarding: false });
+  },
 
   setProject(project, opts) {
     set({

@@ -7,6 +7,7 @@ import { MASTER_ID, newId } from "../../shared/project";
 import { EFFECT_DEFS, EFFECT_CHAIN_PRESETS } from "../engine/effects";
 import type { EffectType } from "../../shared/project";
 import { engine } from "../engine/engine";
+import { atLeast, useLevel } from "./shell/Level";
 import { useRef } from "react";
 
 /** Live FFT spectrum of the master bus, drawn outside React's render loop. */
@@ -41,6 +42,8 @@ function Spectrum() {
 
 export function Mixer() {
   const { project, selection, select, update, dispatch, toast } = useStudio();
+  // routing, sends and sidechain appear from Intermediate up (Quick Mix covers beginners)
+  const showRouting = atLeast(useLevel(), "intermediate");
   const [meters, setMeters] = useState<Record<string, number>>({});
   const [fxEditor, setFxEditor] = useState<{ channelId: string; effectId: string } | null>(null);
 
@@ -166,7 +169,7 @@ export function Mixer() {
               )}
             </div>
 
-            {c.kind !== "master" && (
+            {c.kind !== "master" && showRouting && (
               <>
                 <select className="sel" style={{ fontSize: 9, maxWidth: "100%" }} value={c.outputId ?? MASTER_ID} title="Output routing"
                   onClick={(e) => e.stopPropagation()}

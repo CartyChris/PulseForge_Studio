@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { currentCreds } from "./request-context";
 
 export const PF_DIR = process.env.PF_DATA_DIR ?? path.join(os.homedir(), ".pulseforge");
 const SECRETS_FILE = () => path.join(PF_DIR, "secrets.json");
@@ -94,6 +95,13 @@ function readJson(file: string): Record<string, string> {
 }
 
 export function getSecret(providerId: string): string | null {
+  // hosted build: ONLY the visitor's own request-scoped key (bring-your-own-key). Server env keys
+  // are ignored unless the deployer explicitly opts in, so strangers can never spend them.
+  if (process.env.PF_SERVERLESS === "1") {
+    const own = currentCreds()?.keys[providerId];
+    if (own) return own;
+    if (process.env.PF_ALLOW_SERVER_KEYS !== "1") return null;
+  }
   // order: process env → login-shell import (allow-listed) → ~/.pulseforge/secrets.json
   for (const env of ENV_KEYS[providerId] ?? []) {
     const v = process.env[env];
@@ -121,6 +129,9 @@ export function hasSecret(providerId: string): boolean {
 
 /** Provider config (base URLs, default models for generic adapters). Not secret. */
 export function getProviderConfig(providerId: string): Record<string, string> {
+  const own = currentCreds()?.config[providerId];
+  if (own) return own;
+  if (process.env.PF_SERVERLESS === "1") return {};
   const all = readJson(CONFIG_FILE());
   try {
     return typeof all[providerId] === "object" ? (all[providerId] as unknown as Record<string, string>) : JSON.parse(all[providerId] ?? "{}");
@@ -140,6 +151,9 @@ export function setProviderConfig(providerId: string, config: Record<string, str
 /** Scrub any known secret values and obvious key patterns from a string. */
 export function redactSecrets(text: string): string {
   let out = text;
+  for (const v of Object.values(currentCreds()?.keys ?? {})) {
+    if (v && v.length > 6) out = out.split(v).join("[redacted]");
+  }
   const secrets = readJson(SECRETS_FILE());
   for (const v of Object.values(secrets)) {
     if (v && v.length > 6) out = out.split(v).join("[redacted]");

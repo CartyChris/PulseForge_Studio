@@ -1,83 +1,105 @@
-# PulseForge Studio ⚒
+# PulseForge Studio 2.0 ⚒
 
-A standalone, local-first digital audio workstation with the pattern-based workflow of
-classic beat-making software — plus an optional, secure AI production layer.
-Original design, original branding, original synthesized sounds.
+A local-first music studio for making beats, from "describe it in one sentence" to a full
+FL-style workflow, with an AI producer that can plan, compose, arrange, mix and review a
+whole track. Original design, original branding, original synthesized drums and synths,
+plus real CC0 / CC-BY sampled instruments.
 
-**Everything core runs locally in your browser**: sequencing, piano roll, arrangement,
-mixing, recording, sample chopping, project storage, and WAV export all work without
-any AI provider connected. AI features are additive and route through a local backend
-that keeps API keys out of the frontend.
+**Everything core runs on your machine**: drum pads and step sequencer, piano roll, song
+arrangement, mixer, recording, sample chopping, project storage and WAV export all work with
+no AI connected. AI is additive: the offline producer makes complete beats on its own, and your
+AI subscriptions (Claude Code, Codex, Kimi, Grok CLIs), API keys, OpenRouter sign-in or local
+models make the plans smarter.
 
-## Quick start
+## Three ways to run it
 
-```bash
-# double-click this in Finder:
-Start PulseForge.command
+| | How | Notes |
+|---|---|---|
+| **Mac app** | open `release/PulseForge Studio-2.0.0-arm64.dmg`, drag to Applications | Electron. Finds your installed AI CLIs automatically. Microphone prompt on first record. |
+| **Local browser** | double-click `Start PulseForge.command`, or `npm install && npm run start` | Serves studio + API on http://127.0.0.1:7800 |
+| **Vercel (hosted)** | see [Deploying to Vercel](#deploying-to-vercel) | Bring-your-own-key: each visitor's keys stay in their own browser |
 
-# or from a terminal:
-npm install
-npm run start        # production: build served at http://127.0.0.1:7800
-npm run dev          # development: Vite on :5173, API on :7801
-```
+## Beginner · Intermediate · Expert
 
-The launcher checks your Node runtime (20+), installs dependencies on first run,
-starts the backend (which also serves the built studio), waits for
-`/api/health`, and opens your browser.
+Pick a level on first launch, or switch any time from the top bar. **Nothing is ever removed**:
+the level only decides how much is on screen at once.
+
+- **Beginner**: Home, AI Producer, Beat (drum pads + steps), Melody, Song, Record, Mix (Quick Mix
+  sliders + Auto-mix), Sounds, Connect. Big controls, coach tips, simple toolbars.
+- **Intermediate**: adds Instrument, Audio editor, Sound Lab and AI Chat pages, the sound browser /
+  inspector panels, and the everyday power tools (tap tempo, snap, ghost notes, humanize, routing…).
+  Rarely used tools sit behind a **More tools** button.
+- **Expert**: everything at once: both side panels open, dense toolbars, time signature and count-in
+  in the top bar, every generator and editor.
+
+⌥1…⌥9 jumps between the sections you can see, ⌘K searches every action, `?` shows all shortcuts.
+
+## Making a beat in 60 seconds
+
+1. On **Home**, click a genre tile (Trap, Drill, Afrobeats, Lo-Fi… 16 genres) or describe a beat:
+   *"dark trap beat with eerie bells and hard 808s, 140 bpm"*.
+2. The **AI Producer** plans it (genre, tempo, key, chords, form, sounds), writes every part in key,
+   builds the session on real mixer tracks, then renders a test section and adjusts loudness and tone
+   until it measures right. Every step is undoable.
+3. Not quite right? Type *"faster"*, *"darker"*, *"more swing"*, *"no melody"* or *"another version"*.
+4. Open **Beat** to tap pads (keys 1–8) and edit the drum steps, **Melody** for the piano roll,
+   **Song** for the arrangement, **Mix** for levels.
+5. **Project ▾ → Export…** renders a WAV (16/24/32-bit, 44.1–96 kHz, optional stems).
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Vite dev server + backend API (hot reload) |
+| `npm run dev` | Vite dev server on :7800 + backend API on :7801 (hot reload) |
 | `npm run build` | Production build into `dist/` |
-| `npm run start` | Build (if needed) + serve studio & API on one port |
-| `npm run start:local` | Same as `start`, never opens a browser |
-| `npm run lint` | ESLint over the whole repo |
+| `npm run start` | Build (if needed) + serve studio & API on one port (7800) |
+| `npm run build:desktop` | Build the Mac app → `release/*.dmg` (Electron) |
+| `npm run desktop:dev` | Run the Electron shell against a fresh build, unpackaged |
+| `npm run lint` | ESLint over the sources |
 | `npm run typecheck` | Strict TypeScript on frontend + backend |
-| `npm run test` | Vitest unit + integration suites (88 tests) |
-| `npm run test:e2e` | Playwright end-to-end suite (7 tests, real audio engine) |
+| `npm run test` | Vitest unit + integration suites (343 tests) |
+| `npm run test:e2e` | Playwright end-to-end suite (real audio engine) |
 | `npm run verify` | lint + typecheck + test + build + e2e, in order |
-
-## Making a beat in 60 seconds
-
-1. **PAT mode** is on by default — the transport plays the current Channel Rack pattern.
-2. Open **Channel Rack**, click **+ Add Channel**, add a drum kit starter set.
-3. Click steps to program kick/snare/hats. Right-click a step for velocity,
-   probability, and micro-timing. Swing, Euclidean (E), Randomize (R), Humanize (H),
-   Variation (V) per channel.
-4. Add a melodic instrument, open **Piano Roll**, draw notes (pencil), drag to move,
-   grab a note's tail to stretch, right-click to erase. Velocity and pan lanes below.
-5. Switch to **Playlist**, place pattern clips, arrange sections, add audio and
-   automation clips. Flip the transport to **SONG** mode to hear the arrangement.
-6. Mix in the **Mixer** (18 built-in effect types, sends, buses, sidechain ducking).
-7. **Project ▾ → Export…** renders the full song offline to WAV (16/24/32-bit,
-   44.1–96 kHz, stems optional).
 
 ## What's inside
 
-- **Instruments**: 4 synthesized drum kits (Modern Hip-Hop, Trap & 808, Electronic,
-  Acoustic Essentials — 18 sounds each), sampler (ADSR/filter/loop/portamento/reverse),
-  8 synth engines (subtractive, FM, pad, pluck, piano, e-piano, 808/sub bass, bass) and
-  35+ musical presets (pianos, EPs, organ, basses, pads, leads, bells, brass, choir…).
-- **Starter library**: 60+ programmatically synthesized one-shots and FX — kicks,
-  snares, hats, percussion, risers, downlifters, impacts, sweeps, bass hits, vocal-ish
-  chops, textures, foley-style ticks, metronome clicks. All original, license-free
-  (see `BUNDLED_AUDIO_LICENSES.md`).
-- **Recording studio**: input selection, metering, monitoring with feedback warnings,
-  count-in, punch in/out, loop recording, take lanes with comping, latency calibration,
-  dry-take preservation, 11 vocal chain presets (Clean Rap → Podcast Voice).
-- **Audio editor**: waveform view, non-destructive trim/crop, split, equal-slice,
-  transient slice, normalize, gain, fades, reverse, pitch, stretch, BPM/key estimate,
-  send slices to Drum Rack / Sampler / Playlist.
-- **AI (optional)**: structured composition, validated edit plans with preview and
-  undo, lyrics, mix suggestions, audio analysis, generated-audio jobs with progress —
-  through 10 provider adapters (Anthropic, OpenAI, Gemini, OpenRouter,
-  OpenAI-compatible, Ollama, ElevenLabs, generic sync/async audio REST, manual import).
-  See `AI_PROVIDER_GUIDE.md`.
-- **Sound packs**: Resource Hub with curated royalty-free sources, ZIP/folder importer
-  with path-traversal protection, BPM estimation, tagging, favorites.
-  See `SAMPLE_PACK_GUIDE.md`.
+- **Drums**: 22 kits (808, 909, boom bap, trap, drill, house, techno, afrobeats, reggaeton, phonk,
+  jersey club, drum & bass, dancehall, lo-fi, R&B, pop, 80s, dubstep, world percussion…), each with
+  30 roles: kicks, snares, claps, snaps, hats, percussion, congas, bongos, clave, cowbell, vox "hey",
+  risers and reverse cymbals. Plus 76 factory one-shots (FX, stabs, orchestra hits, vinyl textures).
+- **Instruments**: 118 presets over 31 engines: subtractive/FM/supersaw/organ/string/brass synths, 808
+  and sub basses, plus real sampled grand piano (Salamander, CC BY 3.0) and orchestra (VSCO 2 CE,
+  CC0): strings, pizzicato, harp, woodwinds, brass, mallets, guitars.
+- **AI Producer**: one sentence → planned, composed, arranged, mixed track; revisions in plain
+  English; optional AI producer review with safe, undoable mixer fixes. Uses the first AI that
+  answers (your CLI subscriptions first) and falls back to the offline producer.
+- **Connections**: installed AI CLIs are detected and used in answer-only mode (tools off, empty
+  sandbox folder, your existing login; tokens are never read). 27 providers: Anthropic, OpenAI, Gemini,
+  OpenRouter (one-click OAuth sign-in), xAI, Moonshot/Kimi, Z.ai GLM (API and Coding Plan), DeepSeek,
+  Mistral, Groq, Together, Ollama, LM Studio, any OpenAI- or Anthropic-compatible endpoint, plus
+  ElevenLabs and Fish Audio for audio.
+- **Mixer**: 26 effect types, sends, buses, sidechain ducking, master chain with drive → limiter
+  and a safety clipper (exports can't clip), Quick Mix sliders and a measured Auto-mix.
+- **Recording studio**: input selection, metering, monitoring with feedback warnings, count-in,
+  punch in/out, loop recording, take lanes with comping, latency calibration, vocal chain presets.
+- **Audio editor**: trim, split, slice (equal/transient), normalize, fades, reverse, pitch, stretch,
+  BPM/key estimate, PulseTune pitch correction, send slices to pads / sampler / song.
+- **Sound packs**: Resource Hub with curated royalty-free sources, ZIP/folder importer with
+  path-traversal protection, tagging, favorites. See `SAMPLE_PACK_GUIDE.md`.
+
+## Deploying to Vercel
+
+The repo is Vercel-ready (`vercel.json` + `api/index.ts`): the studio is served as static files and
+the backend runs as one serverless function.
+
+1. Push this folder to a Git repo and **Import** it in Vercel (framework preset: *Other*; the build
+   settings come from `vercel.json`). Or from a terminal: `npx vercel deploy --prod`.
+2. No environment variables are needed. The hosted build is **bring-your-own-key**: visitors paste
+   their own keys (or sign in to OpenRouter) on the Connect page. Keys stay in that visitor's
+   browser and travel only with their own requests; server-side keys are ignored unless you
+   deliberately set `PF_ALLOW_SERVER_KEYS=1` (don't, on a public site).
+3. Desktop-only features say so politely on the hosted build: AI CLI subscriptions, local models,
+   stem separation and pack downloads need the Mac app or a local run.
 
 ## Keyboard shortcuts
 

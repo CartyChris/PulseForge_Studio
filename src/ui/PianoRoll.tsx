@@ -8,6 +8,7 @@ import { SCALES, CHORD_SHAPES, NOTE_NAMES, midiToName, inScale, snapTicks, TICKS
 import { engine } from "../engine/engine";
 import { getHost } from "../host/adapter";
 import { parseMidi } from "../midi";
+import { ShowAt, MoreTools } from "./shell/Level";
 import { strum, flam, roll, velocityRamp, snapToScale, harmonize, invertPitches, retrograde, scaleLength, removeOverlaps, DEFAULT_STRUM_TICKS } from "../../shared/notetools";
 
 const KEY_H = 14;
@@ -431,30 +432,36 @@ export function PianoRoll() {
         <select className="sel" title="Scale" value={project.scale} onChange={(e) => update((p) => ({ ...p, scale: e.target.value }))}>
           {Object.keys(SCALES).map((s) => <option key={s}>{s}</option>)}
         </select>
-        <label className="row small dim"><input type="checkbox" checked={ghost} onChange={(e) => setGhost(e.target.checked)} />ghosts</label>
         <button className="btn small" onClick={actions.quantize} title="Quantize to step grid">Quantize</button>
+        <button className="btn small" onClick={actions.duplicate} title="Duplicate selection (⌘D)">Dup</button>
+        <button className="btn small" onClick={() => editTargets((n) => ({ ...n, pitch: clamp(n.pitch + 12, 0, 127) }))} title="Octave up">+8va</button>
+        <button className="btn small" onClick={() => editTargets((n) => ({ ...n, pitch: clamp(n.pitch - 12, 0, 127) }))} title="Octave down">-8va</button>
+        <ShowAt min="intermediate">
+        <label className="row small dim"><input type="checkbox" checked={ghost} onChange={(e) => setGhost(e.target.checked)} />ghosts</label>
         <button className="btn small" onClick={actions.humanize}>Humanize</button>
         <button className="btn small" onClick={actions.legato}>Legato</button>
         <button className="btn small" onClick={actions.arpeggiate}>Arpeggiate</button>
         <button className="btn small" onClick={actions.strum} title="Strum chords (offset stacked notes in pitch order)">Strum</button>
-        <button className="btn small" onClick={actions.flam} title="Add a quiet grace note before each note">Flam</button>
         <button className="btn small" onClick={actions.roll} title="Note repeat — subdivide each note into fast hits">Roll</button>
-        <button className="btn small" onClick={actions.rampUp} title="Velocity crescendo across the selection">Vel↗</button>
-        <button className="btn small" onClick={actions.rampDown} title="Velocity diminuendo across the selection">Vel↘</button>
         <button className="btn small" onClick={actions.snapScale} title={`Snap every note into ${project.key} ${project.scale}`}>Snap→Key</button>
         <button className="btn small" onClick={actions.harmonize} title="Add a harmony layer a third/fifth above">Harmonize</button>
+        </ShowAt>
+        <MoreTools min="intermediate">
+        <button className="btn small" onClick={actions.flam} title="Add a quiet grace note before each note">Flam</button>
+        <button className="btn small" onClick={actions.rampUp} title="Velocity crescendo across the selection">Vel↗</button>
+        <button className="btn small" onClick={actions.rampDown} title="Velocity diminuendo across the selection">Vel↘</button>
         <button className="btn small" onClick={actions.invert} title="Mirror pitches around the average (melodic inversion)">Invert</button>
         <button className="btn small" onClick={actions.retrograde} title="Reverse the selection in time">Reverse</button>
         <button className="btn small" onClick={actions.staccato} title="Shorten notes to 50%">Stacc.</button>
         <button className="btn small" onClick={actions.fixOverlaps} title="Trim overlapping same-pitch notes">Fix Overlaps</button>
-        <button className="btn small" onClick={actions.duplicate} title="Duplicate selection (⌘D)">Dup</button>
-        <button className="btn small" onClick={() => editTargets((n) => ({ ...n, pitch: clamp(n.pitch + 12, 0, 127) }))} title="Octave up">+8va</button>
-        <button className="btn small" onClick={() => editTargets((n) => ({ ...n, pitch: clamp(n.pitch - 12, 0, 127) }))} title="Octave down">-8va</button>
         <button className="btn small" onClick={() => editTargets((n) => ({ ...n, pitch: clamp(n.pitch + 1, 0, 127) }))} title="Semitone up">+1</button>
         <button className="btn small" onClick={() => editTargets((n) => ({ ...n, pitch: clamp(n.pitch - 1, 0, 127) }))} title="Semitone down">-1</button>
+        </MoreTools>
         <div className="spacer" />
+        <ShowAt min="intermediate">
         <button className="btn small" onClick={actions.importMidi}>Import MIDI</button>
         <button className="btn small" onClick={actions.exportMidi} disabled={!notes.length}>Export MIDI</button>
+        </ShowAt>
         <button className="btn small" title="Zoom out (-)" onClick={() => setZoom("pianoRoll", Math.max(0.15, pxPerTick / 1.3))}>−</button>
         <button className="btn small" title="Zoom in (+)" onClick={() => setZoom("pianoRoll", Math.min(3, pxPerTick * 1.3))}>+</button>
       </div>

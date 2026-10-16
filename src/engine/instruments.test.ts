@@ -146,6 +146,11 @@ describe("sample manifest", () => {
     }
   });
 
+  it("the bundled manifest copy matches public/samples/manifest.json", () => {
+    const served = JSON.parse(fs.readFileSync(path.join(SAMPLES_DIR, "manifest.json"), "utf8"));
+    expect(SAMPLE_MANIFEST).toEqual(served);
+  });
+
   it("total public/samples size is within the 45 MB budget", () => {
     let total = 0;
     const walk = (d: string) => {

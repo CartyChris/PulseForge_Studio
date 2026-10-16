@@ -47,7 +47,7 @@ server.on("exit", (code) => process.exit(code ?? 0));
 const healthURL = `http://127.0.0.1:${port}/api/health`;
 const started = Date.now();
 const wait = async () => {
-  while (Date.now() - started < 30000) {
+  while (Date.now() - started < 120000) {
     try {
       const r = await fetch(healthURL);
       if (r.ok) return true;
@@ -60,5 +60,5 @@ if (await wait()) {
   console.log(`[pulseforge] ready → http://127.0.0.1:${port}`);
   if (!noOpen && process.platform === "darwin") spawn("open", [`http://127.0.0.1:${port}`]);
 } else {
-  console.error(`[pulseforge] server did not become healthy at ${healthURL} within 30s`);
+  console.error(`[pulseforge] server did not become healthy at ${healthURL} within 120s (still starting — it will keep trying)`);
 }

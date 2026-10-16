@@ -1059,6 +1059,8 @@ function mixPlanFor(spec: ResolvedSpec, sections: ProducedSection[]): MixPlan {
     master: [
       { type: "eq3", params: { low: 0.5, mid: -0.5, high: 1 } },
       { type: "compressor", params: { threshold: -14, ratio: 2, attack: 0.03, release: 0.25, knee: 12 } },
+      // drive into the limiter: the auto-mix raises this (never the post-limiter fader) to reach loudness
+      { type: "gain", params: { gain: 6 } },
       { type: "limiter", params: { threshold: -1 } },
     ],
     filterSweeps: sweeps,

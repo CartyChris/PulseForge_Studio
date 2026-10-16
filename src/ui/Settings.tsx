@@ -3,6 +3,9 @@
  * audio are unaffected. */
 import { useEffect, useState } from "react";
 import { useStudio } from "../state/store";
+import { Icon } from "./shell/Icons";
+import { LevelSwitch } from "./shell/Level";
+import { SAMPLE_MANIFEST } from "../engine/sampled";
 
 const KEY = "pf_ui_prefs";
 const ACCENTS = [
@@ -50,7 +53,7 @@ export function SettingsButton() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button className="tbtn" title="Settings" aria-label="Settings" onClick={() => setOpen(true)}>⚙</button>
+      <button className="tbtn" title="Settings" aria-label="Settings" onClick={() => setOpen(true)}><Icon name="settings" size={15} /></button>
       {open && <SettingsModal onClose={() => setOpen(false)} />}
     </>
   );
@@ -72,6 +75,10 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal" style={{ minWidth: 440 }}>
         <h2>Settings</h2>
+
+        <h3 className="section">Experience level</h3>
+        <LevelSwitch />
+        <p className="small dim" style={{ margin: "6px 0 0" }}>Beginner shows the essentials, Intermediate every page with tidy toolbars, Expert everything at once. Nothing is ever removed.</p>
 
         <h3 className="section">Accent color</h3>
         <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
@@ -111,6 +118,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           <button className="btn primary" onClick={onClose}>Done</button>
         </div>
         <p className="faint small" style={{ marginTop: 10 }}>Interface preferences are saved on this device and don't affect your projects or audio.</p>
+
+        <h3 className="section">Sound credits</h3>
+        <div className="small dim" style={{ lineHeight: 1.6 }}>
+          {[...new Map(SAMPLE_MANIFEST.instruments.map((i) => [i.attribution, i])).values()].map((i) => (
+            <p key={i.id} style={{ margin: "0 0 6px" }}>{i.attribution}</p>
+          ))}
+          <p style={{ margin: 0 }}>Drum kits, synths and factory one-shots are original synthesis made for PulseForge. Everything you make with these sounds is yours.</p>
+        </div>
       </div>
     </div>
   );

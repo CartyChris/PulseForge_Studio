@@ -167,3 +167,34 @@ Stage map (each stage has a check that can fail):
 - S9  voice-ready providers (Fish Audio TTS, ElevenLabs Music) -> endpoint tests vs fetched docs
 - S10 Vercel build (BYOK, serverless)                         -> local serverless harness: health + BYOK compose
 - S11 integrate + full verify + skeptical review + final dmg -> lint/typecheck/test/build/e2e green
+
+## 2026-10-15 — S7/S8/S10 verification pass (browser-verified)
+Status: S5–S8 and S10 done; S9 (voice providers) wired in providers.ts; S11 (dmg) next.
+- S8 UI verified in a real browser at 1100/1280/1440/1680/1920 px, all three levels, web + desktop
+  padding: onboarding, Home, AI Producer, Beat, Mix, Connections, Library render; 0 console errors.
+  Fixes found by looking: top bar overflowed (Save/Settings off-screen) → measured squeeze steps
+  (TransportBar `fit`, `.topbar.sqN`), snap/time-sig/count-in move into a ⋯ popover instead of
+  disappearing; nav items squashed in Expert → no flex-shrink; `.main-row` grew to the step grid's
+  width (Kit/Groove pickers off-screen) → grid column `minmax(0,1fr)`; Beat page opened on a chords
+  pattern after producing → opens on the busiest drum pattern.
+- Vite dev never booted: `sampled.ts` imported JSON from `public/` → copy at
+  `src/engine/sample-manifest.json`, kept equal by fetch-samples.mjs + a test.
+- AI Producer, live against the real CLIs: Auto now walks the connected brains (CLIs first),
+  remembers failures for the session, notes which brain planned. Verified: Claude Code (login
+  expired) → Codex (user's own ~/.codex config points at an Ollama catalog this Codex can't parse;
+  reported, never edited) → **Kimi planned the beat**. Kimi bug: `--plan` can't combine with `-p`,
+  and without it `kimi -p` auto-runs tools (verified: it wrote a file). Now `--agent-file` with
+  `tools: []` / `subagents: []` (verified: write refused), `--output-format stream-json` parsed.
+- Mix: three real bugs, each measured in the browser.
+  (1) replace-mode kept the previous beat's master fader (+12 dB from the last auto-mix) → peaks
+  +4.8 dBFS; master strip now resets. (2) the fader is post-limiter, so raising it defeats the
+  ceiling → loudness now goes into a pre-limiter drive stage (`gain` before `limiter` in every
+  production; Quick Mix "Loudness" drives it too); fader only rises with no limiter present.
+  (3) Tone.Limiter overshoots on transients → safety soft-clipper after it (`softClipCurve`).
+  Auto-mix is now a ≤3-pass measured loop. Afrobeats offline: −30 LUFS raw → −10.1 LUFS
+  (target −9.5), peak −3.8 dBFS.
+- Sound credits (Salamander CC BY attribution) shown in Settings; BUNDLED_AUDIO_LICENSES.md
+  documents the sampled instruments. README rewritten for 2.0 (levels, Mac app, Vercel deploy).
+- Machine note: file reads are throttled on this Mac (tsc 2–5 min at 1% CPU, eslint 12 min);
+  `tsx server/index.ts` stalled indefinitely, so local runs use an esbuild bundle (`.pf-run/`).
+- Verify: typecheck ✓ (front + server) · lint ✓ · 343/343 tests (22 files) ✓

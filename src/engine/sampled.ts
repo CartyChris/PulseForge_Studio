@@ -14,7 +14,7 @@
  * voice so the track is never silent forever. Nothing here throws into the audio graph.
  */
 import * as Tone from "tone";
-import manifestJson from "../../public/samples/manifest.json";
+import manifestJson from "./sample-manifest.json"; // copy of public/samples/manifest.json (Vite dev refuses imports from public/)
 import type { InstrumentInstance, ParamDesc, SynthEngine } from "./instruments";
 import type { Project } from "../../shared/project";
 
