@@ -40,7 +40,7 @@ the level only decides how much is on screen at once.
 
 ## Making a beat in 60 seconds
 
-1. On **Home**, click a genre tile (Trap, Drill, Afrobeats, Lo-Fi… 16 genres) or describe a beat:
+1. On **Home**, click a genre tile (Trap, Drill, Afrobeats, Lo-Fi, Chopped & Screwed… 17 genres) or describe a beat:
    *"dark trap beat with eerie bells and hard 808s, 140 bpm"*.
 2. The **AI Producer** plans it (genre, tempo, key, chords, form, sounds), writes every part in key,
    builds the session on real mixer tracks, then renders a test section and adjusts loudness and tone
@@ -82,6 +82,24 @@ the level only decides how much is on screen at once.
   OpenRouter (one-click OAuth sign-in), xAI, Moonshot/Kimi, Z.ai GLM (API and Coding Plan), DeepSeek,
   Mistral, Groq, Together, Ollama, LM Studio, any OpenAI- or Anthropic-compatible endpoint, plus
   ElevenLabs and Fish Audio for audio.
+- **Sampling, chopped & screwed** (Sample page, in every level): **Screw** (tape slow-down), **Chop**
+  (DJ Screw-style repeat), **Stutter**, **Backspin**, **Tape stop**, **Slowed + reverb**; vintage sampler
+  characters (**SP-1200, MPC60, SP-404 vinyl, cassette, 78 rpm, 8-bit**); **time-stretch without pitch change**,
+  **pitch-shift without tempo change**, and **Fit to project** (detects the sample's tempo and key and
+  matches your beat). **Chop to pads** (MPC-style: 8/16 pads snapped to the hits, plus a pattern that replays
+  the original), then **Flip / Reverse / Stutter / Half-time** the chops. Screw or slow your *whole song* from
+  the Song page.
+- **Prompt → audio**: on the AI Producer (or in AI Chat's *Create audio* mode) ask for a **full song**, an
+  **8-bar loop/sample** or a **stem pack** (drums, bass, chords, melody). They render straight into your library,
+  tagged with tempo and key, without touching your project. Uses your connected AI to plan, works offline too.
+- **Presets to start fast**: **68-groove library** (boom bap, Dilla swing, trap rolls, drill, Memphis, Houston
+  screw, dembow, amapiano, UK garage, footwork, jungle…), **48 chord progressions** by mood spelled in your key,
+  **11 song blueprints** that turn one loop into a full arrangement, **12 royalty-free sample starters** to chop,
+  and starter projects (Chopped & Screwed Tape, Sample Flip, Lo-Fi Beat Tape, Memphis Phonk).
+- **Beat pads**: live **Rec** into the pattern (quantized or with your feel) and MPC-style **Note Repeat**
+  (1/4 to 1/32, triplets); chop pads appear next to the drum pads.
+- **Free sampling resources**: curated legal sources (Freesound, Philharmonia Orchestra, Wikimedia Commons,
+  ccMixter, Openverse, VSCO 2…) with each site's terms, plus a plain-English "sampling legally" guide.
 - **Mixer**: 26 effect types, sends, buses, sidechain ducking, master chain with drive → limiter
   and a safety clipper (exports can't clip), Quick Mix sliders and a measured Auto-mix.
 - **Recording studio**: input selection, metering, monitoring with feedback warnings, count-in,

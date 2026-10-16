@@ -12,7 +12,7 @@ import { LevelSwitch, LEVEL_INFO, ShowAt } from "../shell/Level";
 export const GENRE_COLORS: Record<GenreId, string> = {
   trap: "#ff6a3d", drill: "#8b6cff", "boom-bap": "#ffc94d", lofi: "#7fd1ae", rnb: "#ff6fcf", pop: "#3ec6ff",
   house: "#4fe39a", techno: "#9aa7ff", dnb: "#ff9f43", dubstep: "#c56cff", afrobeats: "#ffd166", reggaeton: "#ff8fa3",
-  dancehall: "#5ee6d0", phonk: "#ff4d5e", "jersey-club": "#7ab8ff", synthwave: "#ff7bd5",
+  dancehall: "#5ee6d0", phonk: "#ff4d5e", "jersey-club": "#7ab8ff", synthwave: "#ff7bd5", screwed: "#a06cff",
 };
 
 export const IDEAS = [

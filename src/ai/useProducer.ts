@@ -47,6 +47,8 @@ interface ProducerStore {
   refreshProviders(): Promise<void>;
   resolvedProvider(): ProviderInfo | null;
   candidates(): ProviderInfo[];
+  /** Plan a spec with the first connected brain that answers (same chain + failure memory as Auto). */
+  aiPlan(prompt: string): Promise<{ spec: ProductionSpec; brain: string }>;
   start(req: ProducerRequest): Promise<ProducerRunState | null>;
   cancel(): void;
   variation(): Promise<void>;
@@ -94,6 +96,21 @@ export const useProducer = create<ProducerStore>((set, get) => ({
       if (p && !failed[p.id]) out.push(p);
     }
     return out;
+  },
+
+  async aiPlan(prompt) {
+    const tries = get().candidates().slice(0, MAX_AUTO_TRIES);
+    if (!tries.length) throw new Error("no AI connected");
+    let last: unknown = null;
+    for (const p of tries) {
+      try {
+        return { spec: (await api.producePlan(p.id, prompt, catalogText())).spec, brain: p.name };
+      } catch (e) {
+        last = e;
+        set({ failed: { ...get().failed, [p.id]: errText(e) } });
+      }
+    }
+    throw new Error(errText(last));
   },
 
   async start(req) {

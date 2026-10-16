@@ -7,8 +7,10 @@ import { projectSummary, songStructure, insertComposition, type InsertOptions } 
 import type { Composition } from "../../shared/composition";
 import type { EditPlan } from "../../shared/commands";
 import { applyPulseTune } from "./PulseTune";
+import { detectAudioRequest } from "../ai/generate-audio";
+import { useGenerate, previewAsset, placeOnSong, stopPreview, type GeneratedAssetInfo } from "../audio/sampling";
 
-type Mode = "ask" | "compose" | "edit" | "lyrics" | "mix";
+type Mode = "create" | "ask" | "compose" | "edit" | "lyrics" | "mix";
 
 interface ChatMsg {
   role: "user" | "ai" | "system";
@@ -16,14 +18,16 @@ interface ChatMsg {
   composition?: Composition;
   plan?: EditPlan;
   planApplied?: boolean;
+  clips?: GeneratedAssetInfo[];
 }
 
 export function AIAssistant() {
-  const { project, update, dispatchMany, undo, toast, setFlags } = useStudio();
+  const { project, update, dispatchMany, undo, toast, setFlags, select, setTab } = useStudio();
+  const gen = useGenerate();
   const [providers, setProviders] = useState<ProviderInfo[]>([]);
   const [providerId, setProviderId] = useState(localStorage.getItem("pf_provider") ?? "");
   const [model, setModel] = useState("");
-  const [mode, setMode] = useState<Mode>("compose");
+  const [mode, setMode] = useState<Mode>("create"); // works with or without a provider
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState<ChatMsg[]>([]);
   const [busy, setBusy] = useState(false);
@@ -50,7 +54,24 @@ export function AIAssistant() {
   const send = async () => {
     const prompt = input.trim();
     if (!prompt || busy) return;
-    if (!provider) return toast("Choose and configure an AI provider first (⚙ Setup)", "error");
+    // audio requests ("make me a soul loop", "give me stems", or anything in Create-audio mode) go to the
+    // generator: it uses your connected AI to plan when it can, and works offline when it can't
+    const audioReq = detectAudioRequest(prompt, mode === "create");
+    if (audioReq) {
+      setInput("");
+      push({ role: "user", text: prompt });
+      setBusy(true);
+      const what = audioReq.output === "stems" ? "a stem pack" : audioReq.output === "loop" ? `a ${audioReq.loopBars ?? 8}-bar loop` : "a full song";
+      push({ role: "system", text: `Making ${what}${audioReq.parts?.length ? ` (${audioReq.parts.join(" + ")} only)` : ""}…` });
+      const clips = await gen.start({ prompt, ...audioReq });
+      const st = useGenerate.getState();
+      push(clips.length
+        ? { role: "ai", text: `${st.lastSummary}\n${clips.length} clip${clips.length > 1 ? "s" : ""} saved to your library, tagged with tempo and key.${st.notes.length ? `\n${st.notes.slice(0, 2).join(" ")}` : ""}`, clips }
+        : { role: "system", text: `⚠ ${st.error ?? "Nothing was generated"}` });
+      setBusy(false);
+      return;
+    }
+    if (!provider) return toast("Choose and configure an AI provider first (⚙ Setup), or switch to Create audio, which works offline", "error");
     setInput("");
     push({ role: "user", text: prompt });
     setBusy(true);
@@ -190,6 +211,19 @@ export function AIAssistant() {
                 )}
               </div>
             )}
+            {m.clips && (
+              <div className="plan-card">
+                {m.clips.map((c) => (
+                  <div key={c.assetId} className="row wrap" style={{ padding: "3px 0" }}>
+                    <span className="small" style={{ flex: 1, minWidth: 160 }}><b>{c.role === "song" ? "Full song" : c.role === "loop" ? "Loop" : `${c.role} stem`}</b> <span className="faint">{c.bpm} BPM · {c.key}</span></span>
+                    <button className="btn small" onClick={() => { const a = useStudio.getState().project.assets.find((x) => x.id === c.assetId); if (a) void previewAsset(a); }}>▶</button>
+                    <button className="btn small" onClick={stopPreview}>■</button>
+                    <button className="btn small" onClick={() => { select({ assetId: c.assetId }); setTab("audio-editor"); }}>Chop it</button>
+                    <button className="btn small" onClick={() => { placeOnSong(c.assetId); toast("Placed on the Song", "success"); }}>Add to song</button>
+                  </div>
+                ))}
+              </div>
+            )}
             {m.plan && (
               <div className="plan-card">
                 <strong className="small">{m.plan.commands.length} commands{m.planApplied ? " — applied ✓" : ""}</strong>
@@ -213,6 +247,7 @@ export function AIAssistant() {
 
       <div className="ai-composer-bar">
         <select className="sel" value={mode} onChange={(e) => setMode(e.target.value as Mode)} aria-label="Assistant mode">
+          <option value="create">Create audio</option>
           <option value="compose">Compose</option>
           <option value="edit">Edit</option>
           <option value="ask">Ask</option>
@@ -220,7 +255,7 @@ export function AIAssistant() {
           <option value="mix">Mix</option>
         </select>
         <textarea
-          placeholder={mode === "compose" ? "Describe the song or section to compose…" : mode === "edit" ? "Describe the change to make…" : "Ask about your project…"}
+          placeholder={mode === "create" ? "Describe a song, loop or stems: “dark trap song”, “drumless soul loop”, “afrobeats stems”…" : mode === "compose" ? "Describe the song or section to compose…" : mode === "edit" ? "Describe the change to make…" : "Ask about your project…"}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}

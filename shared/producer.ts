@@ -20,6 +20,8 @@ import { SCALES, NOTE_NAMES, TICKS_PER_STEP } from "./time";
 export const GENRE_IDS = [
   "trap", "drill", "boom-bap", "lofi", "rnb", "pop", "house", "techno",
   "dnb", "dubstep", "afrobeats", "reggaeton", "dancehall", "phonk", "jersey-club", "synthwave",
+  // appended only — saved specs reference these ids
+  "screwed",
 ] as const;
 export type GenreId = (typeof GENRE_IDS)[number];
 
@@ -265,6 +267,14 @@ export const GENRES: Record<GenreId, GenreTemplate> = {
     instruments: { bass: ["bass-808-distorted", "bass-808"], chords: ["pad-dark-drone", "piano-dark"], melody: ["fm-metallic", "bell"], counter: ["choir-ahh", "pad-choir"] },
     bass: "808", chords: "pad", melody: "bells", form: "hiphop",
     mix: { sidechain: false, reverb: 0.3, delay: 0.2, saturation: 0.75, width: 0.5 },
+  },
+  screwed: {
+    id: "screwed", name: "Chopped & Screwed", blurb: "Houston syrup: slow 808s, hazy keys, chops & heavy echo",
+    bpm: [60, 76], swing: 0.12, halfTime: false, scales: ["minor", "dorian"], keys: ["C", "C#", "D", "E", "F", "G", "A"],
+    progressions: [["i", "VI", "VII", "i"], ["i", "iv", "VI", "v"], ["i", "VII", "VI", "VII"], ["i", "VI", "iv", "V"]], harmonicBars: 2, chordExt: "seventh", kit: "trap-808",
+    instruments: { bass: ["bass-808-long", "bass-808"], chords: ["ep-warm", "piano-dark"], melody: ["bell", "ep-classic"], counter: ["choir-ahh", "strings-ensemble"] },
+    bass: "808", chords: "pad", melody: "sparse", form: "hiphop",
+    mix: { sidechain: false, reverb: 0.55, delay: 0.4, saturation: 0.35, width: 0.6 },
   },
   "jersey-club": {
     id: "jersey-club", name: "Jersey Club", blurb: "Triplet kick bounce, vocal chops, bed squeaks",
@@ -679,6 +689,11 @@ function grooveFor(genre: GenreId, rng: Rng, energy: number): GrooveBar {
     case "jersey-club": return {
       kick: pick(rng, ["x..x..x.x..x.x..", "x.....x.x.....x."]), snare: "....x.......x...", hats: "x.x.x.x.x.x.x.x.",
       extra: [["vox-hey", "............x..."]],
+    };
+    case "screwed": return {
+      // slow and heavy: big gaps for the syrup, double-hit pickups that sound like a DJ chop
+      kick: pick(rng, ["x.........x.....", "x.....x...x.....", "x.........x...xx"]), snare: "....x.......x...", hats: hi ? "x.x.x.x.x.x.x.x." : "x...x...x...x...",
+      open: "..............o.", extra: [["clap", "....x.......x..."]],
     };
     case "synthwave": return {
       kick: pick(rng, ["x...x...x...x...", "x.......x.x....."]), snare: "....X.......X...", hats: "x.x.x.x.x.x.x.x.",

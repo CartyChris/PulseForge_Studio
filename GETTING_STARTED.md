@@ -11,7 +11,7 @@ all shortcuts, or ⌘K to search every action.
 
 ## 0. The fast way: the AI Producer
 1. Launch the **Mac app** (or double-click **Start PulseForge.command**, or `npm run start`).
-2. On **Home**, click a genre tile (Trap, Drill, Afrobeats, Lo-Fi… 16 genres), or type a beat:
+2. On **Home**, click a genre tile (Trap, Drill, Afrobeats, Lo-Fi, Chopped & Screwed… 17 genres), or type a beat:
    *"moody drill beat with strings and a sliding 808, 142 bpm in F# minor"* → **Make it**.
 3. Watch the five stages: **Plan → Write the music → Arrange → Mix & master → Review**. The mix
    stage renders a test section, measures loudness and tone, and adjusts until it measures
@@ -23,12 +23,31 @@ all shortcuts, or ⌘K to search every action.
 No AI connected? The **offline producer** makes complete beats on its own. Connect your AI on
 the **Connect** page for smarter plans and a producer review (see the AI section below).
 
+## 0b. Sampling & chopped and screwed (Sample page)
+1. Open **Sample**. Get a sound: **Import audio…**, pick a royalty-free **starter loop** (Soul Keys, Grand
+   Piano, Orchestral Strings, Drill Flute…) and press **Make starter loop**, or type a loop description.
+2. Drag on the waveform to select a part (or use the whole sample), then:
+   - **Screw it**: tape slow-down (slower *and* lower; 80% ≈ −3.9 semitones). **Slowed + reverb** for the internet style.
+   - **Chop ×2**: repeats the selected phrase DJ Screw-style, then carries on. **Stutter**, **Backspin**, **Tape stop**.
+   - A **vintage character**: SP-1200 crunch, MPC60 warmth, SP-404 vinyl, cassette wobble, 78 rpm shellac, 8-bit.
+   - **Fit to project**: matches the sample's tempo and key to your beat (pitch is kept when it stretches).
+3. **Chop to pads → Auto 8 pads**: makes 8 playable pads plus a pattern that replays the original. Hit **Flip**
+   for a new arrangement of the chops, then **Play the pads** on the Beat page.
+4. On the **Song** page, **Screw the song** renders your whole track slowed down into a new sample.
+
+Every result is a **new** sample in your library; the original never changes.
+
+## 0c. Ask for audio: a song, loop or stems
+On the **AI Producer**, under *What do you want back?*, choose **Full song audio**, **Loop / sample** or **Stem
+pack**, describe it and press **Make audio**. Or in **AI Chat → Create audio**, just type *"drumless soul loop to
+chop"* or *"afrobeats stems"*. Results land in your library with ▶ Play, **Chop it** and **Add to song** buttons.
+
 ## 1. Create a project (by hand)
 1. Click **Project ▾ → New Project…** in the top bar, name it, pick a template, click **Create**.
 
 ## 2. Program a beat (Beat page)
 1. Open **Beat**. The top row is **drum pads**: click them, or press keys **1–8**, to hear sounds.
-2. Pick a **Kit** (22 kits) and, to start from a genre groove, a **Groove** in the page header.
+2. Pick a **Kit** (22 kits), then open the **Groove Library** (68 named patterns by style) or pick a genre **Groove**.
 3. Click step cells to turn them on/off:
    - Kick row: steps 1, 5, 9, 13 (four-on-the-floor).
    - Snare/Clap row: steps 5, 13 (the backbeat).
@@ -36,7 +55,9 @@ the **Connect** page for smarter plans and a producer review (see the AI section
 4. Right-click any lit step to adjust its **velocity**, **probability** and **micro-timing**.
 5. Drag **Swing** for groove. At Intermediate, each row also has **E** (Euclidean),
    **H** (Humanize), **V** (Variation) and **F** (Fill); Expert adds the rest.
-6. Press **Space** to loop it. In Beginner the top bar switches to **Pattern** mode on this page
+6. To play it in: turn on **Rec**, press **Space**, and tap the pads (keys 1–8); hits land in the pattern.
+   Hold a pad with **Note repeat** (e.g. 1/16) for rolls.
+7. Press **Space** to loop it. In Beginner the top bar switches to **Pattern** mode on this page
    for you, so you hear the pattern you're editing.
 
 ## 3. Add a melodic instrument
@@ -51,11 +72,14 @@ the **Connect** page for smarter plans and a producer review (see the AI section
    right edge to lengthen, right-click to delete.
 3. Toolbar: **Quantize**, **Dup**, **+8va/-8va**; Intermediate adds ghost notes, humanize,
    legato, arpeggiate, strum, harmonize; more behind **More tools**.
-4. Pick a **Chord** before clicking to stamp full chords. Set **Key**/**Scale** to highlight
+4. **Chord progressions** (top of the page) writes a whole progression in your key: pick by mood or style.
+   Or pick a **Chord** before clicking to stamp single chords. Set **Key**/**Scale** to highlight
    in-key rows.
 5. The bottom lane shows **Velocity**; switch it to **Pan** from its dropdown.
 
 ## 5. Arrange the song (Song page)
+0. Fastest: **Song blueprint** turns your loop into a full arrangement (Rap Song, Trap Banger, Club Edit, Chopped
+   & Screwed Tape…), bringing drums, bass, music and lead in and out per section.
 1. Open **Song**. In Beginner the top bar switches to **Song** mode here, so Play plays the
    whole arrangement (Intermediate/Expert: flip **Pattern / Song** yourself).
 2. Double-click an empty lane to place the selected pattern; drag clips to move, drag their

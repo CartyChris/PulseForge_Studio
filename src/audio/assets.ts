@@ -68,8 +68,9 @@ async function analyzeAssetInBackground(asset: AudioAsset, buffer: AudioBuffer):
     const mono = buffer.getChannelData(0);
     const { promise } = runAnalysis("analyze", mono, buffer.sampleRate);
     const result = await promise;
-    asset.bpmEstimate = result.bpm ?? null;
-    asset.keyEstimate = result.key ?? null;
+    // only fill gaps: generated/rendered audio arrives with its exact tempo & key, which beat any estimate
+    if (asset.bpmEstimate == null) asset.bpmEstimate = result.bpm ?? null;
+    if (asset.keyEstimate == null) asset.keyEstimate = result.key ?? null;
   } catch {}
 }
 

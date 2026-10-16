@@ -21,6 +21,21 @@ const BUILTIN: Resource[] = [
   { id: "pixabay", name: "Pixabay Sound Effects", description: "Royalty-free sound effects & music.", contentType: "SFX, ambience, music", url: "https://pixabay.com/sound-effects/", license: "Pixabay Content License — free to use, no attribution required, some restrictions on standalone redistribution." },
   { id: "looperman", name: "Looperman", description: "Community loops & acapellas.", contentType: "Loops, acapellas", url: "https://www.looperman.com", license: "Loops are free to use in your tracks; acapellas often require credit/permission — read each item's terms." },
   { id: "archive-audio", name: "Internet Archive — Audio", description: "Public domain & openly licensed recordings.", contentType: "Historic recordings, field audio", url: "https://archive.org/details/audio", license: "Varies per item — many public domain, always verify the item's rights statement." },
+  // 2026-10 additions — terms checked against each source's own licensing page
+  { id: "philharmonia", name: "Philharmonia Orchestra Sound Samples", description: "Free recordings of every orchestral instrument by Philharmonia players, plus guitar, mandolin, banjo and lots of percussion.", contentType: "Orchestral one-shots & phrases", url: "https://philharmonia.co.uk/resources/sound-samples/", license: "Free to use, including in commercial releases. You may not sell or share the samples \"as is\" (as a sample pack or sampler instrument)." },
+  { id: "wikimedia-audio", name: "Wikimedia Commons — Audio", description: "Freely licensed and public-domain recordings: field audio, historic records, instruments, speech.", contentType: "Recordings, field audio, instruments", url: "https://commons.wikimedia.org/wiki/Category:Audio_files", license: "Commons only accepts free licenses that allow commercial use (CC0, CC BY, CC BY-SA, public domain). Check each file's license for attribution / share-alike terms." },
+  { id: "ccmixter", name: "ccMixter", description: "Community of remixers sharing a cappellas (\"pells\") and stems made to be remixed.", contentType: "A cappellas, stems, remix parts", url: "https://ccmixter.org", license: "Creative Commons, and it varies per upload: check each listing's license (some are non-commercial) and credit the artist (ccMixter publishes an attribution guide)." },
+  { id: "openverse", name: "Openverse", description: "Search engine for openly licensed media across many collections.", contentType: "Audio & images search", url: "https://openverse.org", license: "Openverse only finds the media; licenses vary per item. Open each result at its source and follow that license." },
+  { id: "vsco2", name: "VSCO 2 Community Edition", description: "Free orchestral sample library (strings, woodwinds, brass, percussion). Already built into PulseForge's instruments.", contentType: "Orchestral multisamples", url: "https://github.com/sgossner/VSCO-2-CE", license: "CC0 public domain: use freely, no attribution required (credit appreciated)." },
+];
+
+/** What every producer should know before sampling. Deliberately general: not legal advice. */
+export const SAMPLING_TIPS = [
+  "A recording has several rights: the composition (notes and lyrics), the performance, and the sound recording itself. Each can be owned separately.",
+  "Old doesn't automatically mean free: many decades-old records are still protected (US sound recordings follow their own term rules under the Music Modernization Act).",
+  "Safest sources: material that explicitly grants rights (CC0 / public domain, royalty-free packs) or audio you made, including PulseForge's own generated loops and starters.",
+  "For a famous record, clear the sample (label + publisher) before releasing, or replay/re-create the part yourself.",
+  "Keep a note of where every sample came from: the Browser stores a license note on each imported sound.",
 ];
 
 export function ResourceHub() {
@@ -53,6 +68,13 @@ export function ResourceHub() {
         <div className="spacer" />
         <button className="btn primary" onClick={() => setAdding(true)}>+ Add Custom Resource</button>
       </div>
+
+      <details className="card" style={{ maxWidth: 900, marginBottom: 12, padding: "10px 14px" }}>
+        <summary className="small"><b>Sampling legally: 5 things to know</b></summary>
+        <ul className="small dim" style={{ lineHeight: 1.6, margin: "8px 0 0", paddingLeft: 18 }}>
+          {SAMPLING_TIPS.map((t) => <li key={t}>{t}</li>)}
+        </ul>
+      </details>
 
       <div className="hub-grid">
         {all.map((r) => (

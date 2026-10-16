@@ -92,3 +92,32 @@ export function ratchet(steps: Step[], index: number, count = 3, ticksPerStep = 
   // only the first keeps the exact step slot; later hits ride micro-timing within it
   return [...rest, ...hits].sort((a, b) => a.index - b.index || a.micro - b.micro);
 }
+
+// ── live pad recording & note repeat ─────────────────────────────────────────────────────────
+/** Note-repeat rates (MPC-style), in ticks (PPQ 96: a 16th = 24). */
+export const REPEAT_RATES = [
+  { id: "1/4", ticks: 96 }, { id: "1/8", ticks: 48 }, { id: "1/8T", ticks: 32 },
+  { id: "1/16", ticks: 24 }, { id: "1/16T", ticks: 16 }, { id: "1/32", ticks: 12 },
+] as const;
+export type RepeatRate = (typeof REPEAT_RATES)[number]["id"];
+
+/**
+ * Write a pad hit played live at `tick` (transport position) into a looping pattern.
+ * quantize=true snaps to the nearest 16th; off keeps the feel as a micro-offset (±half a step).
+ * A step that already has a hit keeps it (the louder velocity wins), so overdub passes never erase.
+ */
+export function recordTap(steps: Step[], tick: number, lengthSteps: number, velocity: number, quantize = true): Step[] {
+  const per = 24;
+  const total = lengthSteps * per;
+  const local = ((tick % total) + total) % total;
+  const raw = Math.round(local / per);
+  const index = raw % lengthSteps;
+  const micro = quantize ? 0 : Math.max(-12, Math.min(12, Math.round(local - raw * per)));
+  const v = Math.max(0.05, Math.min(1, velocity));
+  const existing = steps.find((s) => s.index === index);
+  if (existing) return steps.map((s) => (s.index === index ? { ...s, velocity: Math.max(s.velocity, v) } : s));
+  return [...steps, { index, velocity: v, probability: 1, micro }].sort((a, b) => a.index - b.index);
+}
+
+/** The next grid tick at or after `tick` for a repeat rate — repeats lock to the beat, not to when you pressed. */
+export const nextRepeatTick = (tick: number, rateTicks: number) => Math.ceil(tick / rateTicks - 1e-9) * rateTicks + 0; // + 0 turns -0 into 0

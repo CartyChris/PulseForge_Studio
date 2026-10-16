@@ -24,7 +24,7 @@ beforeAll(async () => {
   base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
   // warm the lazily-built backend here (cold start can take a while on a loaded machine)
   await fetch(`${base}/api/health`);
-}, 180_000);
+}, Number(process.env.PF_TEST_WARMUP_MS ?? 180_000)); // cold-loading Fastify can take minutes on a slow/iCloud-synced disk
 afterAll(() => { server.close(); delete process.env.PF_SERVERLESS; delete process.env.ANTHROPIC_API_KEY; });
 
 const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString("base64");

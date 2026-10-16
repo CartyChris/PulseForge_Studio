@@ -6,6 +6,8 @@ import { zipSync, unzipSync, strToU8, strFromU8 } from "fflate";
 import { idb } from "./db";
 import { getBlobStore, safeBlobKey } from "./blobs";
 import { migrateProject, newId, type Project, createEmptyProject } from "../../shared/project";
+import { buildProduction, ProductionSpecSchema, type ProductionSpec } from "../../shared/producer";
+import { applyProduction } from "../state/production";
 
 export interface ProjectListEntry {
   id: string;
@@ -138,7 +140,19 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
       return withRack;
     },
   },
+  // complete, editable songs built by the offline producer — a running start for each style
+  { id: "screwed-tape", name: "Chopped & Screwed Tape", description: "70 BPM Houston syrup: slow 808s, hazy keys, echo. Screw it further from the Song page", create: () => produced("Chopped & Screwed Tape", { genre: "screwed", bpm: 70, seed: 1101 }) },
+  { id: "sample-flip", name: "Sample Flip (Boom Bap)", description: "Drums + bass only at 90 BPM: drop your sample on the Sample page and chop it to pads", create: () => produced("Sample Flip", { genre: "boom-bap", bpm: 90, seed: 2202, sections: [
+    { name: "Intro", role: "intro", bars: 4, energy: 0.4, parts: ["drums"] }, { name: "Verse", role: "verse", bars: 16, energy: 0.7, parts: ["drums", "bass"] },
+    { name: "Hook", role: "hook", bars: 8, energy: 0.9, parts: ["drums", "bass"] }, { name: "Outro", role: "outro", bars: 4, energy: 0.4, parts: ["drums"] } ] }) },
+  { id: "lofi-tape", name: "Lo-Fi Beat Tape", description: "78 BPM dusty keys and swung drums, ready to chop or vibe to", create: () => produced("Lo-Fi Beat Tape", { genre: "lofi", bpm: 78, seed: 3303 }) },
+  { id: "phonk-memphis", name: "Memphis Phonk", description: "Cowbells, distorted 808s and dark loops at 140 BPM", create: () => produced("Memphis Phonk", { genre: "phonk", bpm: 140, seed: 4404 }) },
 ];
+
+function produced(name: string, spec: Partial<ProductionSpec>): Project {
+  const prod = buildProduction(ProductionSpecSchema.parse({ title: name, ...spec }));
+  return { ...applyProduction(createEmptyProject(name, prod.spec.bpm), prod), name };
+}
 
 function withStarterRack(p: Project, kitId: string): Project {
   const roles = ["kick", "snare", "clap", "hat-closed", "hat-open", "perc"];

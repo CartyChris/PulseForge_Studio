@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { localRevise, directFromPrompt } from "./director";
-import { ProductionSpecSchema, GENRES } from "./producer";
+import { ProductionSpecSchema, GENRES, resolveSpec, buildProduction } from "./producer";
 
 const base = () => ProductionSpecSchema.parse({ genre: "trap", bpm: 140, seed: 7 });
 
@@ -56,5 +56,19 @@ describe("localRevise (offline 'change it' box)", () => {
     localRevise(s, "faster darker more reverb longer");
     expect(JSON.stringify(s)).toBe(before);
     expect(directFromPrompt("trap", 1).spec.genre).toBe("trap");
+  });
+});
+
+describe("chopped & screwed genre", () => {
+  it("is recognised from the ways people ask for it", () => {
+    for (const p of ["chopped and screwed houston beat", "screwed down slow", "slowed beat with syrup", "DJ Screw style tape"]) {
+      expect(directFromPrompt(p, 1).spec.genre, p).toBe("screwed");
+    }
+  });
+  it("builds slow, in the screwed tempo range", () => {
+    const r = resolveSpec(ProductionSpecSchema.parse({ genre: "screwed", seed: 5 }));
+    expect(r.bpm).toBeGreaterThanOrEqual(60);
+    expect(r.bpm).toBeLessThanOrEqual(76);
+    expect(buildProduction(ProductionSpecSchema.parse({ genre: "screwed", seed: 5 })).parts.some((p) => p.role === "drums")).toBe(true);
   });
 });

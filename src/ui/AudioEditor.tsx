@@ -12,6 +12,8 @@ import { PulseTunePanel } from "./PulseTune";
 import { StemExtractor } from "./StemExtractor";
 import { resampleLinear } from "../engine/dsp";
 import { clamp } from "../../shared/time";
+import { ChopScrewPanel } from "./ChopScrew";
+import { MoreTools } from "./shell/Level";
 
 export function AudioEditor() {
   const { project, selection, select, update, addAsset, dispatch, toast, setTab, zoom, setZoom } = useStudio();
@@ -143,7 +145,12 @@ export function AudioEditor() {
   };
 
   if (!asset) {
-    return <div className="rack"><p className="dim">No audio assets yet. Import audio in the Browser panel (left), record in the Recording Studio, or generate in the Sound Lab.</p></div>;
+    return (
+      <div className="audio-editor" style={{ overflowY: "auto" }}>
+        <ChopScrewPanel asset={undefined} sel={null} markers={[]} setMarkers={() => {}} />
+        <p className="dim small" style={{ padding: "0 14px" }}>No audio yet. Import a sample, make a royalty-free starter loop, or describe one above. You can also record on the Record page.</p>
+      </div>
+    );
   }
 
   const selRange = sel && sel.end > sel.start ? sel : buffer ? { start: 0, end: buffer.duration } : null;
@@ -342,7 +349,8 @@ export function AudioEditor() {
   }
 
   return (
-    <div className="audio-editor">
+    <div className="audio-editor" style={{ overflowY: "auto" }}>
+      <ChopScrewPanel asset={asset} sel={sel && sel.end > sel.start ? sel : null} markers={markers} setMarkers={setMarkers} />
       <div className="ae-toolbar">
         <select className="sel" value={asset.id} onChange={(e) => select({ assetId: e.target.value })} aria-label="Asset">
           {project.assets.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -354,6 +362,7 @@ export function AudioEditor() {
         </label>
         <span className="dim small">|</span>
         <button className="btn small" onClick={ops.crop} title="Selection → new trimmed asset">Crop</button>
+        <MoreTools label="Edit tools">
         <button className="btn small" onClick={ops.normalize}>Normalize</button>
         <button className="btn small" onClick={() => ops.gain(3)}>+3dB</button>
         <button className="btn small" onClick={() => ops.gain(-3)}>−3dB</button>
@@ -362,9 +371,11 @@ export function AudioEditor() {
         <button className="btn small" onClick={ops.reverse}>Reverse</button>
         <button className="btn small" onClick={() => ops.pitch(Number(prompt("Pitch shift (semitones, ±24; repitch-style)", "2")) || 0)}>Pitch…</button>
         <button className="btn small" onClick={() => ops.stretch(clamp(Number(prompt("Stretch factor (0.5 = half length, 2 = double; repitch-style)", "1.5")) || 1, 0.25, 4))}>Stretch…</button>
+        </MoreTools>
         <span className="dim small">|</span>
         <button className="btn small" onClick={() => ops.sliceEqual(Number(prompt("Slice into how many equal pieces?", "4")) || 4)}>Slice ÷n</button>
         <button className="btn small" onClick={ops.detectTransients} disabled={busy}>Transients</button>
+        <MoreTools label="Analysis">
         <button className="btn small" onClick={ops.detectSilence}>Silence</button>
         <button className="btn small" onClick={ops.toMidi}
           title="EXPERIMENTAL: transcribe a hummed/sung monophonic melody to Piano Roll notes">♪ To MIDI ⚗</button>
@@ -372,6 +383,7 @@ export function AudioEditor() {
           title="EXPERIMENTAL: PulseTune pitch correction — creates a new tuned asset">PulseTune ⚗</button>
         <button className="btn small" onClick={() => setStemsOpen(true)}
           title="AI Stem Extractor — split this audio into vocals/drums/bass/other via a connected provider (uploads audio)">Stems ✂</button>
+        </MoreTools>
         <button className="btn small" onClick={() => setMarkers([])} disabled={!markers.length}>Clear marks</button>
         <div className="spacer" />
         <button className="btn small" title="Zoom out" onClick={() => setZoom("audio", Math.max(0.5, zoomX / 1.4))}>−</button>

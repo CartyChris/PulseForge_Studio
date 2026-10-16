@@ -9,6 +9,8 @@ import { Icon, type IconName } from "../shell/Icons";
 import { ShowAt, Coach, useLevel } from "../shell/Level";
 import { GENRE_COLORS, IDEAS } from "./Home";
 import { ExportDialog } from "../ProjectMenu";
+import { useGenerate, previewAsset, placeOnSong, stopPreview } from "../../audio/sampling";
+import type { AudioOutput } from "../../ai/generate-audio";
 
 const STAGE_ICON: Record<string, IconName> = { plan: "sparkles", compose: "keys", arrange: "song", mix: "mixer", review: "headphones" };
 const REVISE_IDEAS = ["faster", "darker", "hit harder", "more swing", "another version", "longer", "softer, more space", "use a piano"];
@@ -24,14 +26,25 @@ export function Producer() {
   const [scale, setScale] = useState("");
   const [length, setLength] = useState<ProductionSpec["length"] | "">("");
   const [append, setAppend] = useState(false);
+  const [output, setOutput] = useState<"project" | AudioOutput>("project");
+  const g = useGenerate();
+  const audioMode = output !== "project";
   const [change, setChange] = useState("");
   const [exportOpen, setExportOpen] = useState(false);
 
   useEffect(() => { void p.refreshProviders(); }, []); // mount only
   const provider = p.resolvedProvider();
-  const run = p.run;
+  const run = audioMode ? g.run : p.run;
+  const running = audioMode ? g.running : p.running;
 
   const go = () => {
+    if (audioMode) {
+      void g.start({
+        prompt: prompt || (genre ? GENRES[genre].name : "beat"), output, loopBars: 8,
+        overrides: { genre: genre || undefined, bpm: bpm ? Math.max(50, Math.min(200, Number(bpm))) : undefined, key: key || undefined, scale: scale || undefined, length: length || undefined },
+      });
+      return;
+    }
     void p.start({
       prompt: prompt || (genre ? GENRES[genre].name : "beat"),
       mode: append ? "append" : "replace",
@@ -110,11 +123,21 @@ export function Producer() {
               </div>
             </ShowAt>
 
-            <div className="row" style={{ marginTop: 16 }}>
-              {!p.running
-                ? <button className="btn primary big" onClick={go}><Icon name="sparkles" /> Produce beat</button>
-                : <button className="btn danger big" onClick={p.cancel}><Icon name="stop" /> Cancel</button>}
-              <span className="small faint">{append ? "Adds after your song" : "Replaces the arrangement (your recordings & imports stay). Undo with ⌘Z"}</span>
+            <h3 className="section">What do you want back?</h3>
+            <div className="seg" role="radiogroup" aria-label="Output">
+              {([["project", "Editable song", "song"], ["song", "Full song audio", "wave"], ["loop", "Loop / sample", "loop"], ["stems", "Stem pack", "layers"]] as const).map(([id, label, icon]) => (
+                <button key={id} role="radio" aria-checked={output === id} className={output === id ? "on" : ""} onClick={() => setOutput(id)}><Icon name={icon} size={14} />{label}</button>
+              ))}
+            </div>
+            <div className="row" style={{ marginTop: 12 }}>
+              {!running
+                ? <button className="btn primary big" onClick={go}><Icon name="sparkles" /> {audioMode ? "Make audio" : "Produce beat"}</button>
+                : <button className="btn danger big" onClick={audioMode ? g.cancel : p.cancel}><Icon name="stop" /> Cancel</button>}
+              <span className="small faint">{audioMode
+                ? output === "song" ? "Renders a mixed, mastered song into your library. Your project isn't touched"
+                  : output === "loop" ? "An 8-bar seamless loop for your library: chop it, flip it, use it as a sample"
+                  : "The 8-bar loop plus separate drums, bass, chords and melody stems"
+                : append ? "Adds after your song" : "Replaces the arrangement (your recordings & imports stay). Undo with ⌘Z"}</span>
             </div>
           </div>
 
@@ -133,7 +156,7 @@ export function Producer() {
 
             {run && (
               <div className="card">
-                <h3><Icon name="layers" /> {p.running ? "Producing…" : run.error ? "Stopped" : "Done"}</h3>
+                <h3><Icon name="layers" /> {running ? "Producing…" : run.error ? "Stopped" : "Done"}</h3>
                 <div className="stage-list">
                   {run.stages.map((s) => (
                     <div key={s.id} className={`stage ${s.status}`}>
@@ -148,7 +171,24 @@ export function Producer() {
               </div>
             )}
 
-            {run && !run.error && !p.running && run.summary && (
+            {audioMode && !g.running && g.results.length > 0 && (
+              <div className="result-card">
+                <h2>Your audio</h2>
+                <p className="dim" style={{ marginTop: 0 }}>{g.lastSummary}. Saved to your library (Sounds → Project Assets) with its tempo and key.</p>
+                {g.results.slice(0, 6).map((r) => (
+                  <div key={r.assetId} className="row wrap" style={{ padding: "6px 0", borderTop: "1px solid var(--line)" }}>
+                    <span className="small" style={{ flex: 1, minWidth: 200 }}><b>{r.role === "song" ? "Full song" : r.role === "loop" ? "Loop" : `${r.role[0]!.toUpperCase()}${r.role.slice(1)} stem`}</b> <span className="faint">{r.bpm} BPM · {r.key}</span></span>
+                    <button className="btn small" onClick={() => { const a = useStudio.getState().project.assets.find((x) => x.id === r.assetId); if (a) void previewAsset(a); }}><Icon name="play" size={13} /> Play</button>
+                    <button className="btn small" onClick={stopPreview}><Icon name="stop" size={13} /></button>
+                    <button className="btn small" onClick={() => { useStudio.getState().select({ assetId: r.assetId }); setTab("audio-editor"); }}><Icon name="wave" size={13} /> Chop it</button>
+                    <button className="btn small" onClick={() => { placeOnSong(r.assetId); useStudio.getState().toast("Placed on the Song (Samples track)", "success"); }}><Icon name="song" size={13} /> Add to song</button>
+                  </div>
+                ))}
+                {g.notes.length > 0 && <p className="small faint">{g.notes.slice(0, 3).join(" · ")}</p>}
+              </div>
+            )}
+
+            {!audioMode && run && !run.error && !p.running && run.summary && (
               <div className="result-card">
                 <h2>{run.spec?.title}</h2>
                 <p className="dim" style={{ marginTop: 0 }}>{run.summary}</p>

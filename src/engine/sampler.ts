@@ -28,6 +28,11 @@ export interface SamplerParams {
   pitchTrack: boolean;
 }
 
+/** True for Tone's offline (render/export) context. */
+export function isOfflineContext(ctx: Tone.BaseContext): boolean {
+  return ctx instanceof Tone.OfflineContext || (typeof OfflineAudioContext !== "undefined" && ctx.rawContext instanceof OfflineAudioContext);
+}
+
 export const DEFAULT_SAMPLER_PARAMS: SamplerParams = {
   rootNote: 60, startNorm: 0, endNorm: 1, loop: false, loopStartNorm: 0, loopEndNorm: 1,
   attack: 0.002, decay: 0.1, sustain: 1, release: 0.1, filterHz: 20000, gainDb: 0, pan: 0,
@@ -122,7 +127,10 @@ export class SamplerInstrument implements InstrumentInstance {
     source.onended = () => {
       const i = this.voices.indexOf(voice);
       if (i >= 0) this.voices.splice(i, 1);
-      try { source.dispose(); env.dispose(); } catch {}
+      // Offline renders run every Tone callback in a pre-pass BEFORE rendering audio, so disposing
+      // here would disconnect the voice before it ever sounds (silent exports). The offline graph is
+      // thrown away after rendering anyway; only clean up live voices.
+      if (!isOfflineContext(this.ctx)) { try { source.dispose(); env.dispose(); } catch {} }
     };
   }
 

@@ -14,12 +14,15 @@ import { Recording } from "./ui/Recording";
 import { ResourceHub } from "./ui/ResourceHub";
 import { CommandPalette } from "./ui/CommandPalette";
 import { NavRail, visibleNav } from "./ui/shell/NavRail";
+import { Icon } from "./ui/shell/Icons";
 import { PageFrame, StatusBar, Onboarding, HelpSheet } from "./ui/shell/Chrome";
 import { Home } from "./ui/pages/Home";
 import { Producer } from "./ui/pages/Producer";
 import { Connections } from "./ui/pages/Connections";
 import { BeatPage } from "./ui/pages/Beat";
 import { MixPage } from "./ui/pages/Mix";
+import { ProgressionPicker } from "./ui/ProgressionPicker";
+import { SongTools } from "./ui/pages/SongTools";
 import { installKeyboardShortcuts } from "./keyboard";
 import { setHost, StandaloneHostAdapter } from "./host/adapter";
 import { initUiPrefs } from "./ui/Settings";
@@ -67,9 +70,17 @@ function MelodyPage() {
     if (best) st.select(best);
     else if (!ch || !melodic.has(ch)) { const first = [...melodic.keys()][0]; if (first) st.select({ channelId: first }); }
   }, []);
+  const [progOpen, setProgOpen] = useState(false);
   return (
-    <PageFrame title="Melody" icon="keys" sub="Piano roll" tip={<>Click the grid to add notes, drag to move, drag a note's right edge to lengthen, right-click to delete. Pick a <b>chord</b> to stamp full chords, and set the <b>key/scale</b> to highlight notes that fit.</>}>
-      <PianoRoll />
+    <PageFrame title="Melody" icon="keys" sub="Piano roll" tip={<>Click the grid to add notes, drag to move, drag a note's right edge to lengthen, right-click to delete. Stuck? <b>Chord progressions</b> writes a whole progression in your key.</>}>
+      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <div className="row" style={{ padding: "6px 12px 0" }}>
+          <button className="btn small primary" onClick={() => setProgOpen(true)}><Icon name="keys" size={14} /> Chord progressions</button>
+          <span className="small faint">~50 progressions by mood, spelled in your key</span>
+        </div>
+        <div style={{ flex: 1, minHeight: 0 }}><PianoRoll /></div>
+      </div>
+      {progOpen && <ProgressionPicker onClose={() => setProgOpen(false)} />}
     </PageFrame>
   );
 }
@@ -84,8 +95,11 @@ function renderTab(tab: Tab) {
     case "mixer": return <MixPage />;
     case "piano-roll": return <MelodyPage />;
     case "playlist": return (
-      <PageFrame title="Song" icon="song" sub="Arrangement" tip={<>This is your whole song. Drag clips to move them, drag their edges to trim, and double-click an empty lane to place the selected pattern. Switch the top bar to <b>Song</b> to play everything.</>}>
-        <Playlist />
+      <PageFrame title="Song" icon="song" sub="Arrangement" tip={<>This is your whole song. Got a loop? <b>Song blueprint</b> turns it into a full arrangement. Drag clips to move them, drag their edges to trim, double-click an empty lane to place the selected pattern.</>}>
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <SongTools />
+          <div style={{ flex: 1, minHeight: 0 }}><Playlist /></div>
+        </div>
       </PageFrame>
     );
     case "recording": return (
@@ -94,7 +108,12 @@ function renderTab(tab: Tab) {
       </PageFrame>
     );
     case "instrument": return <PageFrame title="Instrument" icon="knob" sub="Sound design for the selected channel"><InstrumentEditor /></PageFrame>;
-    case "audio-editor": return <PageFrame title="Audio" icon="wave" sub="Chop, slice, tune, stretch, split stems"><AudioEditor /></PageFrame>;
+    case "audio-editor": return (
+      <PageFrame title="Sample" icon="wave" sub="Chop & screw · flip · fit to your beat · slice, tune, stretch"
+        tip={<>Get a sound (import, a free <b>starter loop</b>, or describe one), drag on the waveform to select a part, then <b>Screw</b>, <b>Chop</b> or give it a vintage sampler sound. <b>Chop to pads</b> turns it into playable pads with a pattern.</>}>
+        <AudioEditor />
+      </PageFrame>
+    );
     case "ai-assistant": return <PageFrame title="AI Chat" icon="chat" sub="Compose, edit and mix by chatting. Every change is previewed and undoable"><AIAssistant /></PageFrame>;
     case "sound-lab": return <PageFrame title="Sound Lab" icon="flask" sub="Generate sounds, music & voice with audio AI providers · stem extractor"><SoundLab /></PageFrame>;
     case "resources": return <PageFrame title="Resources" icon="globe" sub="Sample-pack sites & pack importer"><ResourceHub /></PageFrame>;

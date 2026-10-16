@@ -6,10 +6,10 @@
 import * as Tone from "tone";
 import type { Project, MixerChannel } from "../../shared/project";
 import { MASTER_ID } from "../../shared/project";
-import { ticksToSeconds } from "../../shared/time";
+import { ticksToSeconds, TICKS_PER_STEP } from "../../shared/time";
 import { createEffect, type EffectNode, EFFECT_DEFS } from "./effects";
 import { createInstrument, type InstrumentInstance } from "./instruments";
-import { SamplerInstrument, DEFAULT_SAMPLER_PARAMS, bufferFromMono } from "./sampler";
+import { SamplerInstrument, DEFAULT_SAMPLER_PARAMS, bufferFromMono, isOfflineContext } from "./sampler";
 import { getKit, getKitSound } from "./kits";
 import { FACTORY_RATE, mulberry32, synthMetronomeTick } from "./dsp";
 import type { EventList } from "./events";
@@ -202,7 +202,12 @@ export function scheduleEvents(
       transport.schedule((time) => {
         if (ev.probability < 1 && rng() > ev.probability) return;
         const player = graph.drumPlayers.get(ev.channelId);
-        player?.trigger(time, ev.velocity);
+        if (player) return player.trigger(time, ev.velocity);
+        // steps on non-drum channels: samplers fire their (slice of the) sample as a one-shot — the
+        // chop/pad workflow depends on this — and synths play C5 for one step, like FL Studio
+        const inst = graph.instruments.get(ev.channelId);
+        if (inst instanceof SamplerInstrument) inst.trigger(time, ev.velocity);
+        else inst?.triggerAttackRelease(72, ticksToSeconds(TICKS_PER_STEP, bpm), time, ev.velocity);
       }, `${Math.max(0, Math.round(ev.tick))}i`),
     );
   }
@@ -272,11 +277,13 @@ export function scheduleEvents(
       }
     }
     source.start(time, ev.offsetSec + extraOffsetSec * playbackRate, remainDur);
+    // offline renders fire these callbacks before rendering: disposing there silences exported audio clips
+    const cleanup = () => { if (!isOfflineContext(source.context)) { try { source.dispose(); env.dispose(); } catch {} } };
     if (source instanceof Tone.GrainPlayer) {
       source.stop(time + remainDur);
-      source.onstop = () => { try { source.dispose(); env.dispose(); } catch {} };
+      source.onstop = cleanup;
     } else {
-      source.onended = () => { try { source.dispose(); env.dispose(); } catch {} };
+      source.onended = cleanup;
     }
     liveSources.push(source);
   };
@@ -362,7 +369,7 @@ export function scheduleMetronome(project: Project, destination: Tone.ToneAudioN
         src.connect(g);
         g.connect(destination);
         src.start(time);
-        src.onended = () => { try { src.dispose(); g.dispose(); } catch {} };
+        src.onended = () => { if (!isOfflineContext(src.context)) { try { src.dispose(); g.dispose(); } catch {} } };
       }, `${b * beatTicks}i`),
     );
   }

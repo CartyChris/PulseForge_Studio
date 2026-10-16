@@ -8,6 +8,7 @@ import type { GenreId, ProductionSpec } from "./producer";
 import { GENRES, ProductionSpecSchema, normalizeKey } from "./producer";
 
 const GENRE_WORDS: Array<[RegExp, GenreId]> = [
+  [/\bchopped\s*(and|&|n)?\s*screwed\b|\bscrewed\b|\bhouston\b|\bslowed\b|\bsyrup|\bdj\s*screw\b/i, "screwed"],
   [/\b(uk\s*drill|ny\s*drill|drill)\b/i, "drill"],
   [/\bphonk\b|\bmemphis\b|\bdrift\b/i, "phonk"],
   [/\bjersey(\s*club)?\b|\bclub\s*music\b/i, "jersey-club"],

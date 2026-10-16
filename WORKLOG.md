@@ -226,3 +226,46 @@ Status: S5–S8 and S10 done; S9 (voice providers) wired in providers.ts; S11 (d
 - Verify: typecheck ✓ (front + server) · 350/350 tests (24 files) ✓ · `npm run lint` ✓.
 - Not verified here: an actual Vercel deployment (needs the user's Vercel account); the serverless
   entry is covered by server/serverless.test.ts (BYOK isolation, SSRF guard, rewrite paths).
+
+## 2026-10-16 — Sampling / Chopped & Screwed round (stage map)
+Request: 10–15 strong beat-making upgrades, lots of sampling + "chopped & screwed", presets and free
+resources to go from scratch to a song fast. Found first: sampler channels are SILENT from steps
+(graph.ts schedules step hits only via drumPlayers; samplers live in `instruments`) — this breaks the
+existing "Slices → Drum Rack" flow. Stages (each with a failable check):
+0 sampler steps play · 1 screw · 2 chop/stutter · 3 backspin · 4 tape stop · 5 slowed+reverb ·
+6 vintage sampler emulations · 7 time-stretch / pitch-shift / fit-to-project · 8 chop→pads + shuffle ·
+9 note repeat + live record · 10 groove library · 11 progression library · 12 song blueprints ·
+13 chopped & screwed genre + templates · 14 free sampling resources + sample starters · 15 Sample page UI
+
+## 2026-10-16 — Sampling / Chopped & Screwed / Prompt → audio: results
+All 16 stages done, each with a failable check (unit tests + browser checks on real renders).
+- **Critical pre-existing bug found & fixed: offline renders dropped every sampler-based voice.** Tone's
+  OfflineContext runs all scheduled callbacks in a pre-pass BEFORE rendering audio, so the
+  "voice ended → dispose()" handlers in SamplerInstrument (drum pads + sampler channels) and in audio
+  clip playback disconnected every voice before it sounded. Proven in the browser on the pre-fix build:
+  a drums-only loop rendered completely flat; after the fix it has full amplitude. Effect before the fix:
+  WAV exports, bounces, stems and the producer's mix measurements had NO drums, samples or audio clips
+  (why the auto-mix kept reporting "low end 90%+"). Fix: skip per-voice disposal when the context is
+  offline (`isOfflineContext`), the offline graph is discarded after rendering anyway.
+- Also fixed: step hits on sampler channels never played at all (scheduler only looked at drum players),
+  so the old "Slices → Drum Rack" pads were silent from the step grid. Background analysis overwrote
+  exact tempo/key with estimates (generated loops are now tagged with their real BPM/key; screw/stretch
+  carry the tempo through). Chords no longer land on drum/sampler channels.
+- New: src/engine/chop.ts (screw, chop repeat, stutter, backspin, tape stop, plate reverb, slowed+reverb,
+  6 vintage sampler characters, WSOLA time-stretch, pitch-shift, fit-to-project), shared/chops.ts (chop →
+  pads pattern + 4 flip styles), shared/grooves.ts (68 grooves), shared/progressions.ts (48 progressions,
+  strict roman-numeral voicer), shared/blueprints.ts + src/state/blueprint.ts (11 song blueprints),
+  live pad Rec + note repeat (shared/patterntools.ts), "screwed" genre (17th), 4 producer-built starter
+  templates, src/ai/generate-audio.ts (prompt → full song / seamless loop / stem pack, on a scratch
+  project) + chat intent detection, 12 sample starters, 5 verified free sampling sources + sampling tips.
+- UI: Sample page (beginner) with Chop & Screw panel; Beat: Groove Library, Rec, Quantize, Note repeat,
+  chop pads shown as pads; Melody: Chord progressions; Song: Song blueprint, Screw the song, Slowed +
+  reverb, Bounce; Producer: output selector (Editable / Full song audio / Loop / Stem pack); AI Chat:
+  "Create audio" mode (default, works without a provider) + audio intent routing with clip cards.
+- Browser-verified on the production build: starter loop exactly 8 bars (22.857 s @84 BPM); screw 80% →
+  28.57 s and −4 st; auto 8 pads + flip; groove library apply (Dembow: 16 hits, tempo 95); progression
+  in C minor (Cm–Ab–Eb–Bb); blueprint → song; screwed song from chop pads non-silent; AI Chat
+  "give me stems for a dark drill beat" → loop + 4 stems planned by Kimi, drums stem full amplitude,
+  exactly 8 bars @142 BPM.
+- Verify: typecheck ✓ (front + server) · lint ✓ · 397/397 tests (32 files) ✓.
+- Machine: the serverless suite needs PF_TEST_WARMUP_MS (cold Fastify load took ~6.5 min through iCloud).

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fillEnding, ghostNotes, shiftSteps, polyrhythm, accentEvery, thin, reverseSteps, ratchet } from "./patterntools";
+import { fillEnding, ghostNotes, shiftSteps, polyrhythm, accentEvery, thin, reverseSteps, ratchet, recordTap, nextRepeatTick, REPEAT_RATES } from "./patterntools";
 import type { Step } from "./project";
 
 const s = (index: number, velocity = 0.85): Step => ({ index, velocity, probability: 1, micro: 0 });
@@ -88,5 +88,28 @@ describe("pattern tools", () => {
     const src = [s(0)];
     expect(ratchet(src, 9, 3)).toEqual(src);
     expect(ratchet(src, 0, 1)).toEqual(src);
+  });
+});
+
+describe("live recording & note repeat", () => {
+  it("snaps taps to the nearest 16th, wrapping around the loop", () => {
+    let s = recordTap([], 25, 16, 0.9); // just after step 1
+    expect(s).toEqual([{ index: 1, velocity: 0.9, probability: 1, micro: 0 }]);
+    s = recordTap(s, 16 * 24 + 47, 16, 0.7); // second time round the loop, near step 2
+    expect(s.map((x) => x.index)).toEqual([1, 2]);
+    expect(recordTap([], 16 * 24 - 5, 16, 1)[0]!.index).toBe(0); // late tap at the loop end → downbeat
+  });
+  it("unquantized keeps the feel as micro-timing; overdubs never erase, louder wins", () => {
+    expect(recordTap([], 30, 16, 0.8, false)[0]).toMatchObject({ index: 1, micro: 6 });
+    expect(recordTap([], 16, 16, 0.8, false)[0]).toMatchObject({ index: 1, micro: -8 });
+    const once = recordTap([], 0, 16, 0.5);
+    expect(recordTap(once, 2, 16, 0.9)).toEqual([{ index: 0, velocity: 0.9, probability: 1, micro: 0 }]);
+    expect(recordTap(once, 2, 16, 0.2)[0]!.velocity).toBe(0.5);
+  });
+  it("note repeat locks to the grid", () => {
+    expect(nextRepeatTick(0, 24)).toBe(0);
+    expect(nextRepeatTick(25, 24)).toBe(48);
+    expect(nextRepeatTick(33, 32)).toBe(64);
+    expect(REPEAT_RATES.map((r) => r.ticks)).toEqual([96, 48, 32, 24, 16, 12]);
   });
 });

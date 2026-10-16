@@ -477,3 +477,21 @@ body { overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
   .fader { width: 30px; }
 }
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* ── Sample page: Chop & Screw ─────────────────────────────────────────── */
+.chop-screw { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; padding: 10px 12px 4px; }
+.cs-card { background: var(--bg1); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.cs-card h3 { margin: 0 0 8px; font-size: 13px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cs-card .row.wrap { flex-wrap: wrap; gap: 6px; }
+.groove-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; cursor: pointer; padding: 10px 12px; color: var(--text); }
+.groove-card:hover { border-color: var(--ember); }
+.groove-grid { display: flex; flex-direction: column; gap: 2px; margin: 2px 0; }
+.groove-row { display: grid; grid-template-columns: repeat(16, 8px); gap: 2px; }
+.groove-row i { width: 8px; height: 6px; border-radius: 2px; background: var(--bg3); }
+.groove-row i:nth-child(4n+1) { background: var(--bg4); }
+.groove-row i.on { background: var(--ember); }
+.groove-row i.soft { background: var(--ember-soft); }
+.pad-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.pad-tools .rec.on { background: var(--red); color: #fff; border-color: var(--red); }
+.bp-strip { display: flex; gap: 2px; width: 100%; height: 8px; margin-top: 2px; }
+.bp-strip i { background: var(--grad); border-radius: 2px; }
