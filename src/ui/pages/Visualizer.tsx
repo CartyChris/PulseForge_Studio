@@ -79,7 +79,6 @@ export function VisualizerPage() {
   const auto = useRef({ section: "", bar: 0 });
   const hudText = useRef({ pos: "", section: "" });
   const scene = SCENES.find((s) => s.id === prefs.scene) ?? SCENES[0]!;
-  const showLook = true;
   const showSignals = atLeast(level, "intermediate") && prefs.signals;
   const expert = atLeast(level, "expert");
   const padList = padChannels(project.channels);
@@ -275,7 +274,7 @@ export function VisualizerPage() {
           </div>
         )}
 
-        {panel && showLook && (
+        {panel && (
           <div className="viz-pop glass" role="dialog" aria-label="Look">
             <div className="row"><b>Look</b><div className="spacer" /><button className="icon-btn" onClick={() => setPanel(false)} aria-label="Close"><Icon name="close" size={14} /></button></div>
             <div className="viz-colors" role="radiogroup" aria-label="Colours">
@@ -321,7 +320,7 @@ export function VisualizerPage() {
           <button className={`viz-btn ${prefs.auto ? "on" : ""}`} onClick={() => prefs.set({ auto: !prefs.auto })} aria-pressed={prefs.auto} title="Auto (A): scenes change with the song's sections and energy">
             <Icon name="shuffle" size={16} /><span className="lbl">Auto</span>
           </button>
-          {showLook && <button className={`viz-btn ${panel ? "on" : ""}`} onClick={() => setPanel((v) => !v)} aria-expanded={panel} title="Colours, intensity and glow"><Icon name="palette" size={16} /><span className="lbl">Look</span></button>}
+          <button className={`viz-btn ${panel ? "on" : ""}`} onClick={() => setPanel((v) => !v)} aria-expanded={panel} title="Colours, intensity and glow"><Icon name="palette" size={16} /><span className="lbl">Look</span></button>
           <button className={`viz-btn ${pads ? "on" : ""}`} onClick={() => setPads((v) => !v)} aria-pressed={pads} title="Performance pads (keys 1–8): hit drums and visuals together"><Icon name="pads" size={16} /><span className="lbl">Pads</span></button>
           <button className={`viz-btn ${recAt !== null ? "rec" : ""}`} onClick={() => (recAt !== null ? stopRec() : void startRec())}
             title={recAt !== null ? "Stop and save the video" : "Record a video of the visualizer with your song's audio"}>
