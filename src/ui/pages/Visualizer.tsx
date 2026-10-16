@@ -76,7 +76,7 @@ export function VisualizerPage() {
   const recorder = useRef<MediaRecorder | null>(null);
   const idleTimer = useRef<ReturnType<typeof setTimeout>>();
   const hud = useRef<{ pos?: HTMLElement | null; section?: HTMLElement | null; leds: (HTMLElement | null)[]; bands: (HTMLElement | null)[] }>({ leds: [], bands: [] });
-  const auto = useRef({ section: "", bar: 0 });
+  const auto = useRef({ section: "", bar: -1 });
   const hudText = useRef({ pos: "", section: "" });
   const scene = SCENES.find((s) => s.id === prefs.scene) ?? SCENES[0]!;
   const showSignals = atLeast(level, "intermediate") && prefs.signals;
@@ -96,6 +96,7 @@ export function VisualizerPage() {
   }, [choose]);
 
   const onFrame = useCallback((f: VizFrame) => {
+    if (!f.playing) auto.current.bar = -1;
     // HUD text (only touch the DOM when it changes)
     const beat = Math.floor(f.beats % f.beatsPerBar) + 1;
     const pos = `${f.bar + 1}.${beat}`;
@@ -109,6 +110,8 @@ export function VisualizerPage() {
     const p = useVizPrefs.getState();
     if (p.auto && f.playing) {
       const a = auto.current;
+      // first frame of a play (or a seek backwards): note where we are, don't switch yet
+      if (a.bar < 0 || f.bar < a.bar) { a.bar = f.bar; a.section = f.section; return; }
       const sectionChange = f.section && f.section !== a.section;
       if (sectionChange || (f.bar - a.bar >= 16 && f.barPhase < 0.08)) {
         a.section = f.section; a.bar = f.bar;
