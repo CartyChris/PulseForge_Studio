@@ -14,7 +14,7 @@ import { saveProject } from "../storage/projects";
 export type Tab =
   | "home" | "producer" | "connections" | "library"
   | "channel-rack" | "piano-roll" | "playlist" | "audio-editor" | "mixer"
-  | "instrument" | "ai-assistant" | "sound-lab" | "recording" | "resources";
+  | "instrument" | "ai-assistant" | "sound-lab" | "recording" | "resources" | "visualizer";
 
 /** Experience level — controls how much of the studio is visible at once (never what it can do). */
 export type Level = "beginner" | "intermediate" | "expert";

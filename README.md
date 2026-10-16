@@ -28,15 +28,42 @@ PulseForge message and click **Open Anyway** (once). Rebuild it any time with `n
 Pick a level on first launch, or switch any time from the top bar. **Nothing is ever removed**:
 the level only decides how much is on screen at once.
 
-- **Beginner**: Home, AI Producer, Beat (drum pads + steps), Melody, Song, Record, Mix (Quick Mix
-  sliders + Auto-mix), Sounds, Connect. Big controls, coach tips, simple toolbars.
+- **Beginner**: Home, AI Producer, Beat (drum pads + steps), Sample, Melody, Song, Record, Mix (Quick Mix
+  sliders + Auto-mix), Visualizer, Sounds, Connect. Big controls, coach tips, simple toolbars.
 - **Intermediate**: adds Instrument, Audio editor, Sound Lab and AI Chat pages, the sound browser /
   inspector panels, and the everyday power tools (tap tempo, snap, ghost notes, humanize, routing…).
   Rarely used tools sit behind a **More tools** button.
 - **Expert**: everything at once: both side panels open, dense toolbars, time signature and count-in
   in the top bar, every generator and editor.
 
+**Customize** (bottom of the nav rail, or Settings → Workspace) goes further: pick a workspace —
+*Just make beats* (4 pages), *Beat maker*, *Songwriter*, *Full studio* — or switch any section on or off.
+Hidden sections stay one ⌘K away.
+
 ⌥1…⌥9 jumps between the sections you can see, ⌘K searches every action, `?` shows all shortcuts.
+
+## Look & feel
+
+A glass interface over a live ambient light that breathes with your kick and bass. **Settings → Appearance**:
+five themes (Midnight, Graphite, Obsidian, Aurora, Dusk), any accent colour, glass on/off, interface size.
+**Settings → Accessibility**: reduce motion, reduce transparency.
+
+## Visualizer
+
+A song-aware light show in the spirit of the old iTunes visualizer. It reads the song, not just the
+volume: kick, snare, hat, bass, chord and lead hits come straight from your patterns, so they land
+exactly on the beat. Colours come from the song's key; the Beat Matrix scene shows your actual pattern;
+the Orbs scene turns each instrument into a liquid orb in its channel colour.
+
+- **10 GPU scenes**: Classic Flow, Halo, Nebula, Skyline, Orbs, Beat Matrix, Warp, Galaxy, Kaleido,
+  Phosphor. **Auto** changes scene with the song's sections and energy.
+- **Interactive**: move to bend the light, click for a shockwave, scroll for intensity; **Pads** (keys
+  1–8) hit drums and visuals together; ← → change scene, F full screen, H hides the controls.
+- **Record** saves a video of the visualizer with your song's audio (WebM) for socials.
+- **Look**: colour from the song key, your instruments, the studio accent, a spectrum cycle or mono;
+  intensity, speed, trails, glow, grain, lens split, render quality (levels show more of these).
+- Around the studio: a live spectrum LCD in the top bar (click it to open the Visualizer) and a live
+  scene behind the Home prompt. Toggle these in **Settings → Visuals**.
 
 ## Making a beat in 60 seconds
 

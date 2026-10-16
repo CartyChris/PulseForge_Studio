@@ -8,6 +8,8 @@ import { ensureProjectAssetsLoaded } from "../../audio/assets";
 import { engine } from "../../engine/engine";
 import { Icon } from "../shell/Icons";
 import { LevelSwitch, LEVEL_INFO, ShowAt } from "../shell/Level";
+import { VizBackdrop } from "../viz/LiveVisuals";
+import { useVizPrefs } from "../../viz/prefs";
 
 export const GENRE_COLORS: Record<GenreId, string> = {
   trap: "#ff6a3d", drill: "#8b6cff", "boom-bap": "#ffc94d", lofi: "#7fd1ae", rnb: "#ff6fcf", pop: "#3ec6ff",
@@ -46,7 +48,8 @@ export async function openProjectById(id: string) {
 }
 
 export function Home() {
-  const { project, setTab, level, setProject, toast } = useStudio();
+  const { project, setTab, level, setProject, toast, reducedMotion } = useStudio();
+  const backdrop = useVizPrefs((v) => v.backdrop) && !reducedMotion;
   const { running, providers, refreshProviders, resolvedProvider } = useProducer();
   const produce = useProduceAndGo();
   const [prompt, setPrompt] = useState("");
@@ -69,7 +72,9 @@ export function Home() {
   return (
     <div className="page">
       <div className="page-narrow">
-        <section className="hero">
+        <section className={`hero ${backdrop ? "has-backdrop" : ""}`}>
+          {backdrop && <VizBackdrop scene="nebula" intensity={0.75} />}
+          <div className="hero-eyebrow"><span className="dot" /> PulseForge Studio 2.0</div>
           <h1>What are we making today?</h1>
           <p>Describe a beat in your own words. PulseForge plans it, writes every part in key, arranges a full song, mixes it, and plays it back. Everything stays editable.</p>
           <div className="prompt-row">

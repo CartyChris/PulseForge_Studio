@@ -229,7 +229,7 @@ export function ChannelRack() {
         const steps = pattern.steps[ch.id] ?? [];
         const noteCount = (pattern.notes[ch.id] ?? []).length;
         return (
-          <div className="rack-row" key={ch.id}>
+          <div className="rack-row" key={ch.id} style={{ ["--row" as string]: ch.color }}>
             <div className={`rack-chan ${selection.channelId === ch.id ? "selected" : ""}`}>
               <div className="chan-color" style={{ background: ch.color }} title="Change color"
                 onClick={() => {

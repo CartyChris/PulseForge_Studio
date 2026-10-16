@@ -13,7 +13,8 @@ import { SoundLab } from "./ui/SoundLab";
 import { Recording } from "./ui/Recording";
 import { ResourceHub } from "./ui/ResourceHub";
 import { CommandPalette } from "./ui/CommandPalette";
-import { NavRail, visibleNav } from "./ui/shell/NavRail";
+import { NavRail, visibleNav, levelNav, useNavCustom } from "./ui/shell/NavRail";
+import { AmbientGlow } from "./ui/viz/LiveVisuals";
 import { Icon } from "./ui/shell/Icons";
 import { PageFrame, StatusBar, Onboarding, HelpSheet } from "./ui/shell/Chrome";
 import { Home } from "./ui/pages/Home";
@@ -23,6 +24,7 @@ import { BeatPage } from "./ui/pages/Beat";
 import { MixPage } from "./ui/pages/Mix";
 import { ProgressionPicker } from "./ui/ProgressionPicker";
 import { SongTools } from "./ui/pages/SongTools";
+import { VisualizerPage } from "./ui/pages/Visualizer";
 import { installKeyboardShortcuts } from "./keyboard";
 import { setHost, StandaloneHostAdapter } from "./host/adapter";
 import { initUiPrefs } from "./ui/Settings";
@@ -32,7 +34,7 @@ import { engine } from "./engine/engine";
 import { completeOpenRouterBrowserOAuth } from "./ai/oauth-client";
 
 /** Pages that use the full width (no browser/inspector side panels). */
-const FULL_WIDTH: Tab[] = ["home", "producer", "connections", "library", "resources"];
+const FULL_WIDTH: Tab[] = ["home", "producer", "connections", "library", "resources", "visualizer"];
 const isDesktop = typeof window !== "undefined" && !!(window as unknown as { pulseforgeDesktop?: { isDesktop?: boolean } }).pulseforgeDesktop?.isDesktop;
 
 function Library() {
@@ -116,6 +118,7 @@ function renderTab(tab: Tab) {
     );
     case "ai-assistant": return <PageFrame title="AI Chat" icon="chat" sub="Compose, edit and mix by chatting. Every change is previewed and undoable"><AIAssistant /></PageFrame>;
     case "sound-lab": return <PageFrame title="Sound Lab" icon="flask" sub="Generate sounds, music & voice with audio AI providers · stem extractor"><SoundLab /></PageFrame>;
+    case "visualizer": return <VisualizerPage />;
     case "resources": return <PageFrame title="Resources" icon="globe" sub="Sample-pack sites & pack importer"><ResourceHub /></PageFrame>;
   }
 }
@@ -131,10 +134,12 @@ export function App() {
   // side panels follow the level's defaults whenever the level changes
   useEffect(() => { setShowLeft(level === "expert"); setShowRight(level === "expert"); }, [level]);
 
-  // if a page isn't available at the current level, fall back to Home
+  // if a page isn't available at the current level (and isn't pinned), fall back to Home.
+  // Sections hidden with Customize stay reachable (⌘K), so they don't bounce.
+  const overrides = useNavCustom((s) => s.overrides);
   useEffect(() => {
-    if (!visibleNav(level).some((n) => n.tab === tab)) setTab("home");
-  }, [level, tab, setTab]);
+    if (!levelNav(level).some((n) => n.tab === tab) && overrides[tab] !== "show") setTab("home");
+  }, [level, tab, setTab, overrides]);
 
   useEffect(() => {
     setHost(new StandaloneHostAdapter((n) => useStudio.getState().toast(`${n.title}${n.body ? ` — ${n.body}` : ""}`, n.kind ?? "info")));
@@ -217,7 +222,8 @@ export function App() {
   const panelsAllowed = level !== "beginner" && !fullWidth;
 
   return (
-    <div className={`app lvl-${level} ${reducedMotion ? "reduced-motion" : ""} ${isDesktop ? "desktop" : ""}`} style={{ zoom: uiScale }}>
+    <div className={`app lvl-${level} ${reducedMotion ? "reduced-motion" : ""} ${isDesktop ? "desktop" : ""} tab-${tab}`} style={{ zoom: uiScale }}>
+      <AmbientGlow />
       <TransportBar />
       <div className="main-row">
         <NavRail onHelp={() => window.dispatchEvent(new CustomEvent("pf-cheatsheet"))} />
@@ -231,7 +237,7 @@ export function App() {
           <div className="workspace-body">
             {!projectLoaded
               ? <div className="empty" style={{ height: "100%" }}><span className="dim">Forging your studio…</span></div>
-              : renderTab(tab)}
+              : <div className="page-anim" key={tab}>{renderTab(tab)}</div>}
           </div>
         </main>
         {panelsAllowed && showRight && (

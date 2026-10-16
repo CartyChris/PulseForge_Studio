@@ -7,6 +7,8 @@ import { ProjectMenu } from "./ProjectMenu";
 import { SettingsButton } from "./Settings";
 import { Icon, BrandMark } from "./shell/Icons";
 import { ShowAt, LevelSwitch } from "./shell/Level";
+import { LcdSpectrum, LcdBeats } from "./viz/LiveVisuals";
+import { useVizPrefs } from "../viz/prefs";
 
 const SQUEEZE_STEPS = 7;
 
@@ -19,6 +21,7 @@ export function TransportBar() {
   const tapTimes = useRef<number[]>([]);
   const level = useStudio((s) => s.level);
   const barRef = useRef<HTMLDivElement>(null);
+  const lcdOn = useVizPrefs((v) => v.lcd);
 
   // Keep everything on one row at any window width: add squeeze steps (see .topbar.sqN in
   // styles.css) one at a time until the bar stops overflowing. Classes are set on the DOM
@@ -122,10 +125,11 @@ export function TransportBar() {
           }))}><Icon name="loop" size={15} /></button>
       </div>
 
-      <div className="position-display" title="Bar.Beat.Step | mm:ss">
-        <div>{formatPosition(positionTicks, project.timeSignature)}</div>
-        <div className="sub">{formatSeconds(ticksToSeconds(positionTicks, project.bpm))}</div>
-      </div>
+      <button className={`position-display lcd ${playing ? "live" : ""}`} title="Now playing: Bar.Beat.Step · time. Click for the full-screen Visualizer" onClick={() => setTab("visualizer")}>
+        {lcdOn && <LcdSpectrum />}
+        <span className="lcd-row"><span className="lcd-pos">{formatPosition(positionTicks, project.timeSignature)}</span><LcdBeats /></span>
+        <span className="sub">{formatSeconds(ticksToSeconds(positionTicks, project.bpm))}</span>
+      </button>
 
       <div className="bpm-box" title="Tempo (BPM)">
         <input className="num-input" type="number" min={20} max={400} step={0.5} value={project.bpm} aria-label="BPM"

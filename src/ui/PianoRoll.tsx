@@ -1,6 +1,7 @@
 /** Piano Roll: canvas note editor — draw/select/drag/resize, velocity lane, scale
  * highlighting, chord stamp, arpeggiate, quantize/humanize/legato, ghost notes, MIDI I/O. */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { canvasTheme, rgba } from "./theme";
 import { useStudio, usePlayhead } from "../state/store";
 import type { Note } from "../../shared/project";
 import { newId } from "../../shared/project";
@@ -87,13 +88,15 @@ export function PianoRoll() {
     const ctx = canvas.getContext("2d")!;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, gridW, gridH);
+    const th = canvasTheme();
+    ctx.shadowBlur = 0; // the playhead glow from the last frame must not leak into this one
 
     // row backgrounds (scale highlight)
     for (let pitch = MIN_PITCH; pitch <= MAX_PITCH; pitch++) {
       const y = yAtPitch(pitch);
       const inKey = inScale(pitch, rootPc, scalePcs);
       const isRoot = ((pitch % 12) + 12) % 12 === rootPc;
-      ctx.fillStyle = isRoot ? "#1c2438" : inKey ? "#161d2e" : "#10141f";
+      ctx.fillStyle = isRoot ? th.bg3 : inKey ? th.bg2 : th.bg1;
       ctx.fillRect(0, y, gridW, KEY_H);
     }
     // vertical grid
@@ -101,7 +104,7 @@ export function PianoRoll() {
       const x = t * pxPerTick;
       const isBar = t % (TICKS_PER_STEP * 16) === 0;
       const isBeat = t % 96 === 0;
-      ctx.strokeStyle = isBar ? "#3a4666" : isBeat ? "#2c3650" : "#1c2333";
+      ctx.strokeStyle = isBar ? "rgba(255,255,255,0.16)" : isBeat ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.035)";
       ctx.lineWidth = isBar ? 1.5 : 1;
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -109,7 +112,7 @@ export function PianoRoll() {
       ctx.stroke();
     }
     // horizontal lines
-    ctx.strokeStyle = "#181f30";
+    ctx.strokeStyle = "rgba(0,0,0,0.35)";
     for (let pitch = MIN_PITCH; pitch <= MAX_PITCH; pitch++) {
       const y = yAtPitch(pitch) + KEY_H;
       ctx.beginPath();
@@ -134,17 +137,27 @@ export function PianoRoll() {
       const y = yAtPitch(n.pitch) + 1;
       const sel = selectedSet.has(n.id);
       const alpha = 0.45 + n.velocity * 0.55;
-      ctx.fillStyle = sel ? `rgba(255,209,102,${alpha})` : `rgba(232,102,60,${alpha})`;
-      ctx.fillRect(x, y, w, KEY_H - 2);
-      ctx.strokeStyle = sel ? "#ffd166" : "#a34328";
-      ctx.strokeRect(x + 0.5, y + 0.5, w - 1, KEY_H - 3);
+      const base: [number, number, number] = sel ? [255, 209, 102] : th.accentRgb;
+      ctx.shadowColor = rgba(base, 0.55);
+      ctx.shadowBlur = sel ? 10 : 6;
+      ctx.fillStyle = rgba(base, alpha);
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, KEY_H - 2, 3);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "rgba(255,255,255,0.28)"; // top highlight
+      ctx.fillRect(x + 2, y + 1, Math.max(0, w - 4), 1);
+      ctx.strokeStyle = sel ? "#fff3c4" : rgba(base.map((c) => c * 0.55) as [number, number, number], 1);
+      ctx.beginPath();
+      ctx.roundRect(x + 0.5, y + 0.5, w - 1, KEY_H - 3, 3);
+      ctx.stroke();
       // resize handle
-      ctx.fillStyle = "rgba(0,0,0,0.35)";
-      ctx.fillRect(x + w - 4, y, 4, KEY_H - 2);
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.fillRect(x + w - 4, y + 2, 2, KEY_H - 6);
     }
     // marquee
     if (drag?.kind === "marquee") {
-      ctx.strokeStyle = "#4cc2ff";
+      ctx.strokeStyle = th.cyan;
       ctx.setLineDash([4, 3]);
       ctx.strokeRect(Math.min(drag.startX, drag.x), Math.min(drag.startY, drag.y), Math.abs(drag.x - drag.startX), Math.abs(drag.y - drag.startY));
       ctx.setLineDash([]);
@@ -152,7 +165,9 @@ export function PianoRoll() {
     // playhead
     if (playing) {
       const x = (positionTicks % patternTicks) * pxPerTick;
-      ctx.strokeStyle = "#4cc2ff";
+      ctx.strokeStyle = th.cyan;
+      ctx.shadowColor = th.cyan;
+      ctx.shadowBlur = 8;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -174,14 +189,14 @@ export function PianoRoll() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, gridW, 90);
     if (lane === "pan") {
-      ctx.strokeStyle = "#2c3650";
+      ctx.strokeStyle = "rgba(255,255,255,0.1)";
       ctx.beginPath(); ctx.moveTo(0, 44); ctx.lineTo(gridW, 44); ctx.stroke();
     }
     for (const n of notes) {
       const x = n.startTick * pxPerTick;
       const w = Math.max(3, Math.min(8, n.lengthTicks * pxPerTick));
       const sel = selectedSet.has(n.id);
-      ctx.fillStyle = sel ? "#ffd166" : lane === "pan" ? "#4cc2ff" : "#e8663c";
+      ctx.fillStyle = sel ? "#ffd166" : lane === "pan" ? canvasTheme().cyan : canvasTheme().accent;
       if (lane === "velocity") {
         const h = n.velocity * 82;
         ctx.fillRect(x, 88 - h, w, h);

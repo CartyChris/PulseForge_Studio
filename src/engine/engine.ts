@@ -346,6 +346,43 @@ class AudioEngine {
     }
     return this.analyser;
   }
+
+  private vizTap: { mono: AnalyserNode; left: AnalyserNode; right: AnalyserNode; sampleRate: number } | null = null;
+  /** Visualizer taps on the master bus: a 2048-point mono analyser plus left/right time-domain
+   * analysers for the stereo scope. Null until engine init. */
+  getVizTap(): { mono: AnalyserNode; left: AnalyserNode; right: AnalyserNode; sampleRate: number } | null {
+    if (!this.masterTap) return null;
+    if (!this.vizTap) {
+      const raw = this.masterTap.context.rawContext as unknown as AudioContext;
+      const out = this.masterTap.output as unknown as AudioNode;
+      const mono = raw.createAnalyser();
+      mono.fftSize = 2048;
+      mono.smoothingTimeConstant = 0.5;
+      mono.minDecibels = -110;
+      mono.maxDecibels = -10;
+      const split = raw.createChannelSplitter(2);
+      const left = raw.createAnalyser(), right = raw.createAnalyser();
+      left.fftSize = right.fftSize = 2048;
+      out.connect(mono);
+      out.connect(split);
+      split.connect(left, 0);
+      split.connect(right, 1);
+      this.vizTap = { mono, left, right, sampleRate: raw.sampleRate };
+    }
+    return this.vizTap;
+  }
+
+  private recordDest: MediaStreamAudioDestinationNode | null = null;
+  /** A MediaStream of the master output (for recording visualizer videos with sound). */
+  getOutputStream(): MediaStream | null {
+    if (!this.masterTap) return null;
+    if (!this.recordDest) {
+      const raw = this.masterTap.context.rawContext as unknown as AudioContext;
+      this.recordDest = raw.createMediaStreamDestination();
+      (this.masterTap.output as unknown as AudioNode).connect(this.recordDest);
+    }
+    return this.recordDest.stream;
+  }
 }
 
 export const engine = new AudioEngine();

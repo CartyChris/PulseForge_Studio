@@ -269,3 +269,39 @@ All 16 stages done, each with a failable check (unit tests + browser checks on r
   exactly 8 bars @142 BPM.
 - Verify: typecheck ✓ (front + server) · lint ✓ · 397/397 tests (32 files) ✓.
 - Machine: the serverless suite needs PF_TEST_WARMUP_MS (cold Fastify load took ~6.5 min through iCloud).
+
+## 2026-10-16 — Visual overhaul + song-aware Visualizer
+
+- Design system "Glass" (src/styles.css, every existing class kept): layered ink surfaces, frosted
+  glass bars/rail/dialogs over a live ambient light (`AmbientGlow`, breathes with kick + bass), SF
+  typography, spring motion, page transitions, custom selects/sliders/switches/scrollbars, steps lit in
+  each channel's colour, MPC-style pads, segmented LED meters. Five themes (html[data-theme]) + any
+  accent + `.no-glass`. Piano roll draws from the theme (src/ui/theme.ts).
+- Trap fixed on the way: `backdrop-filter` (and a transform left by an animation) makes an element the
+  containing block for its `position: fixed` children — the Settings window opened inside the 58px top
+  bar. Glass on the top bar now lives on a ::before; the page transition uses fill-mode backwards.
+- Visualizer (src/viz): `feed.ts` builds one per-frame snapshot shared by every view — song hits from
+  the event list (`song.ts`: role per channel, binary-searched hits per frame incl. loop wrap, key →
+  palette on the circle of fifths, 4-bar step-grid window), audio analysis (`analysis.ts`: bands, log
+  spectrum, envelopes, spectral-flux onsets as fallback for audio-only material, AutoGain so loud masters
+  still move). `renderer.ts`: WebGL2, half-float feedback buffer, point-sprite pass, mip-chain bloom with
+  threshold, ACES, adaptive resolution, Canvas2D fallback. `scenes.ts`: 10 scenes.
+- Visualizer page: auto-hiding glass dock, scene carousel, Auto (sections/energy), Look panel by level,
+  "what it hears" signal strip, performance pads (vizFeed.trigger), full screen, video recording
+  (canvas.captureStream + engine.getOutputStream → MediaRecorder → exportFiles). Top-bar LCD spectrum +
+  beat dots, Home hero backdrop.
+- Settings window (sidebar: Appearance, Workspace, Visuals, Accessibility, About). Workspace
+  customization: presets + per-section switches (`useNavCustom`), hidden sections stay reachable (App's
+  fallback only bounces sections the level doesn't allow and that aren't pinned).
+- Fixed during verification: React StrictMode double-mount + `loseContext()` in dispose killed the
+  canvas context for good (removed); scene brightness/contrast tuned scene by scene against screenshots
+  (bloom threshold killed the haze); viz index now rebuilds on project identity (modifiedAt only changes
+  on save).
+- Verified in the browser (hidden pane: frames stepped through the `window.__pfViz` hook): all 10 scenes
+  compile and render; kick/snare/hat envelopes follow the lofi template's hits; pads raise the kick
+  envelope 0.36 → 0.90; a 5 s recording → 2.77 MB WebM (VP9 + Opus); workspace preset trims the rail to 5
+  sections; phone width has no horizontal scroll.
+- Verify: typecheck ✓ (front + server) · lint ✓ · 410/410 tests (33 files) ✓ · production build ✓.
+- Machine: a local build copy at /private/tmp/pf-mirror (npm ci there) makes tsc 2.5 s / tests 6 s /
+  vite build 1.6 s instead of minutes; copy edited files over explicitly (rsync of the iCloud tree sees
+  every file as changed and restarts the dev server).

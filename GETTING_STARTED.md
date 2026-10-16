@@ -42,6 +42,12 @@ On the **AI Producer**, under *What do you want back?*, choose **Full song audio
 pack**, describe it and press **Make audio**. Or in **AI Chat → Create audio**, just type *"drumless soul loop to
 chop"* or *"afrobeats stems"*. Results land in your library with ▶ Play, **Chop it** and **Add to song** buttons.
 
+## 0d. Watch it: the Visualizer
+Open **Visualizer** in the nav (or click the position display in the top bar) and press **Space**. It
+reacts to your actual kicks, snares and chords. Move and click on it to play with the light, press **A**
+for Auto scenes, **F** for full screen, and **Record** to save a video with sound. Want fewer pages?
+**Customize** at the bottom of the nav rail sets up a workspace as simple or as full as you like.
+
 ## 1. Create a project (by hand)
 1. Click **Project ▾ → New Project…** in the top bar, name it, pick a template, click **Create**.
 
