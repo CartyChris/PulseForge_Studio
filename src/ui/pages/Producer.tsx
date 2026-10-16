@@ -27,7 +27,7 @@ export function Producer() {
   const [change, setChange] = useState("");
   const [exportOpen, setExportOpen] = useState(false);
 
-  useEffect(() => { void p.refreshProviders(); }, []); // eslint-disable-line
+  useEffect(() => { void p.refreshProviders(); }, []); // mount only
   const provider = p.resolvedProvider();
   const run = p.run;
 

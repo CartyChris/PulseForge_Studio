@@ -127,7 +127,8 @@ export const api = {
   analyzeAudio: (providerId: string, prompt: string, features: string, audioBase64?: string, audioMime?: string, model?: string) =>
     call<{ text: string; audioWasSent: boolean }>("/ai/analyze-audio", { providerId, prompt, features, audioBase64, audioMime, model }),
   generateSound: (providerId: string, prompt: string, durationSec: number, kind: "sound" | "music" | "speech", model?: string) =>
-    call<{ job: JobInfo }>("/ai/generate-sound", { providerId, prompt, durationSec, kind, model }),
+    // the hosted build answers synchronously with the audio inline (no server-side asset store)
+    call<{ job: JobInfo; audioBase64?: string; mime?: string }>("/ai/generate-sound", { providerId, prompt, durationSec, kind, model }),
   separateStems: (providerId: string, audioBase64: string, audioMime: string, sourceName: string) =>
     call<{ job: JobInfo }>("/ai/separate-stems", { providerId, audioBase64, audioMime, sourceName }),
   jobs: () => call<{ jobs: JobInfo[] }>("/jobs"),

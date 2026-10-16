@@ -11,6 +11,7 @@
 // backend is a single esbuild bundle), so electron-builder packs only what we stage.
 import { spawnSync, spawn } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -126,14 +127,42 @@ if (DEV) {
   // 5b. package
   step("electron-builder (mac arm64 dmg, unsigned)");
   const electronVersion = JSON.parse(fs.readFileSync(path.join(root, "node_modules", "electron", "package.json"), "utf8")).version;
-  run(bin("electron-builder"), ["--mac", "dmg", "--arm64", "--publish", "never", `--config.electronVersion=${electronVersion}`], {
+  // electron-builder 26 collects node_modules from the app dir and, when that has none (ours has no
+  // runtime deps: the web build is static and the backend is one bundle), falls back to the PROJECT dir,
+  // copying the repo's whole production dependency tree into app.asar (slow, and ~dead weight). So the
+  // staged app dir is made the project dir, with the package.json "build" config passed explicitly
+  // and every path in it made absolute.
+  const abs = (p) => (typeof p === "string" && !path.isAbsolute(p) ? path.join(root, p) : p);
+  const cfg = JSON.parse(JSON.stringify(pkg.build));
+  // Package OUTSIDE the repo: when the repo lives in an iCloud-synced folder (Desktop & Documents),
+  // File Provider re-applies Finder info to every file there and codesign then refuses the bundle
+  // ("resource fork, Finder information, or similar detritus not allowed"). Only the finished .dmg
+  // (one file, signature inside) is copied back to release/.
+  const outDir = path.join(os.tmpdir(), "pulseforge-release");
+  fs.rmSync(outDir, { recursive: true, force: true });
+  cfg.directories = { app: stage, output: outDir, buildResources: abs(cfg.directories.buildResources) };
+  cfg.electronDist = abs(cfg.electronDist);
+  cfg.afterPack = abs(cfg.afterPack);
+  cfg.extraResources = cfg.extraResources.map((r) => ({ ...r, from: abs(r.from) }));
+  cfg.mac.icon = abs(cfg.mac.icon);
+  cfg.dmg.icon = abs(cfg.dmg.icon);
+  cfg.electronVersion = electronVersion;
+  cfg.extraMetadata = { version: pkg.version };
+  const cfgPath = path.join(root, "dist-electron", "builder-config.json");
+  fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2));
+  run(bin("electron-builder"), ["--mac", "dmg", "--arm64", "--publish", "never", "--projectDir", stage, "--config", cfgPath], {
     env: { ...process.env, CSC_IDENTITY_AUTO_DISCOVERY: "false" },
   });
-  const dmg = path.join(root, "release", `PulseForge-Studio-${pkg.version}-arm64.dmg`);
+  const built = path.join(outDir, `PulseForge-Studio-${pkg.version}-arm64.dmg`);
+  const dmg = path.join(root, "release", path.basename(built));
+  if (fs.existsSync(built)) {
+    fs.mkdirSync(path.dirname(dmg), { recursive: true });
+    fs.copyFileSync(built, dmg);
+  }
   if (!fs.existsSync(dmg)) {
     console.error(`[build-desktop] expected artifact missing: ${dmg}`);
     process.exit(1);
   }
   step(`done → ${path.relative(root, dmg)} (${(fs.statSync(dmg).size / 1048576).toFixed(1)} MiB)`);
-  console.log(`[build-desktop] app: release/mac-arm64/PulseForge Studio.app`);
+  console.log(`[build-desktop] unpacked app (for smoke tests): ${path.join(outDir, "mac-arm64", "PulseForge Studio.app")}`);
 }

@@ -15,9 +15,13 @@ models make the plans smarter.
 
 | | How | Notes |
 |---|---|---|
-| **Mac app** | open `release/PulseForge Studio-2.0.0-arm64.dmg`, drag to Applications | Electron. Finds your installed AI CLIs automatically. Microphone prompt on first record. |
+| **Mac app** | open `release/PulseForge-Studio-2.0.0-arm64.dmg`, drag to Applications | Electron, Apple Silicon. Finds your installed AI CLIs automatically. Microphone prompt on first record. |
 | **Local browser** | double-click `Start PulseForge.command`, or `npm install && npm run start` | Serves studio + API on http://127.0.0.1:7800 |
 | **Vercel (hosted)** | see [Deploying to Vercel](#deploying-to-vercel) | Bring-your-own-key: each visitor's keys stay in their own browser |
+
+**First launch of the Mac app:** it's signed ad-hoc, not notarized by Apple, so macOS says it can't
+verify the developer. Click **Done**, then open **System Settings → Privacy & Security**, scroll to the
+PulseForge message and click **Open Anyway** (once). Rebuild it any time with `npm run build:desktop`.
 
 ## Beginner · Intermediate · Expert
 

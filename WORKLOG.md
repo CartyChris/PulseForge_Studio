@@ -198,3 +198,31 @@ Status: S5–S8 and S10 done; S9 (voice providers) wired in providers.ts; S11 (d
 - Machine note: file reads are throttled on this Mac (tsc 2–5 min at 1% CPU, eslint 12 min);
   `tsx server/index.ts` stalled indefinitely, so local runs use an esbuild bundle (`.pf-run/`).
 - Verify: typecheck ✓ (front + server) · lint ✓ · 343/343 tests (22 files) ✓
+
+## 2026-10-16 — S11: Mac app packaged + remaining fixes
+- Melody page opens on a melodic part with notes (prefers Melody patterns) and the piano roll got a
+  pattern picker (♪ = has notes for this part); there was no way to switch patterns from Melody before.
+- Beginner: play mode follows the page (Song → Song mode; Beat/Melody → Pattern mode).
+- Sound Lab: the hosted build returns generated audio inline (`audioBase64`); it was ignored, so
+  hosted generations vanished. Now decoded (`src/audio/base64.ts`, tested) and saved to the library.
+- `localRevise` (offline "change it" box) now has 6 tests incl. combined requests, limits, seeds, no mutation.
+- `npm run start`: backend runs as one esbuild bundle under node (tsx stalled forever on this Mac);
+  verified healthy + serving the studio on a spare port. tsx stays as the fallback.
+- Desktop build, two real packaging bugs: (1) electron-builder 26 falls back to the PROJECT dir when the
+  staged app has no node_modules and copies the repo's whole production dependency tree into the app
+  (seen crawling node_modules for 75+ min) → staged app is now the projectDir with an explicit,
+  absolute-path config ("no node modules returned", as intended). (2) ~/Desktop is iCloud File Provider:
+  codesign rejects bundles built there even after `xattr -cr` → packaging happens in os.tmpdir(), only
+  the .dmg is copied to release/. Verified the same bundle signs fine outside the synced folder.
+- S11 checks: release/PulseForge-Studio-2.0.0-arm64.dmg (151.9 MiB, sha256 3b3feb5d…2dbb2c) mounts;
+  app inside passes `codesign --verify --deep --strict`; Info.plist 2.0.0 + NSMicrophoneUsageDescription;
+  PF_SMOKE_TEST=1 on the packaged binary → health 200, index 200, SPA fallback 200, login-shell PATH
+  imported (22 entries, used for CLI discovery).
+- Phone layout (<760 px): the page grew past the screen and painted over the top bar (column flex
+  without min-height:0) → fixed; verified by geometry on the production build (screenshot tool was stale).
+- Lint: earlier "clean" runs were not real (an `api` path with no matching config aborted eslint silently,
+  and `eslint .` crawled release/). Ignores + api/** added; `npm run lint` found 1 real error (unused
+  import in server/routes.ts), fixed, re-linted clean.
+- Verify: typecheck ✓ (front + server) · 350/350 tests (24 files) ✓ · `npm run lint` ✓.
+- Not verified here: an actual Vercel deployment (needs the user's Vercel account); the serverless
+  entry is covered by server/serverless.test.ts (BYOK isolation, SSRF guard, rewrite paths).

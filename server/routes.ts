@@ -1,7 +1,7 @@
 /** All PulseForge API routes. Every body is Zod-validated; errors are redacted before logging. */
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { PROVIDERS, getProvider, type AIProviderAdapter } from "./providers";
+import { PROVIDERS, getProvider } from "./providers";
 import { setSecret, hasSecret, setProviderConfig, getProviderConfig, redactSecrets } from "./secrets";
 import { createJob, getJob, listJobs, updateJob, cancelJob, isCancelled, saveAsset, readAsset, jobEvents, type Job } from "./jobs";
 import { inspectZip, extractZipSafe } from "./ziputil";

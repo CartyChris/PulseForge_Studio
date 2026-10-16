@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useStudio } from "../state/store";
 import { api, subscribeJobs, type JobInfo, type ProviderInfo } from "../api";
 import { importAudioData } from "../audio/assets";
+import { base64ToArrayBuffer } from "../audio/base64";
 import { renderRegionToChannelData } from "../audio/export";
 import { assetFromChannelData } from "../audio/assets";
 import { ProviderSetup } from "./AIAssistant";
@@ -58,8 +59,21 @@ export function SoundLab() {
     if (!prompt.trim()) return;
     try {
       setFlags({ cloudActive: true });
-      await api.generateSound(provider.id, prompt.trim(), duration, kind);
-      toast("Generation job started (this may cost provider credits)", "info");
+      const r = await api.generateSound(provider.id, prompt.trim(), duration, kind);
+      if (r.audioBase64) {
+        // hosted build: the audio came back inline, so save it straight into this browser's library
+        const asset = await importAudioData(`AI ${prompt.trim().slice(0, 32)}`, base64ToArrayBuffer(r.audioBase64), "ai", {
+          licenseNote: r.job.licenseNote ?? "AI-generated — check your provider's usage license.",
+          tags: ["ai", r.job.kind.replace("generate-", "")],
+          aiMeta: { providerId: r.job.providerId, model: r.job.model, prompt: r.job.prompt, jobId: r.job.id, createdAt: r.job.createdAt },
+        });
+        addAsset(asset);
+        setImported((m) => ({ ...m, [r.job.id]: asset.id }));
+        setJobs((js) => [r.job, ...js.filter((j) => j.id !== r.job.id)]);
+        toast(`"${asset.name}" saved to library`, "success");
+      } else {
+        toast("Generation job started (this may cost provider credits)", "info");
+      }
     } catch (e) {
       toast(String(e), "error");
     }

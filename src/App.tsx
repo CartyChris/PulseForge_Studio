@@ -45,6 +45,35 @@ function Library() {
   );
 }
 
+/** Melody opens on a melodic part that has notes (the Beat page leaves a drum channel selected,
+ * and an empty piano roll reads as "nothing here"). Prefers the Melody/lead part. Mount only. */
+function MelodyPage() {
+  useEffect(() => {
+    const st = useStudio.getState();
+    const p = st.project;
+    const melodic = new Map(p.channels.filter((c) => c.instrument.type !== "drum-sound").map((c) => [c.id, c.name]));
+    const cur = p.patterns.find((x) => x.id === st.selection.patternId);
+    const ch = st.selection.channelId;
+    if (cur && ch && melodic.has(ch) && (cur.notes[ch]?.length ?? 0) > 0) return;
+    let best: { patternId: string; channelId: string } | null = null;
+    let score = 0;
+    for (const pt of p.patterns) {
+      for (const [cid, notes] of Object.entries(pt.notes)) {
+        if (!melodic.has(cid) || !notes.length) continue;
+        const sc = notes.length + (/melody|lead/i.test(`${pt.name} ${melodic.get(cid) ?? ""}`) ? 10_000 : 0);
+        if (sc > score) { score = sc; best = { patternId: pt.id, channelId: cid }; }
+      }
+    }
+    if (best) st.select(best);
+    else if (!ch || !melodic.has(ch)) { const first = [...melodic.keys()][0]; if (first) st.select({ channelId: first }); }
+  }, []);
+  return (
+    <PageFrame title="Melody" icon="keys" sub="Piano roll" tip={<>Click the grid to add notes, drag to move, drag a note's right edge to lengthen, right-click to delete. Pick a <b>chord</b> to stamp full chords, and set the <b>key/scale</b> to highlight notes that fit.</>}>
+      <PianoRoll />
+    </PageFrame>
+  );
+}
+
 function renderTab(tab: Tab) {
   switch (tab) {
     case "home": return <Home />;
@@ -53,11 +82,7 @@ function renderTab(tab: Tab) {
     case "library": return <Library />;
     case "channel-rack": return <BeatPage />;
     case "mixer": return <MixPage />;
-    case "piano-roll": return (
-      <PageFrame title="Melody" icon="keys" sub="Piano roll" tip={<>Click the grid to add notes, drag to move, drag a note's right edge to lengthen, right-click to delete. Pick a <b>chord</b> to stamp full chords, and set the <b>key/scale</b> to highlight notes that fit.</>}>
-        <PianoRoll />
-      </PageFrame>
-    );
+    case "piano-roll": return <MelodyPage />;
     case "playlist": return (
       <PageFrame title="Song" icon="song" sub="Arrangement" tip={<>This is your whole song. Drag clips to move them, drag their edges to trim, and double-click an empty lane to place the selected pattern. Switch the top bar to <b>Song</b> to play everything.</>}>
         <Playlist />
@@ -132,6 +157,15 @@ export function App() {
     window.addEventListener("keydown", arm, { once: true });
     return () => { window.removeEventListener("pointerdown", arm); window.removeEventListener("keydown", arm); };
   }, [started]);
+
+  // Beginner: the play mode follows the page, so Play does what the page suggests
+  // (Song plays the arrangement; Beat/Melody loop the pattern being edited). Other levels: manual.
+  useEffect(() => {
+    if (level !== "beginner") return;
+    const st = useStudio.getState();
+    if (tab === "playlist" && st.playMode !== "song") st.setPlayMode("song");
+    if ((tab === "channel-rack" || tab === "piano-roll") && st.playMode !== "pattern") st.setPlayMode("pattern");
+  }, [tab, level]);
 
   // ⌥1…⌥9 jump between the sections visible at this level
   useEffect(() => {

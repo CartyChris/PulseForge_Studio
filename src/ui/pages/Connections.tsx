@@ -37,7 +37,7 @@ export function Connections() {
     setReport(conn);
     void producer.refreshProviders();
   };
-  useEffect(() => { void refresh(); }, []); // eslint-disable-line
+  useEffect(() => { void refresh(); }, []); // mount only
 
   const test = async (id: string) => {
     setTests((t) => ({ ...t, [id]: "testing" }));

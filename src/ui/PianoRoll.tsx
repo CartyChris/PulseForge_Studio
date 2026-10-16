@@ -417,6 +417,10 @@ export function PianoRoll() {
         <select className="sel" value={channel.id} onChange={(e) => select({ channelId: e.target.value, noteIds: [] })} aria-label="Channel">
           {project.channels.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
+        <select className="sel" value={pattern.id} onChange={(e) => select({ patternId: e.target.value, noteIds: [] })} aria-label="Pattern"
+          title="Pattern (♪ = has notes for this part)">
+          {project.patterns.map((p) => <option key={p.id} value={p.id}>{(p.notes[channel.id]?.length ?? 0) > 0 ? "♪ " : ""}{p.name}</option>)}
+        </select>
         <button className={`tbtn ${tool === "pencil" ? "active" : ""}`} title="Pencil (P)" onClick={() => setTool("pencil")}>✏</button>
         <button className={`tbtn ${tool === "select" ? "active" : ""}`} title="Select (B)" onClick={() => setTool("select")}>▭</button>
         <select className="sel" title="New note length" value={noteLen} onChange={(e) => setNoteLen(Number(e.target.value))}>

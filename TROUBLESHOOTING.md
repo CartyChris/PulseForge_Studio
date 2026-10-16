@@ -75,3 +75,14 @@
 - Raise the export sample rate only when you need it; 44.1 kHz is standard.
 - The engine status readout (top bar, e.g. `48.0k · 5ms`) shows the context sample
   rate and output latency; if latency looks wrong, replug the audio device.
+
+## Everything is slow / the Mac app build fails to sign (iCloud-synced folder)
+If this folder lives in **Desktop** or **Documents** with iCloud Drive "Desktop & Documents" turned on,
+macOS File Provider sits between Node and every file: type-checks and first test runs can take minutes,
+and `codesign` refuses any app bundle built inside the folder ("resource fork, Finder information, or
+similar detritus not allowed").
+- `npm run build:desktop` already packages in your temp folder and copies only the finished `.dmg` into
+  `release/`, so it works anyway.
+- `npm run start` runs the backend as a single bundled file (faster to start than `tsx`).
+- For a much faster dev loop, move the project to a non-synced folder such as `~/Developer`.
+

@@ -107,10 +107,8 @@ export interface RunResult {
   spawnError?: string;
 }
 
-// eslint-disable-next-line no-control-regex
 const ANSI_RE = /[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[-a-zA-Z\d/#&.:=?%@~_]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))/g;
 export function stripAnsi(s: string): string {
-  // eslint-disable-next-line no-control-regex
   return s.replace(ANSI_RE, "").replace(/\r(?!\n)/g, "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
 }
 

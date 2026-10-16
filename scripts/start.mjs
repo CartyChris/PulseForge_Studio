@@ -37,11 +37,31 @@ try {
 } catch {} // nothing on the port — normal startup
 
 
-const server = spawn("npx", ["tsx", "server/index.ts"], {
-  cwd: root,
-  stdio: "inherit",
-  env: { ...process.env, PF_API_PORT: apiPort, PF_STATIC_PORT: port, PF_SERVE_STATIC: "1" },
-});
+// Run the backend as one esbuild bundle under plain node (same bundling as the Mac app). On slow or
+// heavily loaded Macs `tsx` was seen to stall forever before listening; the bundle starts in seconds.
+// Falls back to tsx if bundling fails for any reason.
+async function bundleServer() {
+  try {
+    const esbuild = await import("esbuild");
+    const outfile = path.join(root, ".pf-run", "server.cjs");
+    await esbuild.build({
+      entryPoints: [path.join(root, "server", "index.ts")],
+      outfile, bundle: true, platform: "node", format: "cjs", target: "node20", logLevel: "warning",
+      define: { "import.meta.url": "__pf_import_meta_url" },
+      banner: { js: "const __pf_import_meta_url = require('url').pathToFileURL(__filename).href;" },
+      external: ["electron", "pino-pretty"],
+    });
+    return outfile;
+  } catch (e) {
+    console.warn(`[pulseforge] couldn't bundle the backend (${String(e).slice(0, 200)}), starting it with tsx instead`);
+    return null;
+  }
+}
+const bundle = await bundleServer();
+const serverEnv = { ...process.env, PF_API_PORT: apiPort, PF_STATIC_PORT: port, PF_SERVE_STATIC: "1" };
+const server = bundle
+  ? spawn(process.execPath, [bundle], { cwd: root, stdio: "inherit", env: serverEnv })
+  : spawn("npx", ["tsx", "server/index.ts"], { cwd: root, stdio: "inherit", env: serverEnv });
 server.on("exit", (code) => process.exit(code ?? 0));
 
 const healthURL = `http://127.0.0.1:${port}/api/health`;

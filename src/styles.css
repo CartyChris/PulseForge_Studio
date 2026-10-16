@@ -447,8 +447,9 @@ body { overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
 
 /* phones: nav rail becomes a bottom tab bar, side panels hide, targets grow */
 @media (max-width: 760px) {
-  .app { grid-template-rows: auto 1fr auto auto; }
+  .app { grid-template-rows: auto minmax(0, 1fr) auto auto; }
   .main-row { flex-direction: column-reverse; }
+  .workspace { min-height: 0; } /* column flex: without this the page grows past the screen and paints over the top bar */
   .nav-rail { width: auto; flex-direction: row; overflow-x: auto; padding: 6px; border-right: 0; border-top: 1px solid var(--line); }
   .nav-group-label, .nav-bottom { display: none; }
   .nav-item { min-width: 66px; }
