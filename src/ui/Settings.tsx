@@ -8,6 +8,7 @@ import { LevelSwitch, LEVEL_INFO } from "./shell/Level";
 import { NAV, WORKSPACE_PRESETS, useNavCustom, visibleNav } from "./shell/NavRail";
 import { SAMPLE_MANIFEST } from "../engine/sampled";
 import { useVizPrefs } from "../viz/prefs";
+import { Portal } from "./shell/Portal";
 
 const KEY = "pf_ui_prefs";
 const ACCENTS = [
@@ -82,7 +83,7 @@ export function SettingsButton() {
   return (
     <>
       <button className="tbtn" title="Settings" aria-label="Settings" onClick={() => setOpen("appearance")}><Icon name="settings" size={15} /></button>
-      {open && <SettingsModal initial={open} onClose={() => setOpen(null)} />}
+      {open && <Portal><SettingsModal initial={open} onClose={() => setOpen(null)} /></Portal>}
     </>
   );
 }

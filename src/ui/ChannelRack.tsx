@@ -1,6 +1,7 @@
 /** Channel Rack: FL-style step sequencer — steps, velocity, probability, micro-timing,
  * swing, euclidean/random/humanize generators, pattern management. */
 import { useState } from "react";
+import { Portal, clampToWindow } from "./shell/Portal";
 import { useStudio, usePlayhead } from "../state/store";
 import type { Step, Pattern } from "../../shared/project";
 import { newId } from "../../shared/project";
@@ -315,8 +316,9 @@ export function ChannelRack() {
         const st = (pattern.steps[stepEdit.channelId] ?? []).find((s) => s.index === stepEdit.index);
         if (!st) return null;
         return (
-          <div className="modal" style={{ position: "fixed", left: Math.min(stepEdit.x, window.innerWidth - 300), top: Math.min(stepEdit.y, window.innerHeight - 200), minWidth: 260, zIndex: 90 }}
-            onClick={(e) => e.stopPropagation()}>
+          <Portal>
+          <div className="modal step-pop" style={{ ...clampToWindow(stepEdit.x, stepEdit.y, 340, 240) }}
+            onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
             <h2 style={{ fontSize: 13 }}>Step {stepEdit.index + 1}</h2>
             <div className="knob-row"><label>Velocity</label>
               <input type="range" min={0.05} max={1} step={0.01} value={st.velocity}
@@ -332,6 +334,7 @@ export function ChannelRack() {
               <span className="val">{st.micro}t</span></div>
             <div className="row end"><button className="btn small" onClick={() => setStepEdit(null)}>Done</button></div>
           </div>
+          </Portal>
         );
       })()}
 

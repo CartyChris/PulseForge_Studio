@@ -8,22 +8,37 @@ import { getHost } from "../host/adapter";
 import { newId } from "../../shared/project";
 import { engine } from "../engine/engine";
 import type { BitDepth } from "../../shared/wav";
+import { Portal, placeMenu } from "./shell/Portal";
 
 type Dialog = null | "open" | "new" | "saveas" | "export";
 
 export function ProjectMenu() {
   const { project, setProject, save, toast } = useStudio();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuAt, setMenuAt] = useState<{ left: number; top: number; maxHeight: number } | null>(null);
+  const menuOpen = menuAt !== null;
+  const setMenuOpen = (open: boolean) => {
+    if (!open) return setMenuAt(null);
+    const r = ref.current?.getBoundingClientRect();
+    if (r) setMenuAt(placeMenu(r, 280, 380));
+  };
   const [dialog, setDialog] = useState<Dialog>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
+  // the menu is portaled to <body>, so "outside" means outside both the button and the menu
   useEffect(() => {
+    if (!menuOpen) return;
     const close = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setMenuOpen(false);
+      const t = e.target as Node;
+      if (!ref.current?.contains(t) && !menuRef.current?.contains(t)) setMenuAt(null);
     };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuAt(null); };
+    const gone = () => setMenuAt(null);
     window.addEventListener("mousedown", close);
-    return () => window.removeEventListener("mousedown", close);
-  }, []);
+    window.addEventListener("keydown", esc);
+    window.addEventListener("resize", gone);
+    return () => { window.removeEventListener("mousedown", close); window.removeEventListener("keydown", esc); window.removeEventListener("resize", gone); };
+  }, [menuOpen]);
 
   const openProject = async (id: string) => {
     engine.stop();
@@ -57,12 +72,13 @@ export function ProjectMenu() {
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <button className="tbtn proj-btn" title={`Project menu: ${project.name}`} aria-haspopup="menu" onClick={() => setMenuOpen(!menuOpen)}>
+      <button className="tbtn proj-btn" title={`Project menu: ${project.name}`} aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         <span className="proj-name">{project.name}</span> ▾
       </button>
-      {menuOpen && (
-        <div className="palette" style={{ position: "absolute", top: 36, left: 0, transform: "none", width: 280 }} role="menu">
-          <div className="results" style={{ borderTop: "none" }}>
+      {menuAt && (
+        <Portal>
+        <div ref={menuRef} className="palette menu-pop" style={{ left: menuAt.left, top: menuAt.top, width: 280 }} role="menu" aria-label="Project">
+          <div className="results" style={{ borderTop: "none", maxHeight: menuAt.maxHeight - 16 }}>
             {item("New Project…", () => setDialog("new"))}
             {item("Open Project…", () => setDialog("open"))}
             {item("Save", () => save(true), "⌘S")}
@@ -85,7 +101,9 @@ export function ProjectMenu() {
             })}
           </div>
         </div>
+        </Portal>
       )}
+      <Portal>
       {dialog === "open" && <OpenDialog onOpen={openProject} onClose={() => setDialog(null)} />}
       {dialog === "new" && <NewDialog onClose={() => setDialog(null)} onOpen={openProject} />}
       {dialog === "saveas" && (
@@ -103,6 +121,7 @@ export function ProjectMenu() {
         />
       )}
       {dialog === "export" && <ExportDialog onClose={() => setDialog(null)} />}
+      </Portal>
     </div>
   );
 

@@ -305,3 +305,26 @@ All 16 stages done, each with a failable check (unit tests + browser checks on r
 - Machine: a local build copy at /private/tmp/pf-mirror (npm ci there) makes tsc 2.5 s / tests 6 s /
   vite build 1.6 s instead of minutes; copy edited files over explicitly (rsync of the iCloud tree sees
   every file as changed and restarts the dev server).
+
+## 2026-10-16 — Clipped popups & top-bar overflow sweep
+
+- Reported bug: the project menu (Project ▾) opened as a sliver under the top bar. It was
+  `position: absolute` inside `.topbar`, which clips overflow (pre-existing; the old dropdown had the
+  same flaw). Now rendered in <body> (`src/ui/shell/Portal.tsx`), anchored with `placeMenu()`, closes on
+  outside click / Esc / resize. All 9 items verified visible and hit-testable.
+- Same class, found by sweep:
+  - Playlist clip context menu: portaled + `clampToWindow()` (could run off the bottom/right edge), and
+    the `.palette` open animation no longer shifts these menus by -50% (new `.menu-pop` class).
+  - Beat page step editor: real width (~374px) exceeded its 300px clamp → off-screen at the right edge;
+    now a fixed 340px popover, portaled, exact clamp.
+  - Settings window and the ⋯ transport popover: portaled (no longer depend on the top bar's styling).
+  - Top bar ran out of squeeze steps: at 900px (Intermediate/Expert) and 780px (Beginner) the level
+    switch, Save and Settings sat past the right edge; on phones ~270px of controls were unreachable.
+    12 squeeze steps now (BPM label + Tap → popover, metronome + undo/redo → popover, narrower project
+    name, LCD last, compact buttons/no logo, Beginner hides Pattern/Song which already follows the
+    page); the ⋯ popover exists at every level once tools move into it; phones wrap to two rows
+    (`tooBig()` counts rows).
+  - Visualizer Look panel: max-height + scroll so short windows can't push it under the page edge.
+- Verified with a geometry audit (essential controls inside the bar, no horizontal overflow) at
+  1440/1150/900/780/375 px × all three levels; menus/popovers checked for on-screen rects and
+  elementFromPoint hits. Typecheck ✓ · lint ✓ · 410/410 ✓ · build ✓.

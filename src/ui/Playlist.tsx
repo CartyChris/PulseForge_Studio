@@ -1,6 +1,7 @@
 /** Playlist: multitrack arrangement — pattern/audio/automation clips, drag/trim/split,
  * fades, markers, sections, ripple edit, track management, drop targets for samples. */
 import { useMemo, useRef, useState } from "react";
+import { Portal, clampToWindow } from "./shell/Portal";
 import { useStudio, usePlayhead } from "../state/store";
 import { ShowAt } from "./shell/Level";
 import type { Clip, Track } from "../../shared/project";
@@ -382,7 +383,8 @@ export function Playlist() {
 
       {/* clip context menu */}
       {menu && menuClip && (
-        <div className="palette" style={{ left: menu.x, top: menu.y, transform: "none", width: 240, position: "fixed" }}
+        <Portal>
+        <div className="palette menu-pop" style={{ ...clampToWindow(menu.x, menu.y, 240, menuClip.kind === "audio" ? 376 : 280), width: 240 }}
           onMouseLeave={() => setMenu(null)}>
           <div className="results" style={{ borderTop: "none" }}>
             {[
@@ -417,6 +419,7 @@ export function Playlist() {
             ))}
           </div>
         </div>
+        </Portal>
       )}
     </div>
   );

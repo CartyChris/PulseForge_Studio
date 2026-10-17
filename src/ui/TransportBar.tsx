@@ -9,28 +9,42 @@ import { Icon, BrandMark } from "./shell/Icons";
 import { ShowAt, LevelSwitch } from "./shell/Level";
 import { LcdSpectrum, LcdBeats } from "./viz/LiveVisuals";
 import { useVizPrefs } from "../viz/prefs";
+import { Portal } from "./shell/Portal";
 
-const SQUEEZE_STEPS = 7;
+const SQUEEZE_STEPS = 12;
+
+/** the bar doesn't fit: it overflows sideways, or (wrapping on phones) needs more than two rows */
+function tooBig(el: HTMLElement): boolean {
+  if (el.scrollWidth > el.clientWidth + 1) return true;
+  if (getComputedStyle(el).flexWrap !== "wrap") return false;
+  const rows = new Set<number>();
+  for (const c of el.children) {
+    const r = (c as HTMLElement).getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) rows.add(Math.round(r.top / 8));
+  }
+  return rows.size > 2;
+}
 
 export function TransportBar() {
   const { project, playing, recording, micActive, cloudActive, aiBusy, dirty, lastSavedAt, snap, setSnap, playMode, setPlayMode, update, undo, redo, undoStack, redoStack, save, setTab, toast } = useStudio();
   const positionTicks = usePlayhead((s) => s.ticks);
   const [status, setStatus] = useState(engine.status());
-  const [moreAt, setMoreAt] = useState<{ x: number; y: number } | null>(null); // ⋯ popover anchor (fixed: the bar clips overflow)
+  const [moreAt, setMoreAt] = useState<{ x: number; y: number; tap: boolean; tools: boolean } | null>(null); // ⋯ popover anchor (fixed: the bar clips overflow)
   const moreOpen = moreAt !== null;
   const tapTimes = useRef<number[]>([]);
   const level = useStudio((s) => s.level);
   const barRef = useRef<HTMLDivElement>(null);
   const lcdOn = useVizPrefs((v) => v.lcd);
 
-  // Keep everything on one row at any window width: add squeeze steps (see .topbar.sqN in
-  // styles.css) one at a time until the bar stops overflowing. Classes are set on the DOM
-  // directly so the 150ms status re-renders never fight them.
+  // Keep every control reachable at any window width: add squeeze steps (see .topbar.sqN in
+  // styles.css) one at a time until the bar fits — one row on desktop, at most two rows on phones
+  // (where the bar wraps). Classes are set on the DOM directly so the 150ms status re-renders
+  // never fight them.
   const fit = useCallback(() => {
     const el = barRef.current;
     if (!el) return;
     for (let k = 1; k <= SQUEEZE_STEPS; k++) el.classList.remove(`sq${k}`);
-    for (let n = 1; n <= SQUEEZE_STEPS && el.scrollWidth > el.clientWidth + 1; n++) el.classList.add(`sq${n}`);
+    for (let n = 1; n <= SQUEEZE_STEPS && tooBig(el); n++) el.classList.add(`sq${n}`);
   }, []);
   useLayoutEffect(fit, [fit, level, project.name, playMode]);
   useEffect(() => {
@@ -45,7 +59,7 @@ export function TransportBar() {
     const t = setInterval(() => {
       setStatus(engine.status());
       const el = barRef.current; // content can grow later (engine info text), re-fit if it overflows
-      if (el && el.scrollWidth > el.clientWidth + 1) fit();
+      if (el && tooBig(el)) fit();
     }, 150);
     return () => clearInterval(t);
   }, [fit]);
@@ -135,27 +149,42 @@ export function TransportBar() {
         <input className="num-input" type="number" min={20} max={400} step={0.5} value={project.bpm} aria-label="BPM"
           onChange={(e) => { const bpm = Number(e.target.value); if (bpm >= 20 && bpm <= 400) update((p) => ({ ...p, bpm })); }} />
         <label>bpm</label>
-        <ShowAt min="intermediate"><button className="tbtn" title="Tap tempo" onClick={tapTempo}>TAP</button></ShowAt>
+        <ShowAt min="intermediate"><button className="tbtn tap-btn" title="Tap tempo" onClick={tapTempo}>TAP</button></ShowAt>
       </div>
 
-      <button className={`tbtn ${project.metronome ? "active" : ""}`} title="Metronome (M)" aria-label="Metronome"
+      <button className={`tbtn tb-metro ${project.metronome ? "active" : ""}`} title="Metronome (M)" aria-label="Metronome"
         onClick={() => update((p) => ({ ...p, metronome: !p.metronome }))}><Icon name="metronome" size={15} /></button>
 
-      <ShowAt min="intermediate">
-        <span className="tb-inline">{extras}</span>
-        <span className="tb-more">
-          <button className={`tbtn ${moreOpen ? "active" : ""}`} title="Snap, time signature, count-in" aria-label="More transport options" aria-expanded={moreOpen}
-            onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setMoreAt(moreOpen ? null : { x: r.left + r.width / 2, y: r.bottom + 6 }); }}><Icon name="sliders" size={15} /></button>
-          {moreAt && (
-            <>
-              <div className="tb-more-scrim" onMouseDown={() => setMoreAt(null)} />
-              <div className="tb-more-pop" style={{ left: moreAt.x, top: moreAt.y }}>{extras}</div>
-            </>
-          )}
-        </span>
-      </ShowAt>
+      <ShowAt min="intermediate"><span className="tb-inline">{extras}</span></ShowAt>
+      {/* ⋯ overflow: whatever the squeeze steps took off the bar lands here, so nothing is ever unreachable */}
+      <span className="tb-more">
+        <button className={`tbtn ${moreOpen ? "active" : ""}`} title="More: snap, time signature, count-in and anything that didn't fit" aria-label="More transport options" aria-expanded={moreOpen}
+          onClick={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            const bar = barRef.current;
+            setMoreAt(moreOpen ? null : { x: r.left + r.width / 2, y: r.bottom + 6, tap: !!bar?.classList.contains("sq7"), tools: !!bar?.classList.contains("sq8") });
+          }}><Icon name="sliders" size={15} /></button>
+        {moreAt && (
+          <Portal>
+            <div className="tb-more-scrim" onMouseDown={() => setMoreAt(null)} />
+            <div className="tb-more-pop" style={{ left: Math.max(130, Math.min(moreAt.x, window.innerWidth - 130)), top: moreAt.y }}>
+              {((moreAt.tap && level !== "beginner") || moreAt.tools) && (
+                <div className="tb-more-row">
+                  {moreAt.tap && <ShowAt min="intermediate"><button className="tbtn" title="Tap tempo" onClick={tapTempo}>TAP</button></ShowAt>}
+                  {moreAt.tools && <>
+                    <button className={`tbtn ${project.metronome ? "active" : ""}`} title="Metronome (M)" aria-label="Metronome" onClick={() => update((p) => ({ ...p, metronome: !p.metronome }))}><Icon name="metronome" size={15} /></button>
+                    <button className="tbtn" title="Undo (⌘Z)" aria-label="Undo" disabled={!undoStack.length} onClick={undo}><Icon name="undo" size={15} /></button>
+                    <button className="tbtn" title="Redo (⌘⇧Z)" aria-label="Redo" disabled={!redoStack.length} onClick={redo}><Icon name="redo" size={15} /></button>
+                  </>}
+                </div>
+              )}
+              <ShowAt min="intermediate">{extras}</ShowAt>
+            </div>
+          </Portal>
+        )}
+      </span>
 
-      <div className="tb-group">
+      <div className="tb-group tb-undo">
         <button className="tbtn" title="Undo (⌘Z)" aria-label="Undo" disabled={!undoStack.length} onClick={undo}><Icon name="undo" size={15} /></button>
         <button className="tbtn" title="Redo (⌘⇧Z)" aria-label="Redo" disabled={!redoStack.length} onClick={redo}><Icon name="redo" size={15} /></button>
       </div>
