@@ -13,7 +13,7 @@ import { SoundLab } from "./ui/SoundLab";
 import { Recording } from "./ui/Recording";
 import { ResourceHub } from "./ui/ResourceHub";
 import { CommandPalette } from "./ui/CommandPalette";
-import { NavRail, visibleNav, levelNav, useNavCustom } from "./ui/shell/NavRail";
+import { NavRail, NAV, visibleNav, levelNav, useNavCustom } from "./ui/shell/NavRail";
 import { AmbientGlow } from "./ui/viz/LiveVisuals";
 import { Icon } from "./ui/shell/Icons";
 import { PageFrame, StatusBar, Onboarding, HelpSheet } from "./ui/shell/Chrome";
@@ -136,10 +136,14 @@ export function App() {
 
   // if a page isn't available at the current level (and isn't pinned), fall back to Home.
   // Sections hidden with Customize stay reachable (⌘K), so they don't bounce.
+  // With AI off, AI pages (producer, chat, sound lab, connect) are closed even if pinned.
   const overrides = useNavCustom((s) => s.overrides);
+  const aiEnabled = useStudio((s) => s.aiEnabled);
   useEffect(() => {
-    if (!levelNav(level).some((n) => n.tab === tab) && overrides[tab] !== "show") setTab("home");
-  }, [level, tab, setTab, overrides]);
+    const aiPage = NAV.find((n) => n.tab === tab)?.ai ?? false;
+    if (aiPage && !aiEnabled) { setTab("home"); return; }
+    if (!levelNav(level, aiEnabled).some((n) => n.tab === tab) && overrides[tab] !== "show") setTab("home");
+  }, [level, tab, setTab, overrides, aiEnabled]);
 
   useEffect(() => {
     setHost(new StandaloneHostAdapter((n) => useStudio.getState().toast(`${n.title}${n.body ? ` — ${n.body}` : ""}`, n.kind ?? "info")));

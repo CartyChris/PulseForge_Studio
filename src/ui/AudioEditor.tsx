@@ -13,7 +13,7 @@ import { StemExtractor } from "./StemExtractor";
 import { resampleLinear } from "../engine/dsp";
 import { clamp } from "../../shared/time";
 import { ChopScrewPanel } from "./ChopScrew";
-import { MoreTools } from "./shell/Level";
+import { MoreTools, AiOnly } from "./shell/Level";
 
 export function AudioEditor() {
   const { project, selection, select, update, addAsset, dispatch, toast, setTab, zoom, setZoom } = useStudio();
@@ -381,8 +381,8 @@ export function AudioEditor() {
           title="EXPERIMENTAL: transcribe a hummed/sung monophonic melody to Piano Roll notes">♪ To MIDI ⚗</button>
         <button className="btn small" onClick={() => setTuneOpen(true)}
           title="EXPERIMENTAL: PulseTune pitch correction — creates a new tuned asset">PulseTune ⚗</button>
-        <button className="btn small" onClick={() => setStemsOpen(true)}
-          title="AI Stem Extractor — split this audio into vocals/drums/bass/other via a connected provider (uploads audio)">Stems ✂</button>
+        <AiOnly><button className="btn small" onClick={() => setStemsOpen(true)}
+          title="AI Stem Extractor — split this audio into vocals/drums/bass/other via a connected provider (uploads audio)">Stems ✂</button></AiOnly>
         </MoreTools>
         <button className="btn small" onClick={() => setMarkers([])} disabled={!markers.length}>Clear marks</button>
         <div className="spacer" />

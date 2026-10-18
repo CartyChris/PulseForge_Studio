@@ -39,7 +39,7 @@ export function MoreTools({ label = "More tools", children, min = "beginner" }: 
 }
 
 export const LEVEL_INFO: Record<Level, { label: string; icon: IconName; blurb: string }> = {
-  beginner: { label: "Beginner", icon: "seedling", blurb: "Big, simple controls and guided steps. The AI Producer and drum pads front and center." },
+  beginner: { label: "Beginner", icon: "seedling", blurb: "Big, simple controls and guided steps, with the essentials (drum pads, songs, the mixer) front and center." },
   intermediate: { label: "Intermediate", icon: "rocket", blurb: "Every production page with clean toolbars — advanced tools one click away." },
   expert: { label: "Expert", icon: "crown", blurb: "Everything at once: browser + inspector panels, dense toolbars, every generator and editor." },
 };
@@ -73,5 +73,32 @@ export function Coach({ id, title, children, max = "intermediate" }: { id: strin
         <Icon name="close" size={14} />
       </button>
     </div>
+  );
+}
+
+/** AI features on/off, the companion to the experience level. */
+export function useAi(): boolean {
+  return useStudio((s) => s.aiEnabled);
+}
+
+/** render only while AI features are on */
+export function AiOnly({ children }: { children: ReactNode }) {
+  return useAi() ? <>{children}</> : null;
+}
+
+export const AI_INFO = {
+  on: "AI on: the AI Producer, AI Chat, Sound Lab, prompts and AI connections are available.",
+  off: "AI off: a pure beat-making and production studio. No AI pages, prompts or connections, nothing is sent anywhere. Turn it back on any time.",
+};
+
+/** top-bar switch, styled like the level switch */
+export function AiSwitch() {
+  const { aiEnabled, setAiEnabled, toast } = useStudio();
+  return (
+    <button type="button" role="switch" aria-checked={aiEnabled} className={`ai-toggle ${aiEnabled ? "on" : ""}`}
+      title={`${aiEnabled ? AI_INFO.on : AI_INFO.off} Click to turn AI ${aiEnabled ? "off" : "on"}.`}
+      onClick={() => { setAiEnabled(!aiEnabled); toast(aiEnabled ? "AI off. Pure production mode: just you and the studio" : "AI on. The AI Producer and AI Chat are back", "success"); }}>
+      <Icon name="sparkles" size={14} /><span className="lbl">AI</span><i aria-hidden="true" />
+    </button>
   );
 }

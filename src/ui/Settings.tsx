@@ -4,7 +4,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useStudio, levelRank, type Tab } from "../state/store";
 import { Icon, type IconName } from "./shell/Icons";
-import { LevelSwitch, LEVEL_INFO } from "./shell/Level";
+import { LevelSwitch, LEVEL_INFO, AI_INFO } from "./shell/Level";
 import { NAV, WORKSPACE_PRESETS, useNavCustom, visibleNav } from "./shell/NavRail";
 import { SAMPLE_MANIFEST } from "../engine/sampled";
 import { useVizPrefs } from "../viz/prefs";
@@ -98,7 +98,7 @@ function Toggle({ on, onChange, label, hint }: { on: boolean; onChange: (v: bool
 }
 
 function SettingsModal({ onClose, initial }: { onClose: () => void; initial: Pane }) {
-  const { uiScale, setUiScale, reducedMotion, setFlags, toast, level } = useStudio();
+  const { uiScale, setUiScale, reducedMotion, setFlags, toast, level, aiEnabled, setAiEnabled } = useStudio();
   const [prefs, setPrefs] = useState<UiPrefs>(() => ({ ...loadUiPrefs(), scale: uiScale, reducedMotion }));
   const [pane, setPane] = useState<Pane>(initial);
   const viz = useVizPrefs();
@@ -116,11 +116,11 @@ function SettingsModal({ onClose, initial }: { onClose: () => void; initial: Pan
   }, [onClose]);
 
   const set = (patch: Partial<UiPrefs>) => setPrefs((p) => ({ ...p, ...patch }));
-  const shown = new Set(visibleNav(level, nav.overrides).map((n) => n.tab));
+  const shown = new Set(visibleNav(level, nav.overrides, aiEnabled).map((n) => n.tab));
   const customized = Object.keys(nav.overrides).length > 0;
   const presetActive = (tabs: Tab[] | null) => tabs === null
     ? !customized
-    : customized && NAV.every((n) => n.tab === "home" || shown.has(n.tab) === tabs.includes(n.tab));
+    : customized && NAV.every((n) => n.tab === "home" || (n.ai && !aiEnabled) || shown.has(n.tab) === tabs.includes(n.tab));
   const applyPreset = (tabs: Tab[] | null, name: string) => {
     if (!tabs) nav.apply({});
     else {
@@ -191,6 +191,9 @@ function SettingsModal({ onClose, initial }: { onClose: () => void; initial: Pan
 
           {pane === "workspace" && (
             <>
+              <h3 className="section">AI features</h3>
+              <Toggle on={aiEnabled} onChange={(v) => setAiEnabled(v)} label={aiEnabled ? "AI is on" : "AI is off: pure production mode"}
+                hint={aiEnabled ? AI_INFO.on : AI_INFO.off} />
               <h3 className="section">Experience level</h3>
               <LevelSwitch />
               <p className="small dim" style={{ margin: "8px 0 0" }}>{LEVEL_INFO[level].blurb} Levels change how much is shown at once, never what the studio can do.</p>
@@ -203,7 +206,7 @@ function SettingsModal({ onClose, initial }: { onClose: () => void; initial: Pan
                 ))}
               </div>
               <div className="section-list">
-                {NAV.filter((n) => n.tab !== "home").map((n) => {
+                {NAV.filter((n) => n.tab !== "home" && (aiEnabled || !n.ai)).map((n) => {
                   const on = shown.has(n.tab);
                   const byLevel = levelRank(level) >= levelRank(n.min);
                   return (

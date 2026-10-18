@@ -10,7 +10,7 @@ import { fillEnding, ghostNotes, shiftSteps, polyrhythm, accentEvery, thin, reve
 import { DRUM_KITS } from "../engine/kits";
 import { INSTRUMENT_PRESETS } from "../engine/instruments";
 import { engine } from "../engine/engine";
-import { ShowAt, MoreTools } from "./shell/Level";
+import { ShowAt, MoreTools, AiOnly } from "./shell/Level";
 
 const COLORS = ["#e8663c", "#ffd166", "#4cc2ff", "#8ef58a", "#7b6cff", "#ff7bd5", "#5ad9c9", "#f5a623"];
 
@@ -202,7 +202,7 @@ export function ChannelRack() {
             dispatch({ type: "setSteps", patternId: pattern.id, channelId: selection.channelId!, steps });
             toast("Groove applied", "success");
           }}>Paste Groove</button>
-        <button className="btn small" title="Ask the AI Assistant to continue/extend this pattern"
+        <AiOnly><button className="btn small" title="Ask the AI Assistant to continue/extend this pattern"
           onClick={() => {
             const desc = project.channels
               .map((ch) => {
@@ -216,7 +216,7 @@ export function ChannelRack() {
             setTimeout(() => window.dispatchEvent(new CustomEvent("pf-ai-prefill", {
               detail: `Continue this ${pattern.lengthSteps}-step drum pattern with a complementary variation as a new pattern. Current pattern "${pattern.name}" (${project.bpm} BPM): ${desc || "empty"}`,
             })), 50);
-          }}>AI ▸ Continue</button>
+          }}>AI ▸ Continue</button></AiOnly>
         </MoreTools>
         <div className="spacer" />
         <button className="btn small primary" onClick={() => setAddOpen(true)}>+ Add Channel</button>

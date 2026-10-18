@@ -36,6 +36,11 @@ the level only decides how much is on screen at once.
 - **Expert**: everything at once: both side panels open, dense toolbars, time signature and count-in
   in the top bar, every generator and editor.
 
+**AI on / off** (the ✨ AI switch next to the level, or Settings → Workspace): turn AI off and PulseForge
+becomes a pure beat-making and production studio — no AI Producer, AI Chat, Sound Lab, Connect page or
+prompts, and nothing is sent anywhere. Home becomes your project shelf (search, open, duplicate, import,
+new from a template). Turn it back on any time; nothing is lost.
+
 **Customize** (bottom of the nav rail, or Settings → Workspace) goes further: pick a workspace —
 *Just make beats* (4 pages), *Beat maker*, *Songwriter*, *Full studio* — or switch any section on or off.
 Hidden sections stay one ⌘K away.

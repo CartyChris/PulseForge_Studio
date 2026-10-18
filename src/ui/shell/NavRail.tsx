@@ -5,11 +5,11 @@ import { create } from "zustand";
 import { useStudio, type Tab, type Level, levelRank } from "../../state/store";
 import { Icon, type IconName } from "./Icons";
 
-export interface NavItem { tab: Tab; label: string; icon: IconName; min: Level; group: string; hint: string; hero?: boolean }
+export interface NavItem { tab: Tab; label: string; icon: IconName; min: Level; group: string; hint: string; hero?: boolean; /** hidden while AI features are off */ ai?: boolean }
 
 export const NAV: NavItem[] = [
   { tab: "home", label: "Home", icon: "home", min: "beginner", group: "Create", hint: "Start here: make a beat, open a project, learn the basics" },
-  { tab: "producer", label: "AI Producer", icon: "sparkles", min: "beginner", group: "Create", hint: "Describe a beat — get a finished, mixed arrangement", hero: true },
+  { tab: "producer", label: "AI Producer", icon: "sparkles", min: "beginner", group: "Create", hint: "Describe a beat — get a finished, mixed arrangement", hero: true, ai: true },
   { tab: "channel-rack", label: "Beat", icon: "pads", min: "beginner", group: "Create", hint: "Drum pads & step sequencer" },
   { tab: "audio-editor", label: "Sample", icon: "wave", min: "beginner", group: "Create", hint: "Chop & screw, flip samples, make loops from a prompt" },
   { tab: "piano-roll", label: "Melody", icon: "keys", min: "beginner", group: "Create", hint: "Draw notes, chords and melodies" },
@@ -19,9 +19,9 @@ export const NAV: NavItem[] = [
   { tab: "mixer", label: "Mix", icon: "mixer", min: "beginner", group: "Mix", hint: "Levels, effects and the master chain" },
   { tab: "visualizer", label: "Visualizer", icon: "viz", min: "beginner", group: "Mix", hint: "A song-aware light show: 10 interactive scenes, full screen, record a video" },
   { tab: "library", label: "Sounds", icon: "library", min: "beginner", group: "Sounds", hint: "Kits, instruments, samples & sound packs" },
-  { tab: "sound-lab", label: "Sound Lab", icon: "flask", min: "intermediate", group: "Sounds", hint: "Generate sounds with AI audio providers, split stems" },
-  { tab: "ai-assistant", label: "AI Chat", icon: "chat", min: "intermediate", group: "Sounds", hint: "Chat with AI to compose, edit and mix" },
-  { tab: "connections", label: "Connect", icon: "plug", min: "beginner", group: "Setup", hint: "Connect your AI subscriptions, local models & API keys" },
+  { tab: "sound-lab", label: "Sound Lab", icon: "flask", min: "intermediate", group: "Sounds", hint: "Generate sounds with AI audio providers, split stems", ai: true },
+  { tab: "ai-assistant", label: "AI Chat", icon: "chat", min: "intermediate", group: "Sounds", hint: "Chat with AI to compose, edit and mix", ai: true },
+  { tab: "connections", label: "Connect", icon: "plug", min: "beginner", group: "Setup", hint: "Connect your AI subscriptions, local models & API keys", ai: true },
   { tab: "resources", label: "Resources", icon: "globe", min: "expert", group: "Setup", hint: "Sample-pack sites & the pack importer" },
 ];
 
@@ -55,13 +55,14 @@ export const WORKSPACE_PRESETS: WorkspacePreset[] = [
 ];
 
 /** sections the level allows (ignores customization): what the app may fall back from */
-export function levelNav(level: Level): NavItem[] {
-  return NAV.filter((n) => levelRank(level) >= levelRank(n.min));
+export function levelNav(level: Level, ai = useStudio.getState().aiEnabled): NavItem[] {
+  return NAV.filter((n) => levelRank(level) >= levelRank(n.min) && (ai || !n.ai));
 }
 /** sections shown in the rail: the level's, plus pinned, minus hidden (Home always stays) */
-export function visibleNav(level: Level, overrides = useNavCustom.getState().overrides): NavItem[] {
+export function visibleNav(level: Level, overrides = useNavCustom.getState().overrides, ai = useStudio.getState().aiEnabled): NavItem[] {
   return NAV.filter((n) => {
     if (n.tab === "home") return true;
+    if (n.ai && !ai) return false;
     const o = overrides[n.tab];
     if (o === "hide") return false;
     return o === "show" || levelRank(level) >= levelRank(n.min);
@@ -71,7 +72,8 @@ export function visibleNav(level: Level, overrides = useNavCustom.getState().ove
 export function NavRail({ onHelp }: { onHelp: () => void }) {
   const { tab, setTab, level } = useStudio();
   const overrides = useNavCustom((s) => s.overrides);
-  const items = visibleNav(level, overrides);
+  const ai = useStudio((s) => s.aiEnabled);
+  const items = visibleNav(level, overrides, ai);
   let lastGroup = "";
   return (
     <nav className="nav-rail" aria-label="Studio sections">

@@ -22,6 +22,7 @@ export function PageFrame({ title, icon, sub, tipTitle, tip, children }: { title
 export function StatusBar({ showLeft, showRight, toggleLeft, toggleRight }: { showLeft: boolean; showRight: boolean; toggleLeft: () => void; toggleRight: () => void }) {
   const { tab, project, level, dirty, lastSavedAt, playMode } = useStudio();
   const brain = useProducer((s) => s.resolvedProvider());
+  const aiEnabled = useStudio((s) => s.aiEnabled);
   const hint = NAV.find((n) => n.tab === tab)?.hint ?? "";
   return (
     <footer className="statusbar">
@@ -33,7 +34,9 @@ export function StatusBar({ showLeft, showRight, toggleLeft, toggleRight }: { sh
       )}
       <span className="hint">{hint}</span>
       <span><b>{project.name}</b> · {project.bpm} BPM · {project.key} {project.scale} · {playMode === "song" ? "Song" : "Pattern"} mode</span>
-      <span title="Who the AI Producer uses"><Icon name="sparkles" size={11} /> {brain?.name ?? "Offline producer"}</span>
+      {aiEnabled
+        ? <span title="Who the AI Producer uses"><Icon name="sparkles" size={11} /> {brain?.name ?? "Offline producer"}</span>
+        : <span title="AI features are off (top bar or Settings → Workspace)">AI off</span>}
       <span>{dirty ? "● unsaved (autosaves)" : `✓ saved${lastSavedAt ? ` ${new Date(lastSavedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}`}</span>
       <span>{LEVEL_INFO[level].label}</span>
     </footer>
@@ -41,14 +44,14 @@ export function StatusBar({ showLeft, showRight, toggleLeft, toggleRight }: { sh
 }
 
 export function Onboarding() {
-  const { needsOnboarding, finishOnboarding, setTab } = useStudio();
+  const { needsOnboarding, finishOnboarding, setTab, aiEnabled, setAiEnabled } = useStudio();
   const [pick, setPick] = useState<Level>("beginner");
   if (!needsOnboarding) return null;
   return (
     <div className="modal-backdrop">
       <div className="modal onboard" role="dialog" aria-labelledby="pf-welcome">
         <div className="row"><BrandMark size={40} /><div><div className="faint small">PulseForge Studio 2.0</div><h1 id="pf-welcome">Welcome. Let's make some music.</h1></div></div>
-        <p className="dim">How much of the studio do you want to see? You can change this any time from the top bar. Nothing is ever taken away, it's just tidied up.</p>
+        <p className="dim">How much of the studio do you want to see, and do you want AI? You can change both any time from the top bar. Nothing is ever taken away, it's just tidied up.</p>
         <div className="level-cards">
           {(Object.keys(LEVEL_INFO) as Level[]).map((l) => (
             <button key={l} className={`level-card ${pick === l ? "on" : ""}`} onClick={() => setPick(l)} aria-pressed={pick === l}>
@@ -58,12 +61,20 @@ export function Onboarding() {
             </button>
           ))}
         </div>
+        <div className="onboard-ai" role="radiogroup" aria-label="AI features">
+          <button role="radio" aria-checked={aiEnabled} className={`level-card ${aiEnabled ? "on" : ""}`} onClick={() => setAiEnabled(true)}>
+            <Icon name="sparkles" size={22} /><b>With AI</b><span>The AI Producer turns a sentence into a finished beat, plus AI Chat and AI sounds.</span>
+          </button>
+          <button role="radio" aria-checked={!aiEnabled} className={`level-card ${!aiEnabled ? "on" : ""}`} onClick={() => setAiEnabled(false)}>
+            <Icon name="pads" size={22} /><b>Studio only</b><span>A pure beat-making and production app: pads, steps, piano roll, sampling, arrangement, mixer. No AI anywhere.</span>
+          </button>
+        </div>
         <ul className="small dim" style={{ lineHeight: 1.7, paddingLeft: 18 }}>
-          <li><b>AI Producer</b>: describe a beat and get a finished, mixed song. Works offline, and better with your AI subscriptions connected.</li>
+          {aiEnabled && <li><b>AI Producer</b>: describe a beat and get a finished, mixed song. Works offline, and better with your AI subscriptions connected.</li>}
           <li><b>Beat · Melody · Song · Mix</b>: build everything by hand, FL-style, with 22 drum kits and 100+ instruments.</li>
         </ul>
         <div className="row end">
-          <button className="btn" onClick={() => { finishOnboarding(pick); setTab("connections"); }}><Icon name="plug" size={14} /> Connect my AI first</button>
+          {aiEnabled && <button className="btn" onClick={() => { finishOnboarding(pick); setTab("connections"); }}><Icon name="plug" size={14} /> Connect my AI first</button>}
           <button className="btn primary big" onClick={() => { finishOnboarding(pick); setTab("home"); }}>Let's go <Icon name="chevron" size={16} /></button>
         </div>
       </div>

@@ -18,7 +18,7 @@ import { importAudioData } from "../audio/assets";
 import { getHost } from "../host/adapter";
 import { runAnalysis } from "../workers/analysis-client";
 import { Icon } from "./shell/Icons";
-import { ShowAt } from "./shell/Level";
+import { ShowAt, AiOnly } from "./shell/Level";
 
 interface Props {
   asset: AudioAsset | undefined;
@@ -140,11 +140,11 @@ export function ChopScrewPanel({ asset, sel, markers, setMarkers }: Props) {
           </select>
           <B label={gen.running ? "Making…" : "Make starter loop"} icon="sparkles" onClick={makeStarter} disabled={gen.running} title="A royalty-free loop rendered by PulseForge: nothing to clear" />
         </div>
-        <div className="row" style={{ marginTop: 6 }}>
+        <AiOnly><div className="row" style={{ marginTop: 6 }}>
           <input className="search-box" style={{ flex: 1, margin: 0, width: "auto" }} value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="…or describe one: “dusty soul piano loop, 88 bpm, A minor”"
             onKeyDown={(e) => { if (e.key === "Enter" && prompt.trim()) void gen.start({ prompt: prompt.trim(), output: "loop", parts: ["chords", "melody"] }); }} />
           <B label="Generate loop" onClick={() => void gen.start({ prompt: prompt.trim(), output: "loop", parts: ["chords", "melody"] })} disabled={gen.running || !prompt.trim()} />
-        </div>
+        </div></AiOnly>
         {gen.running && <p className="small dim" style={{ margin: "6px 0 0" }}>{gen.run?.stages.find((s) => s.status === "running")?.label ?? "Starting"}…</p>}
       </div>
 

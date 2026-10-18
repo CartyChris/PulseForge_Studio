@@ -28,6 +28,10 @@ function loadLevel(): Level {
   } catch {}
   return "beginner";
 }
+/** AI features on/off — off turns the studio into a pure beat-making/production app (per device). */
+function loadAi(): boolean {
+  try { return localStorage.getItem("pf_ai") !== "0"; } catch { return true; }
+}
 function loadTab(): Tab {
   try { if (localStorage.getItem("pf_onboarded") === "1") return "home"; } catch {}
   return "home";
@@ -78,6 +82,9 @@ interface StudioState {
   needsOnboarding: boolean;
 
   setLevel(level: Level): void;
+  /** AI features on (AI Producer, AI Chat, Sound Lab, Connect, prompts) or off (pure production) */
+  aiEnabled: boolean;
+  setAiEnabled(on: boolean): void;
   finishOnboarding(level: Level): void;
   setProject(project: Project, opts?: { resetUndo?: boolean }): void;
   update(fn: (p: Project) => Project, opts?: { undoable?: boolean }): void;
@@ -129,11 +136,16 @@ export const useStudio = create<StudioState>((set, get) => ({
   reducedMotion: false,
   paletteOpen: false,
   level: loadLevel(),
+  aiEnabled: loadAi(),
   needsOnboarding: (() => { try { return localStorage.getItem("pf_onboarded") !== "1"; } catch { return false; } })(),
 
   setLevel(level) {
     try { localStorage.setItem("pf_level", level); } catch {}
     set({ level });
+  },
+  setAiEnabled(on) {
+    try { localStorage.setItem("pf_ai", on ? "1" : "0"); } catch {}
+    set({ aiEnabled: on });
   },
   finishOnboarding(level) {
     try { localStorage.setItem("pf_level", level); localStorage.setItem("pf_onboarded", "1"); } catch {}

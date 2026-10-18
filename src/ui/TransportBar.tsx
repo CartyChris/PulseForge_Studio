@@ -6,7 +6,7 @@ import { formatPosition, formatSeconds, ticksToSeconds, ticksPerBar } from "../.
 import { ProjectMenu } from "./ProjectMenu";
 import { SettingsButton } from "./Settings";
 import { Icon, BrandMark } from "./shell/Icons";
-import { ShowAt, LevelSwitch } from "./shell/Level";
+import { ShowAt, LevelSwitch, AiSwitch } from "./shell/Level";
 import { LcdSpectrum, LcdBeats } from "./viz/LiveVisuals";
 import { useVizPrefs } from "../viz/prefs";
 import { Portal } from "./shell/Portal";
@@ -26,7 +26,7 @@ function tooBig(el: HTMLElement): boolean {
 }
 
 export function TransportBar() {
-  const { project, playing, recording, micActive, cloudActive, aiBusy, dirty, lastSavedAt, snap, setSnap, playMode, setPlayMode, update, undo, redo, undoStack, redoStack, save, setTab, toast } = useStudio();
+  const { project, playing, recording, micActive, cloudActive, aiBusy, aiEnabled, dirty, lastSavedAt, snap, setSnap, playMode, setPlayMode, update, undo, redo, undoStack, redoStack, save, setTab, toast } = useStudio();
   const positionTicks = usePlayhead((s) => s.ticks);
   const [status, setStatus] = useState(engine.status());
   const [moreAt, setMoreAt] = useState<{ x: number; y: number; tap: boolean; tools: boolean } | null>(null); // ⋯ popover anchor (fixed: the bar clips overflow)
@@ -46,7 +46,7 @@ export function TransportBar() {
     for (let k = 1; k <= SQUEEZE_STEPS; k++) el.classList.remove(`sq${k}`);
     for (let n = 1; n <= SQUEEZE_STEPS && tooBig(el); n++) el.classList.add(`sq${n}`);
   }, []);
-  useLayoutEffect(fit, [fit, level, project.name, playMode]);
+  useLayoutEffect(fit, [fit, level, project.name, playMode, aiEnabled]);
   useEffect(() => {
     const el = barRef.current;
     if (!el) return;
@@ -201,10 +201,11 @@ export function TransportBar() {
         <ShowAt min="expert"><span className="mono engine-info">{status.running ? `${(status.sampleRate / 1000).toFixed(1)}k · ${status.outputLatencyMs}ms` : "engine idle"}</span></ShowAt>
         <span className={`light ${micActive ? "on-red" : ""}`} title={micActive ? "Microphone active" : "Microphone off"} />
         <span className={`light ${cloudActive ? "on-cyan" : ""}`} title={cloudActive ? "Cloud request in flight" : "No cloud activity"} />
-        <span className={`light ${aiBusy ? "on-purple" : ""}`} title={aiBusy ? "AI working" : "AI idle"} />
+        {aiEnabled && <span className={`light ${aiBusy ? "on-purple" : ""}`} title={aiBusy ? "AI working" : "AI idle"} />}
         <span className={`light ${!dirty ? "on-green" : ""}`} title={dirty ? "Unsaved changes (autosave pending)" : `Saved ${lastSavedAt ? new Date(lastSavedAt).toLocaleTimeString() : ""}`} />
       </div>
 
+      <AiSwitch />
       <LevelSwitch compact />
       <button className="tbtn" title="Save (⌘S)" aria-label="Save" onClick={() => save(true)}><Icon name="save" size={15} /></button>
       <SettingsButton />

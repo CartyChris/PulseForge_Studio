@@ -328,3 +328,17 @@ All 16 stages done, each with a failable check (unit tests + browser checks on r
 - Verified with a geometry audit (essential controls inside the bar, no horizontal overflow) at
   1440/1150/900/780/375 px × all three levels; menus/popovers checked for on-screen rects and
   elementFromPoint hits. Typecheck ✓ · lint ✓ · 410/410 ✓ · build ✓.
+
+## 2026-10-18 — AI on/off switch (pure production mode)
+
+- `aiEnabled` in the store (localStorage `pf_ai`, default on) + `AiSwitch` in the top bar beside the level
+  switch, a Settings → Workspace toggle, an onboarding choice (With AI / Studio only) and a ⌘K command.
+- Off hides: AI Producer, Sound Lab, AI Chat, Connect (nav `ai: true`; App closes them even if pinned),
+  "Produce a … beat" commands, the Beat page's "AI ▸ Continue", the Sample page's describe-a-loop prompt,
+  the audio editor's cloud Stem Extractor, the AI status light and brain label (status bar says "AI off").
+  Kept: starter loops (rendered locally from fixed specs), measured Auto-mix, the Visualizer.
+- Home with AI off (`StudioHome`): same hero box and live backdrop, holding a searchable project shelf
+  (recent / A–Z, open, continue, duplicate, import .pfproj, new project) and template tiles below.
+- Verified in the browser: real click flips the switch, rail drops 2 sections at Beginner (4 at
+  Intermediate+), Home shows the shelf, /producer bounces to Home, palette shows only "Turn AI features on",
+  switching back restores everything; top bar fits at 780 px and 375 px for every level × AI state.

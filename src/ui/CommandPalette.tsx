@@ -20,8 +20,9 @@ export function CommandPalette() {
     // every section — choosing one from a lower level switches up so it's visible
     const tabs = NAV.map((n) => [n.tab, n.label, n.min] as const);
     return [
-      ...tabs.map(([tab, name, min]) => ({ name: `Go to ${name}`, kbd: "", run: () => { if (levelRank(studio.level) < levelRank(min)) studio.setLevel(min); studio.setTab(tab as Tab); } })),
-      ...GENRE_IDS.map((g) => ({ name: `Produce a ${GENRES[g].name} beat`, kbd: "", run: () => { studio.setTab("producer"); void useProducer.getState().start({ prompt: GENRES[g].name, overrides: { genre: g } }); } })),
+      ...tabs.filter(([tab]) => studio.aiEnabled || !NAV.find((n) => n.tab === tab)?.ai).map(([tab, name, min]) => ({ name: `Go to ${name}`, kbd: "", run: () => { if (levelRank(studio.level) < levelRank(min)) studio.setLevel(min); studio.setTab(tab as Tab); } })),
+      { name: studio.aiEnabled ? "Turn AI features off (pure production mode)" : "Turn AI features on", kbd: "", run: () => studio.setAiEnabled(!studio.aiEnabled) },
+      ...(!studio.aiEnabled ? [] : GENRE_IDS).map((g) => ({ name: `Produce a ${GENRES[g].name} beat`, kbd: "", run: () => { studio.setTab("producer"); void useProducer.getState().start({ prompt: GENRES[g].name, overrides: { genre: g } }); } })),
       ...LEVELS.map((l) => ({ name: `Switch to ${l} mode`, kbd: "", run: () => studio.setLevel(l) })),
       { name: "Show help & shortcuts", kbd: "?", run: () => window.dispatchEvent(new CustomEvent("pf-cheatsheet")) },
       { name: "Play / Pause", kbd: "Space", run: () => (engine.playing ? engine.pause() : engine.play()) },
