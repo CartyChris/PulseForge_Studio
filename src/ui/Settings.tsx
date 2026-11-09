@@ -9,6 +9,60 @@ import { NAV, WORKSPACE_PRESETS, useNavCustom, visibleNav } from "./shell/NavRai
 import { SAMPLE_MANIFEST } from "../engine/sampled";
 import { useVizPrefs } from "../viz/prefs";
 import { Portal } from "./shell/Portal";
+import { storageStatus, requestPersistentStorage, lastBackupAt, type StorageStatus } from "../storage/backup";
+import { backUpEverything, restoreFromBackup, projectCount } from "./backup-actions";
+
+const isDesktopApp = typeof window !== "undefined" && !!(window as unknown as { pulseforgeDesktop?: { isDesktop?: boolean } }).pulseforgeDesktop?.isDesktop;
+function fmtBytes(n: number | null): string {
+  if (n === null) return "?";
+  return n >= 1e9 ? `${(n / 1e9).toFixed(1)} GB` : n >= 1e6 ? `${(n / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1e3))} KB`;
+}
+
+/** Where your projects live, how safe they are, and one-file backups. */
+function DataPane() {
+  const [st, setSt] = useState<StorageStatus | null>(null);
+  const [last, setLast] = useState<string | null>(null);
+  const [count, setCount] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const refresh = () => { void storageStatus().then(setSt); void lastBackupAt().then(setLast); void projectCount().then(setCount); };
+  useEffect(refresh, []);
+  const pct = st?.usage != null && st?.quota ? Math.min(100, (st.usage / st.quota) * 100) : 0;
+  return (
+    <>
+      <p className="small dim" style={{ marginTop: 0 }}>
+        {isDesktopApp
+          ? "Your projects and audio are saved on this Mac, inside PulseForge's own storage. Autosave runs as you work."
+          : "Your projects and audio are saved in this browser on this device, never on our servers. Autosave runs as you work. Clearing site data removes them, so keep a backup."}
+      </p>
+      <div className="data-card">
+        <div className="row" style={{ justifyContent: "space-between" }}>
+          <b>{count ?? "…"} project{count === 1 ? "" : "s"}</b>
+          <span className="small dim">{fmtBytes(st?.usage ?? null)} used{st?.quota ? ` of ${fmtBytes(st.quota)} available` : ""}</span>
+        </div>
+        <div className="data-meter"><i style={{ width: `${Math.max(pct, 0.6)}%` }} /></div>
+        <div className="row small" style={{ justifyContent: "space-between", marginTop: 8 }}>
+          <span className={`pill ${st?.persisted ? "ok" : "warn"}`}>{st?.persisted ? "Protected: the browser won't clear it to free space" : st?.persisted === false ? "Best effort: the browser may clear it when space runs low" : "Storage protection unavailable"}</span>
+          {st?.persisted === false && <button className="btn small" onClick={async () => { const ok = await requestPersistentStorage(); refresh(); useStudio.getState().toast(ok ? "Protected: your browser will keep your projects" : "The browser declined for now. It usually agrees once you've used the studio a little more. Keep a backup meanwhile", ok ? "success" : "info"); }}>Protect my projects</button>}
+        </div>
+      </div>
+      <h3 className="section">Backups</h3>
+      <div className="set-row" style={{ cursor: "default" }}>
+        <span className="set-text"><b>Back up everything</b><span>Every project and all of its audio in one <span className="mono">.pfbackup</span> file. Restores in any browser or the Mac app. Last backup: {last ? new Date(last).toLocaleString() : "never"}</span></span>
+        <button className="btn primary small" disabled={busy} onClick={async () => { setBusy(true); await backUpEverything(); setBusy(false); refresh(); }}><Icon name="save" size={13} /> Back up</button>
+      </div>
+      <div className="set-row" style={{ cursor: "default" }}>
+        <span className="set-text"><b>Restore from a backup</b><span>Adds missing projects and updates older ones. Anything you've edited more recently is never overwritten.</span></span>
+        <button className="btn small" disabled={busy} onClick={async () => { setBusy(true); await restoreFromBackup(); setBusy(false); refresh(); }}>Restore…</button>
+      </div>
+      <h3 className="section">Export your music</h3>
+      <p className="small dim" style={{ margin: 0, lineHeight: 1.55 }}>
+        From the project menu ▾ in the top bar: <b>Export…</b> renders a WAV of the song, stems or a selection;
+        <b> Export Portable Project</b> saves one project with its audio (<span className="mono">.pfproj</span>); <b>Export Pattern MIDI</b> for other DAWs.
+        Samples, loops and bounces you make are in <b>Sounds</b>, ready to drag anywhere.
+      </p>
+    </>
+  );
+}
 
 const KEY = "pf_ui_prefs";
 const ACCENTS = [
@@ -64,12 +118,13 @@ export function initUiPrefs(): void {
   if (p.reducedMotion) s.setFlags({ reducedMotion: true });
 }
 
-type Pane = "appearance" | "workspace" | "visuals" | "access" | "about";
+type Pane = "appearance" | "workspace" | "visuals" | "data" | "access" | "about";
 const PANES: { id: Pane; label: string; icon: IconName }[] = [
   { id: "appearance", label: "Appearance", icon: "palette" },
   { id: "workspace", label: "Workspace", icon: "grid" },
   { id: "visuals", label: "Visuals", icon: "viz" },
   { id: "access", label: "Accessibility", icon: "eye" },
+  { id: "data", label: "Your data", icon: "save" },
   { id: "about", label: "About & credits", icon: "help" },
 ];
 
@@ -253,6 +308,8 @@ function SettingsModal({ onClose, initial }: { onClose: () => void; initial: Pan
               <p className="faint small" style={{ marginTop: 10 }}>Interface preferences are saved on this device and don't affect your projects or audio.</p>
             </>
           )}
+
+          {pane === "data" && <DataPane />}
 
           {pane === "about" && (
             <>

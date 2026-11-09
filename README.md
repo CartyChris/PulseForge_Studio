@@ -1,27 +1,82 @@
-# PulseForge Studio 2.0 ⚒
+<div align="center">
 
-[![CI](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml) [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FCartyChris%2FPulseForge_Studio&project-name=pulseforge-studio)
+# PulseForge Studio ⚒
 
-**Live (hosted, bring-your-own-key):** https://pulseforge-studio-app.vercel.app
+### Your whole beat studio in a browser tab. Pads, piano roll, sampler, mixer, a light show,<br>and an AI producer you can switch off whenever you just want to cook.
 
-A local-first music studio for making beats, from "describe it in one sentence" to a full
-FL-style workflow, with an AI producer that can plan, compose, arrange, mix and review a
-whole track. Original design, original branding, original synthesized drums and synths,
-plus real CC0 / CC-BY sampled instruments.
+[![CI](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FCartyChris%2FPulseForge_Studio&project-name=pulseforge-studio)
 
-**Everything core runs on your machine**: drum pads and step sequencer, piano roll, song
-arrangement, mixer, recording, sample chopping, project storage and WAV export all work with
-no AI connected. AI is additive: the offline producer makes complete beats on its own, and your
-AI subscriptions (Claude Code, Codex, Kimi, Grok CLIs), API keys, OpenRouter sign-in or local
-models make the plans smarter.
+**▶ [Open the web studio](https://pulseforge-studio-app.vercel.app)** &nbsp;·&nbsp; **🍎 [Download the Mac app](https://github.com/CartyChris/PulseForge_Studio/releases/latest)** &nbsp;·&nbsp; **📖 [Your first song](GETTING_STARTED.md)**
+
+<img src="docs/screenshots/01-home.jpg" alt="PulseForge Home: describe a beat or pick a genre" width="100%">
+
+</div>
+
+---
+
+## What's in the box 🎛️
+
+Type *"dark trap beat with eerie bells, 140 bpm"* and hear a finished, mixed song a few seconds later.
+Or ignore the robots entirely and build every hit yourself. Either way, everything stays editable.
+
+| | |
+|---|---|
+| <img src="docs/screenshots/02-beat.jpg" alt="Beat page: MPC-style pads and a colour-coded step sequencer"> | **🥁 Beat:** MPC-style pads (keys 1–8), live **Rec** with **Note Repeat**, a step sequencer lit in each instrument's colour, and a **68-groove library** (boom bap, Dilla swing, drill, Memphis, dembow, amapiano and more). 22 drum kits, one-click genre grooves, swing, humanize, Euclidean rhythms. |
+| **🔪 Sample · chopped & screwed:** import anything (or make a royalty-free starter loop), then **Screw it**, chop, stutter, backspin, tape-stop, slowed + reverb. Give it an **SP-1200 / MPC60 / SP-404 / cassette** character, **fit it to your tempo and key**, and **chop it to 8 or 16 pads** with flips. | <img src="docs/screenshots/08-sample.jpg" alt="Sample page: chop & screw tools above a waveform"> |
+| <img src="docs/screenshots/03-song.jpg" alt="Song page: arrangement with sections"> | **🎼 Melody & Song:** a piano roll with **48 chord progressions** spelled in your key, 118 instrument presets (real sampled piano and orchestra, FM, supersaws, 808s), and an arrangement view with **song blueprints** that grow one loop into intro → verse → hook → outro. |
+| **🎚️ Mix:** Quick-Mix sliders for beginners, a full mixer for everyone else. 26 effects, sends, buses, sidechain ducking, a mastering chain and a measured **Auto-mix**. Export WAV, stems or MIDI. | <img src="docs/screenshots/04-mix.jpg" alt="Mixer with channel strips and LED meters"> |
+
+### 🌈 A visualizer that actually listens to *your* song
+
+The old iTunes visualizer, but it reads your patterns: every kick, snare, hat, bass note and chord lands
+**exactly** on the beat, colours come from your song's key, and the **Orbs** scene turns each instrument
+into a glowing blob in its own colour. Ten GPU scenes, Auto mode that changes with your song's sections,
+performance pads, full screen, and **record a video with audio** for socials.
+
+<img src="docs/screenshots/05-viz-halo.jpg" alt="Halo visualizer scene" width="49%"> <img src="docs/screenshots/06-viz-skyline.jpg" alt="Skyline synthwave visualizer scene" width="49%">
+<img src="docs/screenshots/07-viz-orbs.jpg" alt="Orbs visualizer: one glowing orb per instrument" width="49%"> <img src="docs/screenshots/10-settings.jpg" alt="Settings: five themes and any accent colour" width="49%">
+
+### 🧠 AI when you want it. 🔌 Off when you don't.
+
+- **AI Producer:** one sentence → plan, compose, arrange, mix, review. Works **offline** with the built-in
+  producer, and gets smarter with your **Claude Code, Codex, Kimi or Grok** subscription, an API key, or an
+  OpenRouter sign-in. Ask for a full song, a loop to sample, or a stem pack.
+- **Flip the ✨ AI switch off** and PulseForge becomes a pure production studio: no AI pages, no prompts,
+  nothing sent anywhere. Home turns into your project shelf.
+
+<img src="docs/screenshots/09-studio-home.jpg" alt="Production mode: your projects shelf" width="100%">
+
+### 🙂 As simple or as deep as you like
+
+**Beginner · Intermediate · Expert** decides how much is on screen (never what the studio can do), and
+**Customize** lets you build your own workspace, from a four-page beat station to the full studio.
+Five themes, any accent colour, glass or solid surfaces, reduced motion.
+
+### 💾 Your music stays yours
+
+- **Saved in your browser, on your device.** Projects and audio live in this browser's storage (IndexedDB + OPFS),
+  never on a server. **Autosave** runs as you work and flushes the instant you switch tabs or close the window.
+- **Protected storage:** the studio asks the browser to keep your data so it isn't cleared to free space.
+  Check it any time in **Settings → Your data**.
+- **Export everything:** **Back up everything** downloads every project and its audio as one `.pfbackup` file
+  that restores in any browser or the Mac app (and never overwrites newer work). Single projects export as
+  `.pfproj`; songs as **WAV**, **stems** or **MIDI**.
+- **Install it:** in Chrome or Edge, use *Install PulseForge Studio* from the browser menu to get it in its own window.
+- **Bring your own key:** on the hosted site, any API keys you add stay in your browser and travel only with your own requests.
+
+> **Safari users:** Safari can delete website data after seven days without a visit, so keep a recent
+> backup (⌘K → *Back up all projects*) or use the Mac app.
+
+---
 
 ## Three ways to run it
 
 | | How | Notes |
 |---|---|---|
-| **Mac app** | open `release/PulseForge-Studio-2.0.0-arm64.dmg`, drag to Applications | Electron, Apple Silicon. Finds your installed AI CLIs automatically. Microphone prompt on first record. |
+| **Mac app** | download the `.dmg` from [Releases](https://github.com/CartyChris/PulseForge_Studio/releases/latest), drag to Applications | Electron, Apple Silicon. Finds your installed AI CLIs automatically. Microphone prompt on first record. |
 | **Local browser** | double-click `Start PulseForge.command`, or `npm install && npm run start` | Serves studio + API on http://127.0.0.1:7800 |
-| **Vercel (hosted)** | see [Deploying to Vercel](#deploying-to-vercel) | Bring-your-own-key: each visitor's keys stay in their own browser |
+| **Web (hosted)** | **https://pulseforge-studio-app.vercel.app**, or deploy your own: [Deploying to Vercel](#deploying-to-vercel) | Bring-your-own-key: each visitor's keys stay in their own browser |
 
 **First launch of the Mac app:** it's signed ad-hoc, not notarized by Apple, so macOS says it can't
 verify the developer. Click **Done**, then open **System Settings → Privacy & Security**, scroll to the

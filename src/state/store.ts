@@ -10,6 +10,7 @@ import type { DawCommand } from "../../shared/commands";
 import { applyCommand } from "./commands";
 import { engine } from "../engine/engine";
 import { saveProject } from "../storage/projects";
+import { requestPersistentStorage } from "../storage/backup";
 
 export type Tab =
   | "home" | "producer" | "connections" | "library"
@@ -111,6 +112,7 @@ interface StudioState {
 
 const MAX_UNDO = 80;
 let autosaveTimer: ReturnType<typeof setTimeout> | null = null;
+let persistAsked = false;
 
 export const useStudio = create<StudioState>((set, get) => ({
   project: createEmptyProject(),
@@ -258,7 +260,11 @@ export const useStudio = create<StudioState>((set, get) => ({
     try {
       const saved = await saveProject(project);
       set({ project: saved, dirty: false, lastSavedAt: saved.modifiedAt });
-      if (manual) get().toast("Project saved", "success");
+      if (manual) {
+        get().toast("Project saved", "success");
+        // the first deliberate save asks the browser to keep our storage (no-op on desktop / if granted)
+        if (!persistAsked) { persistAsked = true; void requestPersistentStorage(); }
+      }
     } catch (e) {
       get().toast(`Save failed: ${e}`, "error");
     }
@@ -269,15 +275,26 @@ export const useStudio = create<StudioState>((set, get) => ({
   },
 }));
 
+let autosaveGet: (() => StudioState) | null = null;
 function scheduleAutosave(get: () => StudioState) {
+  autosaveGet = get;
   if (autosaveTimer) clearTimeout(autosaveTimer);
-  autosaveTimer = setTimeout(async () => {
-    const s = get();
-    if (!s.dirty || !s.projectLoaded) return;
-    try {
-      await saveProject(s.project, { autosave: true });
-    } catch {}
-  }, 4000);
+  autosaveTimer = setTimeout(() => void flushAutosave(), 4000);
+}
+
+/** Edits newer than the last autosave exist (closing now could lose up to ~4 s of work). */
+export function isAutosavePending(): boolean {
+  return autosaveTimer !== null;
+}
+
+/** Write the pending autosave now (tab hidden / window closing). */
+export async function flushAutosave(): Promise<void> {
+  if (autosaveTimer) { clearTimeout(autosaveTimer); autosaveTimer = null; }
+  const s = autosaveGet?.();
+  if (!s || !s.dirty || !s.projectLoaded) return;
+  try {
+    await saveProject(s.project, { autosave: true });
+  } catch {}
 }
 
 /**

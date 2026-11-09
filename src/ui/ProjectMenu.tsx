@@ -9,6 +9,7 @@ import { newId } from "../../shared/project";
 import { engine } from "../engine/engine";
 import type { BitDepth } from "../../shared/wav";
 import { Portal, placeMenu } from "./shell/Portal";
+import { backUpEverything, restoreFromBackup } from "./backup-actions";
 
 type Dialog = null | "open" | "new" | "saveas" | "export";
 
@@ -95,6 +96,8 @@ export function ProjectMenu() {
               catch (e) { toast(String(e), "error"); }
             })}
             {item("Import Portable Project…", importPortable)}
+            {item("Back Up All Projects (.pfbackup)…", () => void backUpEverything())}
+            {item("Restore From Backup…", () => void restoreFromBackup())}
             {item("Export Pattern MIDI (.mid)", async () => {
               try { await exportMidi(project); toast("MIDI exported", "success"); }
               catch (e) { toast(String(e), "error"); }

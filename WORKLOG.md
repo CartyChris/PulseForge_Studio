@@ -358,3 +358,21 @@ All 16 stages done, each with a failable check (unit tests + browser checks on r
   resurrect it). Help sheet lists the Visualizer keys.
 - CI: .github/workflows/ci.yml runs lint, typecheck, tests and a build on every push / PR.
 - Verify: typecheck ✓ (front + server) · lint ✓ · 410/410 ✓ · build ✓.
+
+## 2026-11-09 — Your data, worklet fix, README photos
+
+- Research → upgrades (sources: MDN storage quotas & eviction; Chrome "Revisiting installability criteria"):
+  `navigator.storage.persist()` requested on the first deliberate save and from Settings; whole-library
+  `.pfbackup` export/restore (`src/storage/backup.ts`: every project incl. autosave-only ones + all audio;
+  restore never overwrites newer local work; rejects non-backups, traversal paths and newer formats);
+  Settings → Your data (usage/quota, protection status, backup/restore, export guide); autosave flushes on
+  visibilitychange/pagehide and the web build warns on close only while an autosave is still pending;
+  web app manifest + icons (menu-installable in Chrome 112+, no service worker needed).
+- Bug: Tone caches ONE AudioWorklet module promise per context, so our meter worklet (registered through
+  Tone) and Tone's BitCrusher (e-piano lofi presets) raced — the BitCrusher never registered and threw an
+  uncaught NotSupportedError on every e-piano project (verified on the old live build in both load orders).
+  The meter now registers on the raw context; both orders verified clean with a working meter (−4 dB).
+- UX: genre tile titles no longer collide with the BPM range; Beat rack names no longer truncate to 3 letters.
+- README: fun feature tour with 10 screenshots captured by headless Chrome from the production build
+  (`docs/screenshots/`), live link, Mac download via GitHub Releases. Feature counts verified from code.
+- Verify: typecheck ✓ · lint ✓ · tests ✓ · production build ✓; backup/restore/flush verified in the browser.

@@ -62,7 +62,11 @@ class AudioEngine {
     // wrapper that the native AudioWorkletNode constructor rejects.
     try {
       const toneCtx = Tone.getContext();
-      await toneCtx.addAudioWorkletModule("/worklets/meter-processor.js");
+      // Register on the raw context, NOT toneCtx.addAudioWorkletModule(): Tone caches a single
+      // worklet promise per context and ignores later URLs, so whichever module loads second
+      // (ours, or Tone's own BitCrusher used by the e-piano presets) never registers and its
+      // node creation fails with NotSupportedError.
+      await (toneCtx.rawContext as unknown as { audioWorklet: { addModule(url: string): Promise<void> } }).audioWorklet.addModule("/worklets/meter-processor.js");
       this.meterNode = toneCtx.createAudioWorkletNode("pf-meter");
       this.meterNode.port.onmessage = (e) => { this.meterData = e.data; };
       this.masterTap.connect(this.meterNode as unknown as Tone.ToneAudioNode);

@@ -442,7 +442,8 @@ input[type="range"]:not(.fader)::-moz-range-thumb { width: 14px; height: 14px; b
 .genre-tile:hover::after { opacity: .3; transform: scale(1.25); }
 .genre-tile:active { transform: translateY(-1px) scale(.98); }
 .genre-tile.on { border-color: var(--tile, var(--ember)); box-shadow: 0 0 0 1px var(--tile, var(--ember)) inset; }
-.genre-tile b { display: block; font-size: 14px; margin-bottom: 3px; letter-spacing: -.01em; }
+.genre-tile b { display: block; font-size: 14px; margin-bottom: 3px; letter-spacing: -.01em; padding-right: 50px; } /* clear the BPM range in the corner */
+.genre-tile:not(:has(em)) b { padding-right: 0; }
 .genre-tile span { font-size: 11.5px; color: var(--dim); line-height: 1.35; display: block; }
 .genre-tile em { position: absolute; top: 12px; right: 12px; font-style: normal; font-size: 10px; color: var(--faint); font-family: var(--mono); }
 .stat { display: flex; flex-direction: column; gap: 2px; }
@@ -473,7 +474,7 @@ input[type="range"]:not(.fader)::-moz-range-thumb { width: 14px; height: 14px; b
 .rack { padding: 12px 14px; overflow: auto; height: 100%; }
 .rack-toolbar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
 .rack-row { --row: var(--ember); display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.rack-chan { width: 220px; min-width: 220px; display: flex; align-items: center; gap: 6px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025)); border: 1px solid var(--line); border-radius: 10px; padding: 4px 8px; height: calc(var(--step) + 8px); box-shadow: var(--lift); transition: border-color .15s, box-shadow .2s; }
+.rack-chan { width: 268px; min-width: 268px; display: flex; align-items: center; gap: 6px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025)); border: 1px solid var(--line); border-radius: 10px; padding: 4px 8px; height: calc(var(--step) + 8px); box-shadow: var(--lift); transition: border-color .15s, box-shadow .2s; }
 .rack-chan.selected { border-color: color-mix(in srgb, var(--row) 70%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--row) 22%, transparent) inset, 0 0 18px color-mix(in srgb, var(--row) 12%, transparent); }
 .chan-color { width: 5px; height: 70%; border-radius: 3px; cursor: pointer; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
 .chan-name { flex: 1; font-size: 12px; font-weight: 650; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -802,3 +803,8 @@ body { overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
 .pad-tools .rec.on { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 0 14px rgba(255,77,94,.45); }
 .bp-strip { display: flex; gap: 2px; width: 100%; height: 8px; margin-top: 2px; }
 .bp-strip i { background: var(--grad); border-radius: 2px; }
+
+/* Settings → Your data */
+.data-card { padding: 14px; border-radius: 14px; background: rgba(255,255,255,.035); border: 1px solid var(--line); }
+.data-meter { height: 8px; margin-top: 10px; border-radius: 6px; background: var(--well); overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,.5); }
+.data-meter i { display: block; height: 100%; border-radius: 6px; background: var(--grad); }

@@ -5,6 +5,7 @@ import { NAV } from "./shell/NavRail";
 import { GENRES, GENRE_IDS } from "../../shared/producer";
 import { useProducer } from "../ai/useProducer";
 import { engine } from "../engine/engine";
+import { backUpEverything, restoreFromBackup } from "./backup-actions";
 
 export function CommandPalette() {
   const studio = useStudio();
@@ -24,6 +25,9 @@ export function CommandPalette() {
       { name: studio.aiEnabled ? "Turn AI features off (pure production mode)" : "Turn AI features on", kbd: "", run: () => studio.setAiEnabled(!studio.aiEnabled) },
       ...(!studio.aiEnabled ? [] : GENRE_IDS).map((g) => ({ name: `Produce a ${GENRES[g].name} beat`, kbd: "", run: () => { studio.setTab("producer"); void useProducer.getState().start({ prompt: GENRES[g].name, overrides: { genre: g } }); } })),
       ...LEVELS.map((l) => ({ name: `Switch to ${l} mode`, kbd: "", run: () => studio.setLevel(l) })),
+      { name: "Back up all projects (download one .pfbackup file)", kbd: "", run: () => void backUpEverything() },
+      { name: "Restore projects from a backup", kbd: "", run: () => void restoreFromBackup() },
+      { name: "Your data: storage, backups", kbd: "", run: () => window.dispatchEvent(new CustomEvent("pf-settings", { detail: "data" })) },
       { name: "Show help & shortcuts", kbd: "?", run: () => window.dispatchEvent(new CustomEvent("pf-cheatsheet")) },
       { name: "Play / Pause", kbd: "Space", run: () => (engine.playing ? engine.pause() : engine.play()) },
       { name: "Stop", kbd: "", run: () => engine.stop() },

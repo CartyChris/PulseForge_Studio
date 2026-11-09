@@ -48,6 +48,13 @@ reacts to your actual kicks, snares and chords. Move and click on it to play wit
 for Auto scenes, **F** for full screen, and **Record** to save a video with sound. Want fewer pages?
 **Customize** at the bottom of the nav rail sets up a workspace as simple or as full as you like.
 
+## 0e. Saving, backups and export
+Everything autosaves as you work (and the instant you switch away). On the web your projects live in **this
+browser on this device**: open **Settings → Your data** to see how much is stored, protect it from being cleared,
+and **Back up everything** to one `.pfbackup` file you can restore in any browser or the Mac app. Songs export
+as **WAV**, **stems** or **MIDI** from the project menu ▾. On Safari, keep a recent backup: it can clear site data
+after a week without a visit.
+
 ## 1. Create a project (by hand)
 1. Click **Project ▾ → New Project…** in the top bar, name it, pick a template, click **Create**.
 

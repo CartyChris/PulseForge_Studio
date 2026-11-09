@@ -249,9 +249,9 @@ export function ChannelRack() {
                 onClick={() => update((p) => ({ ...p, channels: p.channels.map((c) => (c.id === ch.id ? { ...c, muted: !c.muted } : c)) }))}>M</button>
               <button className={`ms-btn s ${ch.soloed ? "active" : ""}`} title="Solo"
                 onClick={() => update((p) => ({ ...p, channels: p.channels.map((c) => (c.id === ch.id ? { ...c, soloed: !c.soloed } : c)) }))}>S</button>
-              <input type="range" style={{ width: 44 }} min={-30} max={6} step={0.5} value={ch.volumeDb} title={`Volume ${ch.volumeDb} dB`}
+              <input type="range" style={{ width: 40 }} min={-30} max={6} step={0.5} value={ch.volumeDb} title={`Volume ${ch.volumeDb} dB`}
                 onChange={(e) => update((p) => ({ ...p, channels: p.channels.map((c) => (c.id === ch.id ? { ...c, volumeDb: Number(e.target.value) } : c)) }), { undoable: false })} />
-              <input type="range" style={{ width: 34 }} min={-1} max={1} step={0.05} value={ch.pan} title={`Pan ${ch.pan}`}
+              <input type="range" style={{ width: 30 }} min={-1} max={1} step={0.05} value={ch.pan} title={`Pan ${ch.pan}`}
                 onChange={(e) => update((p) => ({ ...p, channels: p.channels.map((c) => (c.id === ch.id ? { ...c, pan: Number(e.target.value) } : c)) }), { undoable: false })} />
             </div>
 

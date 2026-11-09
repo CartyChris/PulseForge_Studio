@@ -1,6 +1,6 @@
 /** PulseForge Studio 2.0 shell: top bar · level-aware nav rail · pages · side panels · status bar. */
 import { lazy, Suspense, useEffect, useState } from "react";
-import { useStudio, startTransportLoop, levelRank, type Tab } from "./state/store";
+import { useStudio, startTransportLoop, levelRank, flushAutosave, isAutosavePending, type Tab } from "./state/store";
 import { TransportBar } from "./ui/TransportBar";
 import { Browser } from "./ui/Browser";
 import { Inspector } from "./ui/Inspector";
@@ -201,6 +201,23 @@ export function App() {
     })();
     return uninstall;
   }, [setProject, toast, setTab]);
+
+  // Never lose the last few seconds of work: write the pending autosave the moment the window is
+  // hidden or closing, and (web only — Electron would block quitting) warn if that couldn't finish.
+  useEffect(() => {
+    const flush = () => { if (document.visibilityState === "hidden") void flushAutosave(); };
+    const hide = () => void flushAutosave();
+    const warn = (e: BeforeUnloadEvent) => {
+      if (isDesktop || !isAutosavePending()) return;
+      void flushAutosave();
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    document.addEventListener("visibilitychange", flush);
+    window.addEventListener("pagehide", hide);
+    window.addEventListener("beforeunload", warn);
+    return () => { document.removeEventListener("visibilitychange", flush); window.removeEventListener("pagehide", hide); window.removeEventListener("beforeunload", warn); };
+  }, []);
 
   // audio context needs a user gesture — arm on first interaction
   useEffect(() => {

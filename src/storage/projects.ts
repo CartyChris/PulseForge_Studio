@@ -61,6 +61,22 @@ export async function loadProjectWithRecovery(id: string): Promise<{ project: Pr
   return { project: migrateProject(JSON.parse(main!.json)), recovered: false };
 }
 
+/** Every project id in storage, including ones that only exist as an autosave. */
+export async function allProjectIds(): Promise<string[]> {
+  const keys = (await idb.getAllKeys("projects")).map(String);
+  return [...new Set(keys.map((k) => (k.startsWith("autosave:") ? k.slice(9) : k)))];
+}
+
+/** Write a project exactly as given (keeps its modifiedAt) — used when restoring a backup. */
+export async function restoreProjectRecord(project: Project): Promise<void> {
+  const record: StoredProject = {
+    id: project.id, name: project.name, modifiedAt: project.modifiedAt, createdAt: project.createdAt,
+    bpm: project.bpm, json: JSON.stringify(project),
+  };
+  await idb.put("projects", record);
+  await pushRecent(project.id);
+}
+
 export async function deleteProject(id: string): Promise<void> {
   await idb.delete("projects", id);
   await idb.delete("projects", `autosave:${id}`);

@@ -5,6 +5,8 @@ import { useProducer } from "../../ai/useProducer";
 import { GENRES, GENRE_IDS, type GenreId } from "../../../shared/producer";
 import { listProjects, loadProjectWithRecovery, saveProject, duplicateProject, deleteProject, importPortableProject, PROJECT_TEMPLATES, type ProjectListEntry } from "../../storage/projects";
 import { getHost } from "../../host/adapter";
+import { backUpEverything } from "../backup-actions";
+import { importBackup } from "../../storage/backup";
 import { ensureProjectAssetsLoaded } from "../../audio/assets";
 import { engine } from "../../engine/engine";
 import { Icon } from "../shell/Icons";
@@ -183,7 +185,12 @@ function StudioHome() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<"recent" | "name">("recent");
   const refresh = () => listProjects().then((l) => setAll(l.filter((p) => !p.autosave))).catch(() => setAll([]));
-  useEffect(() => { void refresh(); }, []);
+  useEffect(() => {
+    void refresh();
+    const h = () => void refresh();
+    window.addEventListener("pf-projects-changed", h);
+    return () => window.removeEventListener("pf-projects-changed", h);
+  }, []);
 
   const list = (all ?? [])
     .filter((p) => !q || p.name.toLowerCase().includes(q.toLowerCase()))
@@ -213,9 +220,15 @@ function StudioHome() {
     void refresh();
   };
   const importOne = async () => {
-    const files = await getHost().importFiles({ accept: [".pfproj", ".zip"], multiple: false });
+    const files = await getHost().importFiles({ accept: [".pfproj", ".pfbackup", ".zip"], multiple: false });
     if (!files[0]) return;
     try {
+      if (files[0].name.toLowerCase().endsWith(".pfbackup")) {
+        const r = await importBackup(files[0].data);
+        toast(`Restored backup: ${r.added} added, ${r.updated} updated, ${r.skipped} already up to date`, "success");
+        void refresh();
+        return;
+      }
       const imported = await importPortableProject(files[0].data);
       await openProjectById(imported.id);
       toast(`Imported “${imported.name}”`, "success");
@@ -240,7 +253,8 @@ function StudioHome() {
                 <button role="radio" aria-checked={sort === "name"} className={sort === "name" ? "on" : ""} onClick={() => setSort("name")}>A–Z</button>
               </div>
               <div className="spacer" />
-              <button className="btn small" onClick={importOne} title="Open a portable .pfproj project"><Icon name="export" size={13} style={{ transform: "rotate(180deg)" }} /> Import</button>
+              <button className="btn small" onClick={() => void backUpEverything()} title="Download every project and its audio as one .pfbackup file"><Icon name="save" size={13} /> Back up</button>
+              <button className="btn small" onClick={importOne} title="Open a portable .pfproj project, or restore a .pfbackup"><Icon name="export" size={13} style={{ transform: "rotate(180deg)" }} /> Import</button>
               <button className="btn small primary" onClick={() => void newFrom("blank")}><Icon name="plus" size={14} /> New project</button>
             </div>
             <div className="projects-list" role="list">
