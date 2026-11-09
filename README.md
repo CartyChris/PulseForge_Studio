@@ -1,6 +1,8 @@
 # PulseForge Studio 2.0 ⚒
 
-[![CI](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml)
+[![CI](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml) [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FCartyChris%2FPulseForge_Studio&project-name=pulseforge-studio)
+
+**Live (hosted, bring-your-own-key):** https://pulseforge-studio-app.vercel.app
 
 A local-first music studio for making beats, from "describe it in one sentence" to a full
 FL-style workflow, with an AI producer that can plan, compose, arrange, mix and review a
@@ -145,7 +147,8 @@ the Orbs scene turns each instrument into a liquid orb in its channel colour.
 
 ## Deploying to Vercel
 
-The repo is Vercel-ready (`vercel.json` + `api/index.ts`): the studio is served as static files and
+The repo is Vercel-ready (`vercel.json` + `scripts/build-vercel.mjs`, which bundles `api/index.ts` into one
+function with esbuild): the studio is served as static files and
 the backend runs as one serverless function.
 
 1. Push this folder to a Git repo and **Import** it in Vercel (framework preset: *Other*; the build
