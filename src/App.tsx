@@ -1,30 +1,20 @@
 /** PulseForge Studio 2.0 shell: top bar · level-aware nav rail · pages · side panels · status bar. */
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useStudio, startTransportLoop, levelRank, type Tab } from "./state/store";
 import { TransportBar } from "./ui/TransportBar";
 import { Browser } from "./ui/Browser";
 import { Inspector } from "./ui/Inspector";
 import { PianoRoll } from "./ui/PianoRoll";
 import { Playlist } from "./ui/Playlist";
-import { AudioEditor } from "./ui/AudioEditor";
-import { InstrumentEditor } from "./ui/InstrumentEditor";
-import { AIAssistant } from "./ui/AIAssistant";
-import { SoundLab } from "./ui/SoundLab";
-import { Recording } from "./ui/Recording";
-import { ResourceHub } from "./ui/ResourceHub";
 import { CommandPalette } from "./ui/CommandPalette";
 import { NavRail, NAV, visibleNav, levelNav, useNavCustom } from "./ui/shell/NavRail";
 import { AmbientGlow } from "./ui/viz/LiveVisuals";
 import { Icon } from "./ui/shell/Icons";
 import { PageFrame, StatusBar, Onboarding, HelpSheet } from "./ui/shell/Chrome";
 import { Home } from "./ui/pages/Home";
-import { Producer } from "./ui/pages/Producer";
-import { Connections } from "./ui/pages/Connections";
 import { BeatPage } from "./ui/pages/Beat";
 import { MixPage } from "./ui/pages/Mix";
-import { ProgressionPicker } from "./ui/ProgressionPicker";
 import { SongTools } from "./ui/pages/SongTools";
-import { VisualizerPage } from "./ui/pages/Visualizer";
 import { installKeyboardShortcuts } from "./keyboard";
 import { setHost, StandaloneHostAdapter } from "./host/adapter";
 import { initUiPrefs } from "./ui/Settings";
@@ -32,6 +22,40 @@ import { recentProjects, loadProjectWithRecovery, saveProject, PROJECT_TEMPLATES
 import { ensureProjectAssetsLoaded } from "./audio/assets";
 import { engine } from "./engine/engine";
 import { completeOpenRouterBrowserOAuth } from "./ai/oauth-client";
+import { PageBoundary, PageLoading } from "./ui/shell/ErrorBoundary";
+
+// Pages that aren't part of the everyday beat loop load on demand, keeping startup lean; they are
+// prefetched once the studio is idle so switching to them is still instant (and works offline).
+const PAGE_CHUNKS = {
+  AudioEditor: () => import("./ui/AudioEditor").then((m) => ({ default: m.AudioEditor })),
+  InstrumentEditor: () => import("./ui/InstrumentEditor").then((m) => ({ default: m.InstrumentEditor })),
+  AIAssistant: () => import("./ui/AIAssistant").then((m) => ({ default: m.AIAssistant })),
+  SoundLab: () => import("./ui/SoundLab").then((m) => ({ default: m.SoundLab })),
+  Recording: () => import("./ui/Recording").then((m) => ({ default: m.Recording })),
+  ResourceHub: () => import("./ui/ResourceHub").then((m) => ({ default: m.ResourceHub })),
+  Producer: () => import("./ui/pages/Producer").then((m) => ({ default: m.Producer })),
+  Connections: () => import("./ui/pages/Connections").then((m) => ({ default: m.Connections })),
+  ProgressionPicker: () => import("./ui/ProgressionPicker").then((m) => ({ default: m.ProgressionPicker })),
+  VisualizerPage: () => import("./ui/pages/Visualizer").then((m) => ({ default: m.VisualizerPage })),
+};
+const AudioEditor = lazy(PAGE_CHUNKS.AudioEditor);
+const InstrumentEditor = lazy(PAGE_CHUNKS.InstrumentEditor);
+const AIAssistant = lazy(PAGE_CHUNKS.AIAssistant);
+const SoundLab = lazy(PAGE_CHUNKS.SoundLab);
+const Recording = lazy(PAGE_CHUNKS.Recording);
+const ResourceHub = lazy(PAGE_CHUNKS.ResourceHub);
+const Producer = lazy(PAGE_CHUNKS.Producer);
+const Connections = lazy(PAGE_CHUNKS.Connections);
+const ProgressionPicker = lazy(PAGE_CHUNKS.ProgressionPicker);
+const VisualizerPage = lazy(PAGE_CHUNKS.VisualizerPage);
+function prefetchPages(): void {
+  const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500));
+  idle(() => { for (const load of Object.values(PAGE_CHUNKS)) void load().catch(() => {}); }, { timeout: 4000 });
+}
+
+/** Startup runs once per page load (React StrictMode mounts effects twice in development, which
+ * used to create two starter projects on a fresh profile). */
+let bootOnce: Promise<void> | null = null;
 
 /** Pages that use the full width (no browser/inspector side panels). */
 const FULL_WIDTH: Tab[] = ["home", "producer", "connections", "library", "resources", "visualizer"];
@@ -82,7 +106,7 @@ function MelodyPage() {
         </div>
         <div style={{ flex: 1, minHeight: 0 }}><PianoRoll /></div>
       </div>
-      {progOpen && <ProgressionPicker onClose={() => setProgOpen(false)} />}
+      {progOpen && <Suspense fallback={null}><ProgressionPicker onClose={() => setProgOpen(false)} /></Suspense>}
     </PageFrame>
   );
 }
@@ -154,7 +178,8 @@ export function App() {
       if (r === "connected") { toast("OpenRouter connected. Your AI Producer can use it now", "success"); setTab("connections"); }
       if (r === "failed") toast("OpenRouter sign-in didn't complete. Please try again", "error");
     });
-    (async () => {
+    prefetchPages();
+    bootOnce ??= (async () => {
       try {
         const recent = await recentProjects();
         if (recent[0]) {
@@ -241,7 +266,13 @@ export function App() {
           <div className="workspace-body">
             {!projectLoaded
               ? <div className="empty" style={{ height: "100%" }}><span className="dim">Forging your studio…</span></div>
-              : <div className="page-anim" key={tab}>{renderTab(tab)}</div>}
+              : (
+                <div className="page-anim" key={tab}>
+                  <PageBoundary label={NAV.find((n) => n.tab === tab)?.label ?? "This page"} onHome={() => setTab("home")}>
+                    <Suspense fallback={<PageLoading label={NAV.find((n) => n.tab === tab)?.label ?? "page"} />}>{renderTab(tab)}</Suspense>
+                  </PageBoundary>
+                </div>
+              )}
           </div>
         </main>
         {panelsAllowed && showRight && (

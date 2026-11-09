@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useStudio } from "../../state/store";
 import { useProducer } from "../../ai/useProducer";
 import { GENRES, GENRE_IDS, type GenreId } from "../../../shared/producer";
-import { listProjects, loadProjectWithRecovery, saveProject, duplicateProject, importPortableProject, PROJECT_TEMPLATES, type ProjectListEntry } from "../../storage/projects";
+import { listProjects, loadProjectWithRecovery, saveProject, duplicateProject, deleteProject, importPortableProject, PROJECT_TEMPLATES, type ProjectListEntry } from "../../storage/projects";
 import { getHost } from "../../host/adapter";
 import { ensureProjectAssetsLoaded } from "../../audio/assets";
 import { engine } from "../../engine/engine";
@@ -206,6 +206,12 @@ function StudioHome() {
     const copy = await duplicateProject(id);
     if (copy) { toast(`Duplicated as “${copy.name}”`, "success"); void refresh(); }
   };
+  const remove = async (p: ProjectListEntry) => {
+    if (!confirm(`Delete “${p.name}”? This cannot be undone.`)) return;
+    await deleteProject(p.id);
+    toast(`Deleted “${p.name}”`);
+    void refresh();
+  };
   const importOne = async () => {
     const files = await getHost().importFiles({ accept: [".pfproj", ".zip"], multiple: false });
     if (!files[0]) return;
@@ -256,6 +262,8 @@ function StudioHome() {
                       <span>{p.bpm} BPM · edited {ago(p.modifiedAt)}</span>
                     </span>
                     <button className="icon-btn" title="Duplicate" aria-label={`Duplicate ${p.name}`} onClick={(e) => { e.stopPropagation(); void duplicate(p.id); }}><Icon name="copy" size={15} /></button>
+                    <button className="icon-btn danger" disabled={current} title={current ? "This project is open: open another one to delete it" : "Delete"} aria-label={`Delete ${p.name}`}
+                      onClick={(e) => { e.stopPropagation(); void remove(p); }}><Icon name="trash" size={15} /></button>
                     <span className="btn small project-open">{current ? "Continue" : "Open"} <Icon name="chevron" size={13} /></span>
                   </div>
                 );

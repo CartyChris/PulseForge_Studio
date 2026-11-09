@@ -86,7 +86,8 @@ const SHORTCUTS: Array<[string, string]> = [
   ["Space", "Play / Pause"], ["Esc", "Cancel / close"], ["⌘Z / ⌘⇧Z", "Undo / Redo"], ["⌘S / ⌘⇧S", "Save / Save As"],
   ["⌘K", "Command palette (search every action)"], ["⌥1 … ⌥9", "Jump to section"], ["1 … 8", "Play drum pads (Beat page)"],
   ["R", "Record"], ["M", "Metronome"], ["⌘A", "Select all"], ["⌘D", "Duplicate"], ["Delete", "Delete selection"],
-  ["P / B", "Pencil / Select tool"], ["S", "Split (Song)"], ["+ / −", "Zoom"], ["← → ↑ ↓", "Nudge / transpose"], ["⇧↑ / ⇧↓", "Octave (Melody)"], ["?", "This help"],
+  ["P / B", "Pencil / Select tool"], ["S", "Split (Song)"], ["+ / −", "Zoom"], ["← → ↑ ↓", "Nudge / transpose"], ["⇧↑ / ⇧↓", "Octave (Melody)"],
+  ["← / →", "Previous / next scene (Visualizer)"], ["F · H · A", "Full screen · hide controls · Auto scenes (Visualizer)"], ["?", "This help"],
 ];
 
 export function HelpSheet() {

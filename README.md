@@ -1,5 +1,7 @@
 # PulseForge Studio 2.0 ⚒
 
+[![CI](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/CartyChris/PulseForge_Studio/actions/workflows/ci.yml)
+
 A local-first music studio for making beats, from "describe it in one sentence" to a full
 FL-style workflow, with an AI producer that can plan, compose, arrange, mix and review a
 whole track. Original design, original branding, original synthesized drums and synths,

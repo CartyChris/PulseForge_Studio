@@ -342,3 +342,19 @@ All 16 stages done, each with a failable check (unit tests + browser checks on r
 - Verified in the browser: real click flips the switch, rail drops 2 sections at Beginner (4 at
   Intermediate+), Home shows the shelf, /producer bounces to Home, palette shows only "Turn AI features on",
   switching back restores everything; top bar fits at 780 px and 375 px for every level × AI state.
+
+## 2026-11-09 — Polish pass + GitHub
+
+- Startup: 10 occasional pages (Producer, Connect, AI Chat, Sound Lab, Record, Resources, Sample editor,
+  Instrument editor, Visualizer, chord picker) load on demand and are prefetched when the studio is
+  idle; React/audio/other libraries split into long-cached vendor chunks. App chunk 1,221 KB → 600 KB
+  (179 KB gzipped); every lazy page verified rendering on the production build.
+- Resilience: per-page error boundary (`ui/shell/ErrorBoundary.tsx`). A crash shows a recovery card
+  (Try again / Go Home) while the top bar, nav and project keep working — verified by forcing the Mix page
+  to crash and recovering it. Chunk-download failures get their own message.
+- Startup runs once per page load (StrictMode's double effect in development created two starter
+  projects on a fresh profile).
+- Home shelf (AI off): delete with confirmation; the open project can't be deleted (autosave would
+  resurrect it). Help sheet lists the Visualizer keys.
+- CI: .github/workflows/ci.yml runs lint, typecheck, tests and a build on every push / PR.
+- Verify: typecheck ✓ (front + server) · lint ✓ · 410/410 ✓ · build ✓.
